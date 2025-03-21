@@ -82,7 +82,7 @@ export default function ForgotPassword() {
         ) : (
           <form onSubmit={handleSubmit} className='space-y-6'>
             <div className='space-y-2'>
-              <label htmlFor='email' className='block text-gray-700'>
+              <label htmlFor='email' className='block text-lg text-[#333333]'>
                 E-Mail Address
               </label>
               <input
