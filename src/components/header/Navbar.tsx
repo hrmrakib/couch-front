@@ -14,7 +14,7 @@ export default function Navbar() {
     <header className='border-b border-gray-200'>
       <div className='container mx-auto px-4 flex items-center justify-between h-20'>
         <div className='flex items-center'>
-          <Link href='/' className='mr-24'>
+          <Link href='/' className='mr-24 hidden md:block'>
             <Image
               src='/header/logo.svg'
               alt='Campus Store Logo'
@@ -31,11 +31,11 @@ export default function Navbar() {
                 <Menu className='h-5 w-5' />
               </button>
             </SheetTrigger>
-            <SheetContent side='left' className='w-[250px]'>
+            <SheetContent side='left' className='w-[280px]'>
               <SheetHeader>
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
-              <nav className='flex flex-col space-y-4 mt-6'>
+              <nav className='pl-4 flex flex-col space-y-4 mt-6'>
                 <Link
                   href='/'
                   className='text-black hover:text-gray-600 font-medium'

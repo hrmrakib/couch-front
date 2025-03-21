@@ -16,7 +16,7 @@ export default function MyAccount() {
     <div className='md:flex justify-center items-center h-[calc(100vh-100px)]'>
       <div className='h-full px-4 py-12 flex justify-center items-center my-auto'>
         <div className='w-full md:w-[600px]'>
-          <h1 className='text-5xl font-medium text-[#545454] text-center mb-8'>
+          <h1 className='text-[40px] font-medium text-[#545454] text-center mb-8'>
             My Account
           </h1>
 
@@ -29,7 +29,7 @@ export default function MyAccount() {
                 id='email'
                 type='email'
                 placeholder='E-mail address'
-                className='w-full h-[56px] border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400 placeholder:text-[#545454]'
+                className='w-full h-14 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400 placeholder:text-[#545454]'
               />
             </div>
 
@@ -68,7 +68,7 @@ export default function MyAccount() {
 
             <button
               type='submit'
-              className='w-full h-[56px] md:h-[72px] bg-[#FDB515] hover:bg-[#fdb415e6] text-base md:text-lg text-[#4A3300] font-medium py-3 rounded transition-colors cursor-pointer'
+              className='w-full h-14 md:h-[72px] cursor-pointer bg-[#FDB515] hover:bg-[#fdb415e6] text-base md:text-lg text-[#4A3300] font-medium py-3 rounded transition-colors cursor-pointer'
             >
               Sign In
             </button>
