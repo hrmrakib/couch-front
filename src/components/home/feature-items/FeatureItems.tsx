@@ -118,7 +118,7 @@ export default function FeaturedItems() {
                 activeFilter === "most-rented"
                   ? "bg-primary text-[#4A3300]"
                   : "border border-gray-300 text-[#545454] hover:bg-gray-50"
-              }`}
+              }`} 
             >
               Most Rented
             </button>
@@ -146,7 +146,7 @@ export default function FeaturedItems() {
               <div className='relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
                 <button
                   onClick={() => toggleFavorite(product.id)}
-                  className='absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/80 hover:bg-white transition-colors'
+                  className='absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors'
                   aria-label={
                     favorites.includes(product.id)
                       ? "Remove from favorites"
@@ -175,12 +175,16 @@ export default function FeaturedItems() {
               </div>
 
               <Link href={`/product/${product.id}`}>
-                <h3 className='text-xl font-medium mb-1'>{product.name}</h3>
+                <h3 className='text-xl md:text-[32px] text-[#000000] font-medium mb-1'>
+                  {product.name}
+                </h3>
               </Link>
 
               <div className='flex justify-between mb-2'>
-                <span className='font-medium'>${product.monthlyPrice}/mo</span>
-                <span className='text-gray-600'>
+                <span className='text-[#000000] text-lg font-medium'>
+                  ${product.monthlyPrice}/mo
+                </span>
+                <span className='text-[##333333] text-lg'>
                   ${product.buyPrice} to buy
                 </span>
               </div>
