@@ -48,19 +48,25 @@ export default function HeroSection() {
 
               <div className='grid grid-cols-3 gap-4'>
                 <div>
-                  <h3 className='text-3xl md:text-4xl font-bold text-[#FFFFFF]'>25k+</h3>
+                  <h3 className='text-3xl md:text-4xl font-bold text-[#FFFFFF]'>
+                    25k+
+                  </h3>
                   <p className='text-sm md:text-base opacity-80 text-[#FFFFFF]'>
                     Unique Styles
                   </p>
                 </div>
                 <div>
-                  <h3 className='text-3xl md:text-4xl font-bold text-[#FFFFFF]'>50k</h3>
+                  <h3 className='text-3xl md:text-4xl font-bold text-[#FFFFFF]'>
+                    50k
+                  </h3>
                   <p className='text-sm md:text-base opacity-80 text-[#FFFFFF]'>
                     Happy Customer
                   </p>
                 </div>
                 <div>
-                  <h3 className='text-3xl md:text-4xl font-bold text-[#FFFFFF]'>100</h3>
+                  <h3 className='text-3xl md:text-4xl font-bold text-[#FFFFFF]'>
+                    100
+                  </h3>
                   <p className='text-sm md:text-base opacity-80 text-[#FFFFFF]'>
                     Certified Outlets
                   </p>
@@ -69,14 +75,14 @@ export default function HeroSection() {
             </div>
 
             <div
-              className={`border-2 border-red-500 relative w-[400px] md:w-[730px] h-[300px] md:h-[593px]`}
+              className={`relative w-[400px] md:w-[730px] h-[300px] md:h-[593px]`}
             >
               <Image
                 src='/home/hero-banner.png'
                 alt='Sustainable furniture showcase'
                 width={900}
                 height={700}
-                className='border-2 border-blue-500 object-cover w-full md:h-[120%]'
+                className='object-cover w-full md:h-[120%]'
                 priority
               />
             </div>

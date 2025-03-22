@@ -2,7 +2,7 @@
 
 import HeroSection from "@/components/home/hero/HeroSection";
 import CategoryCarousel from "@/components/home/categories/CategoryCarousel";
-
+import FeaturedItems from "@/components/home/feature-items/FeatureItems";
 export default function Home() {
   return (
     <main className='min-h-[706px]'>
@@ -10,6 +10,8 @@ export default function Home() {
       <HeroSection />
 
       <CategoryCarousel />
+
+      <FeaturedItems />
     </main>
   );
 }

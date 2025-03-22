@@ -57,26 +57,43 @@ export default function CategoryCarousel() {
             </h2>
 
             <div className='flex items-center mb-6'>
-              <div className='w-12 h-12 mr-3'>
+              <div className='w-20 h-20 mr-3'>
                 <svg
-                  viewBox='0 0 24 24'
+                  width='80'
+                  height='80'
+                  viewBox='0 0 80 80'
                   fill='none'
-                  stroke='currentColor'
-                  strokeWidth='1.5'
-                  className='text-gray-600'
+                  xmlns='http://www.w3.org/2000/svg'
                 >
-                  <path d='M20 10V7a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0v10a2 2 0 01-2 2H6a2 2 0 01-2-2V10m16 0h-2.5a1 1 0 00-1 1v1a1 1 0 01-1 1h-7a1 1 0 01-1-1v-1a1 1 0 00-1-1H4' />
+                  <path
+                    d='M62.3438 33.9062V51.25H17.6562V33.9062C17.6562 31.0586 15.3477 28.75 12.5 28.75H8.59375C5.14203 28.75 2.34375 31.5483 2.34375 35V47.5C2.34375 54.4036 7.94016 60 14.8438 60H65.1562C72.0598 60 77.6562 54.4036 77.6562 47.5V35C77.6562 31.5483 74.858 28.75 71.4062 28.75H67.5C64.6523 28.75 62.3438 31.0586 62.3438 33.9062Z'
+                    stroke='#545454'
+                    stroke-width='4'
+                    stroke-miterlimit='10'
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
+                  />
+                  <path
+                    d='M62.3438 46.25C62.3438 43.4886 60.1052 41.25 57.3438 41.25H22.6562C19.8948 41.25 17.6562 43.4886 17.6562 46.25M15 60V63.75M65 60V63.75M75 30V28.75C75 21.8464 69.4036 16.25 62.5 16.25H17.5C10.5964 16.25 5 21.8464 5 28.75V30'
+                    stroke='#545454'
+                    stroke-width='4'
+                    stroke-miterlimit='10'
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
+                  />
                 </svg>
               </div>
               <div>
-                <p className='text-lg font-medium'>+200 Unique</p>
-                <p className='text-lg font-medium'>Products</p>
+                <p className='text-xl text-[#545454] font-medium'>
+                  +200 Unique
+                </p>
+                <p className='text-xl text-[#545454] font-medium'>Products</p>
               </div>
             </div>
 
             <Link
               href='/categories'
-              className='inline-flex items-center text-gray-700 hover:text-gray-900 transition-colors'
+              className='inline-flex items-center font-medium text-[#545454] hover:text-[#3f3e3e] transition-colors'
             >
               ALL CATIGORIES
               <svg
@@ -104,15 +121,19 @@ export default function CategoryCarousel() {
               }}
               className='w-full'
             >
-              <CarouselContent>
-                {categories.map((category) => (
+              <CarouselContent className='items-end'>
+                {categories.map((category, index) => (
                   <CarouselItem
                     key={category.id}
                     className='basis-full sm:basis-1/2 md:basis-1/2 lg:basis-1/3 pl-2 pr-2'
                   >
                     <Link href={`/category/${category.slug}`}>
-                      <div className='bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'>
-                        <div className='relative h-64 w-full'>
+                      <div
+                        className={`${
+                          index % 2 === 0 ? "h-[352px]" : "h-[320px]"
+                        }  bg-[#FEFEFE] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow`}
+                      >
+                        <div className='relative h-full w-full'>
                           <Image
                             src={category.image || "/placeholder.svg"}
                             alt={category.name}
