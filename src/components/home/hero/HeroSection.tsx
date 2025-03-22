@@ -17,11 +17,11 @@ export default function HeroSection() {
   return (
     <main className='min-h-[706px]'>
       {/* Hero Section */}
-      <section className='relative w-full overflow-hidden bg-[#2A4190] text-white'>
+      <section className='relative w-full overflow-hidden bg-[url("/home/hero-bg.png")] bg-cover bg-center text-white'>
         <div className='container mx-auto px-4 py-12 md:py-16 lg:py-20 relative z-10'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-8 items-center'>
             <div className=''>
-              <h1 className='max-w-[600px] text-4xl md:text-5xl lg:text-[56px] font-bold text-[#FFFFFF] leading-tight mb-6'>
+              <h1 className='max-w-[680px] text-4xl md:text-5xl lg:text-[56px] font-bold text-[#FFFFFF] leading-tight mb-6'>
                 Affordable & Sustainable Furniture for Students
               </h1>
               <p className='text-lg mb-8 text-[#E6E6E6] opacity-90 leading-relaxed'>

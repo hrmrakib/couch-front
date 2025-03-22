@@ -47,9 +47,11 @@ export default function FeaturesSection() {
                 />
               </div>
 
-              <h3 className='text-lg font-semibold mb-2'>{feature.title}</h3>
+              <h3 className='text-lg text-[#000000] font-medium mb-3'>
+                {feature.title}
+              </h3>
 
-              <p className='text-gray-600 text-sm'>{feature.description}</p>
+              <p className='max-w-[250px] text-[#545454] text-sm'>{feature.description}</p>
             </div>
           ))}
         </div>
