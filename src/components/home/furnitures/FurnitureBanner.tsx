@@ -5,7 +5,7 @@ export default function FurnitureBanner() {
   return (
     <section className='py-8 md:py-20'>
       <div className='container mx-auto px-4'>
-        <div className='h-[530px] relative bg-[#F6FEC6] rounded-3xl overflow-hidden'>
+        <div className='h-[380px] md:h-[530px] relative bg-[#F6FEC6] rounded-3xl overflow-hidden'>
           <div className='flex flex-col md:flex-row items-center h-full'>
             <div className='w-full md:w-1/2 p-8 md:p-12 lg:p-16'>
               <h1 className='text-3xl md:text-4xl lg:text-[64px] font-semibold text-[#333333] leading-tight mb-8'>
@@ -20,7 +20,7 @@ export default function FurnitureBanner() {
               </Link>
             </div>
 
-            <div className='absolute -bottom-10 -right-16 w-full md:w-[667px]'>
+            <div className='absolute bottom-0 md:-bottom-10 -right-8 md:-right-16 w-full md:w-[667px]'>
               <div className='relative h-64 md:h-80 lg:h-[536px] w-full'>
                 <Image
                   src='/home/furnitures/furniture-banner.png'

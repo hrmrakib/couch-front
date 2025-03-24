@@ -99,7 +99,7 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <div className='flex justify-between items-center mt-12'>
+        <div className='flex flex-col md:flex-row  justify-between items-center mt-12'>
           <div className='flex space-x-3 mt-6'>
             <Link
               href='https://facebook.com'
