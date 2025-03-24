@@ -150,38 +150,40 @@ export default function Navbar() {
               />
             </svg>
           </button>
-          <button aria-label='Cart' className='p-2'>
-            {/* <ShoppingBag className='h-5 w-5' /> */}
+          <Link href='/cart' className='cursor-pointer'>
+            <button aria-label='Cart' className='p-2 cursor-pointer'>
+              {/* <ShoppingBag className='h-5 w-5' /> */}
 
-            <svg
-              width='48'
-              height='48'
-              viewBox='0 0 48 48'
-              fill='none'
-              xmlns='http://www.w3.org/2000/svg'
-            >
-              <rect
-                x='0.5'
-                y='0.5'
-                width='47'
-                height='47'
-                rx='23.5'
-                fill='white'
-              />
-              <rect
-                x='0.5'
-                y='0.5'
-                width='47'
-                height='47'
-                rx='23.5'
-                stroke='#E6E6E6'
-              />
-              <path
-                d='M24.0049 14C27.3186 14 30.0049 16.6863 30.0049 20V21H34.0049V23H32.8379L32.0813 32.083C32.0381 32.6013 31.6048 33 31.0847 33H16.925C16.4049 33 15.9717 32.6013 15.9285 32.083L15.1709 23H14.0049V21H18.0049V20C18.0049 16.6863 20.6912 14 24.0049 14ZM30.8309 23H17.1779L17.8449 31H30.1639L30.8309 23ZM25.0049 25V29H23.0049V25H25.0049ZM21.0049 25V29H19.0049V25H21.0049ZM29.0049 25V29H27.0049V25H29.0049ZM24.0049 16C21.8627 16 20.1138 17.684 20.0098 19.8004L20.0049 20V21H28.0049V20C28.0049 17.8578 26.3209 16.1089 24.2045 16.0049L24.0049 16Z'
-                fill='#101010'
-              />
-            </svg>
-          </button>
+              <svg
+                width='48'
+                height='48'
+                viewBox='0 0 48 48'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+              >
+                <rect
+                  x='0.5'
+                  y='0.5'
+                  width='47'
+                  height='47'
+                  rx='23.5'
+                  fill='white'
+                />
+                <rect
+                  x='0.5'
+                  y='0.5'
+                  width='47'
+                  height='47'
+                  rx='23.5'
+                  stroke='#E6E6E6'
+                />
+                <path
+                  d='M24.0049 14C27.3186 14 30.0049 16.6863 30.0049 20V21H34.0049V23H32.8379L32.0813 32.083C32.0381 32.6013 31.6048 33 31.0847 33H16.925C16.4049 33 15.9717 32.6013 15.9285 32.083L15.1709 23H14.0049V21H18.0049V20C18.0049 16.6863 20.6912 14 24.0049 14ZM30.8309 23H17.1779L17.8449 31H30.1639L30.8309 23ZM25.0049 25V29H23.0049V25H25.0049ZM21.0049 25V29H19.0049V25H21.0049ZM29.0049 25V29H27.0049V25H29.0049ZM24.0049 16C21.8627 16 20.1138 17.684 20.0098 19.8004L20.0049 20V21H28.0049V20C28.0049 17.8578 26.3209 16.1089 24.2045 16.0049L24.0049 16Z'
+                  fill='#101010'
+                />
+              </svg>
+            </button>
+          </Link>
           <div className='relative'>
             <button className='flex items-center'>
               <div className='h-9 w-9 rounded-full bg-yellow-500 flex items-center justify-center overflow-hidden'>

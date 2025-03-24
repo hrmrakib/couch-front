@@ -23,6 +23,7 @@ import {
   PaginationLink,
   PaginationNext,
 } from "@/components/ui/pagination";
+import Link from "next/link";
 
 // Sample product data
 const products = Array(9).fill({
@@ -98,7 +99,7 @@ export default function ShopPageComponent() {
 
         <div className='w-48'>
           <Select defaultValue='latest'>
-            <SelectTrigger className='h-9'>
+            <SelectTrigger className='h-9 ml-auto'>
               <SelectValue placeholder='Sort by' />
             </SelectTrigger>
             <SelectContent>
@@ -171,84 +172,87 @@ export default function ShopPageComponent() {
             } gap-6`}
           >
             {productsWithImages.map((product) => (
-              <div
-                key={product.id}
-                className={`group ${viewMode === "list" ? "flex gap-6" : ""}`}
-              >
-                <div className='min-w-[397px] h-[432px] relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
-                  <button
-                    onClick={() => toggleFavorite(product.id)}
-                    className='absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors'
-                    aria-label={
-                      favorites.includes(product.id)
-                        ? "Remove from favorites"
-                        : "Add to favorites"
-                    }
-                  >
-                    <Heart
-                      className={`w-6 h-6 ${
+              <Link href={`/shop/${product.id}`} key={product.id}>
+                <div
+                  key={product.id}
+                  className={`group ${viewMode === "list" ? "flex gap-6" : ""}`}
+                >
+                  <div className='min-w-[397px] h-[432px] relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
+                    <button
+                      onClick={() => toggleFavorite(product.id)}
+                      className='absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors'
+                      aria-label={
                         favorites.includes(product.id)
-                          ? "fill-rose-500 text-rose-500"
-                          : "text-gray-600"
-                      }`}
-                    />
-                  </button>
-
-                  <div className='relative h-full w-full'>
-                    <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
-                      fill
-                      className='object-contain p-4'
-                    />
-                  </div>
-                </div>
-
-                <div className='w-auto flex flex-col justify-center'>
-                  <h3 className='text-lg font-medium mb-3'>{product.name}</h3>
-
-                  <div className='flex items-center gap-6 mb-3'>
-                    <span className='font-medium'>
-                      ${product.monthlyPrice}/mo
-                    </span>
-                    <span className='text-gray-600'>
-                      ${product.buyPrice} to buy
-                    </span>
-                  </div>
-
-                  <div className='flex mb-3'>
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className={`w-5 h-5 ${
-                          i < product.rating
-                            ? "text-yellow-400"
-                            : "text-gray-300"
+                          ? "Remove from favorites"
+                          : "Add to favorites"
+                      }
+                    >
+                      <Heart
+                        className={`w-6 h-6 ${
+                          favorites.includes(product.id)
+                            ? "fill-rose-500 text-rose-500"
+                            : "text-gray-600"
                         }`}
-                        fill='currentColor'
-                        viewBox='0 0 20 20'
-                      >
-                        <path d='M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z' />
-                      </svg>
-                    ))}
+                      />
+                    </button>
+
+                    <div className='relative h-full w-full'>
+                      <Image
+                        src={product.image || "/placeholder.svg"}
+                        alt={product.name}
+                        width={397}
+                        height={432}
+                        className='object-contain p-4'
+                      />
+                    </div>
                   </div>
 
-                  {viewMode === "list" && (
-                    <p className='text-[#000000] mb-6'>
-                      Upgrade your space with the Comfi Table, designed for
-                      modern living. Whether for studying, working, dining, or
-                      relaxing, this sleek and sturdy table fits seamlessly into
-                      any setting.
-                    </p>
-                  )}
+                  <div className='w-auto flex flex-col justify-center'>
+                    <h3 className='text-lg font-medium mb-3'>{product.name}</h3>
 
-                  {viewMode === "list" && (
-                    <Button className='w-fit bg-primary text-[#4A3300] cursor-pointer rounded-none'>
-                      See Details
-                    </Button>
-                  )}
+                    <div className='flex items-center gap-6 mb-3'>
+                      <span className='font-medium'>
+                        ${product.monthlyPrice}/mo
+                      </span>
+                      <span className='text-gray-600'>
+                        ${product.buyPrice} to buy
+                      </span>
+                    </div>
+
+                    <div className='flex mb-3'>
+                      {[...Array(5)].map((_, i) => (
+                        <svg
+                          key={i}
+                          className={`w-5 h-5 ${
+                            i < product.rating
+                              ? "text-yellow-400"
+                              : "text-gray-300"
+                          }`}
+                          fill='currentColor'
+                          viewBox='0 0 20 20'
+                        >
+                          <path d='M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z' />
+                        </svg>
+                      ))}
+                    </div>
+
+                    {viewMode === "list" && (
+                      <p className='text-[#000000] mb-6'>
+                        Upgrade your space with the Comfi Table, designed for
+                        modern living. Whether for studying, working, dining, or
+                        relaxing, this sleek and sturdy table fits seamlessly
+                        into any setting.
+                      </p>
+                    )}
+
+                    {viewMode === "list" && (
+                      <Button className='w-fit bg-primary text-[#4A3300] cursor-pointer rounded-none'>
+                        See Details
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 
