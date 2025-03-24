@@ -172,43 +172,50 @@ export default function ShopPageComponent() {
             } gap-6`}
           >
             {productsWithImages.map((product) => (
-              <Link href={`/shop/${product.id}`} key={product.id}>
-                <div
-                  key={product.id}
-                  className={`group ${viewMode === "list" ? "flex gap-6" : ""}`}
-                >
-                  <div className='min-w-[397px] h-[432px] relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
-                    <button
-                      onClick={() => toggleFavorite(product.id)}
-                      className='absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors'
-                      aria-label={
+              <div
+                key={product.id}
+                className={`group ${viewMode === "list" ? "flex gap-8" : ""}`}
+              >
+                <div className='min-w-[397px] h-[432px] relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
+                  <button
+                    onClick={() => toggleFavorite(product.id)}
+                    className='absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors'
+                    aria-label={
+                      favorites.includes(product.id)
+                        ? "Remove from favorites"
+                        : "Add to favorites"
+                    }
+                  >
+                    <Heart
+                      className={`w-6 h-6 ${
                         favorites.includes(product.id)
-                          ? "Remove from favorites"
-                          : "Add to favorites"
-                      }
-                    >
-                      <Heart
-                        className={`w-6 h-6 ${
-                          favorites.includes(product.id)
-                            ? "fill-rose-500 text-rose-500"
-                            : "text-gray-600"
-                        }`}
-                      />
-                    </button>
+                          ? "fill-rose-500 text-rose-500"
+                          : "text-gray-600"
+                      }`}
+                    />
+                  </button>
 
-                    <div className='relative h-full w-full'>
-                      <Image
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        width={397}
-                        height={432}
-                        className='object-contain p-4'
-                      />
-                    </div>
-                  </div>
+                  {/* <div className='relative h-full w-full'> */}
+                  <Link
+                    href={`/shop/${product.id}`}
+                    className='relative h-full w-full'
+                  >
+                    <Image
+                      src={product.image || "/placeholder.svg"}
+                      alt={product.name}
+                      width={397}
+                      height={432}
+                      className='object-contain p-4'
+                    />
+                  </Link>
+                  {/* </div> */}
+                </div>
 
-                  <div className='w-auto flex flex-col justify-center'>
-                    <h3 className='text-lg font-medium mb-3'>{product.name}</h3>
+                <div className='w-auto flex flex-col justify-center'>
+                  <Link href={`/shop/${product.id}`}>
+                    <h3 className='text-2xl text-[#000000] font-medium mb-3'>
+                      {product.name}
+                    </h3>
 
                     <div className='flex items-center gap-6 mb-3'>
                       <span className='font-medium'>
@@ -237,22 +244,24 @@ export default function ShopPageComponent() {
                     </div>
 
                     {viewMode === "list" && (
-                      <p className='text-[#000000] mb-6'>
-                        Upgrade your space with the Comfi Table, designed for
-                        modern living. Whether for studying, working, dining, or
-                        relaxing, this sleek and sturdy table fits seamlessly
-                        into any setting.
+                      <p className='text-[#545454] text-sm mb-6'>
+                        Upgrade your space with the Comfi Table, this sleek and
+                        sturdy table fits seamlessly into any setting. designed
+                        for modern living. Whether for studying, working,
+                        dining, or relaxing, this sleek and sturdy table fits
+                        seamlessly into any setting. Whether for studying,
+                        working, dining, or relaxing.
                       </p>
                     )}
 
                     {viewMode === "list" && (
-                      <Button className='w-fit bg-primary text-[#4A3300] cursor-pointer rounded-none'>
+                      <Button className='w-[126px] h-[43px] bg-primary text-base text-[#4A3300] cursor-pointer rounded-none'>
                         See Details
                       </Button>
                     )}
-                  </div>
+                  </Link>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
 

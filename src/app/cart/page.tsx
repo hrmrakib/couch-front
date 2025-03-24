@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 // Define the cart item type
 interface CartItem {
   id: string;
@@ -16,6 +16,7 @@ interface CartItem {
 }
 
 export default function CartPage() {
+  const router = useRouter();
   // Initial cart items
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
@@ -77,6 +78,11 @@ export default function CartPage() {
   // Format price to always show 2 decimal places
   const formatPrice = (price: number) => {
     return `$${price.toFixed(2)}`;
+  };
+
+  const handleCheckout = () => {
+    alert("Proceeding to checkout");
+    router.push("/checkout");
   };
 
   return (
@@ -296,7 +302,7 @@ export default function CartPage() {
                   <div className='flex justify-end'>
                     <button
                       className='max-w-[400px] bg-primary text-[#010101] font-medium py-3 px-6 rounded transition-colors'
-                      onClick={() => alert("Proceeding to checkout")}
+                      onClick={() => handleCheckout()}
                     >
                       Checkout
                     </button>
