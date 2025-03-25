@@ -25,7 +25,7 @@ const roomCategories = [
     image: "/home/furnitures/3.jpg",
     slug: "dining-room",
     fullWidth: true,
-  },
+  },  
 ];
 
 export default function FurnitureBundles() {
