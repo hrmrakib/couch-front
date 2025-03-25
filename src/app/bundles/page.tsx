@@ -66,9 +66,6 @@ export default function FurnitureBundles() {
               onMouseLeave={() => setIsHovering(null)}
             >
               <div className={`relative w-full h-52 md:h-64 lg:h-80`}>
-                {/* {category.fullWidth && (
-                  <div className='md:pt-[30%] lg:pt-[25%]' />
-                )} */}
                 <Image
                   src={category.image || "/placeholder.svg"}
                   alt={category.name}
