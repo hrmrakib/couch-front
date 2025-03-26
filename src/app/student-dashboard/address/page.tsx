@@ -25,7 +25,7 @@ export default function OrdersPage() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 800));
       // In a real app, you would save the data to your backend here
-      console.log("Saved addresses:", { address, shippingAddress });
+      // ("Saved addresses:", { address, shippingAddress });
       alert("Addresses saved successfully!");
     } catch (error) {
       console.error("Error saving addresses:", error);

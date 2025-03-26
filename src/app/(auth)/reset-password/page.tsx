@@ -75,7 +75,7 @@ export default function ResetPassword() {
       // Simulate API call to reset password
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      console.log("Password reset successful");
+      // ("Password reset successful");
 
       // Show success message
       setResetSuccess(true);

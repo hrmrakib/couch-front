@@ -286,9 +286,9 @@ export default function SellPage() {
     }
 
     // In a real app, you would submit the form data and images to your backend
-    console.log("Form data:", formData);
-    console.log("Main image:", mainImage);
-    console.log("Additional images:", additionalImages);
+    // ("Form data:", formData);
+    // ("Main image:", mainImage);
+    // ("Additional images:", additionalImages);
 
     alert("Your furniture has been listed successfully!");
   };
@@ -305,7 +305,7 @@ export default function SellPage() {
       }));
   }, []);
 
-  console.log(countries);
+  // (countries);
 
   return (
     <div className='max-w-6xl mx-auto px-4 py-8'>
@@ -316,8 +316,8 @@ export default function SellPage() {
         <p className='text-gray-600'>
           Are you a student looking to sell your old furniture? List your used
           furniture on our platform and sell it directly to the website owner
-          hassle-free! No need to find buyers just upload details, and we'll
-          take care of the rest.
+          hassle-free! No need to find buyers just upload details, and
+          we&apos;ll take care of the rest.
         </p>
       </div>
 
@@ -955,14 +955,14 @@ export default function SellPage() {
 //     }
 
 //     // In a real app, you would submit the form data and images to your backend
-//     console.log("Form data:", formData);
-//     console.log("Main image:", mainImage);
-//     console.log("Additional images:", additionalImages);
+//     // ("Form data:", formData);
+//     // ("Main image:", mainImage);
+//     // ("Additional images:", additionalImages);
 
 //     alert("Your furniture has been listed successfully!");
 //   };
 
-//   console.log({ countryList });
+//   // ({ countryList });
 
 //   return (
 //     <div className='max-w-6xl mx-auto px-4 py-8'>

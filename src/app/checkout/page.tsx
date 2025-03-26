@@ -2,9 +2,9 @@
 
 import type React from "react";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import countryList from "react-select-country-list";
+// import countryList from "react-select-country-list";
 
 // Define types
 interface CartItem {
@@ -79,7 +79,7 @@ export default function CheckoutPage() {
     useShippingAsBilling: false,
   });
   //   const [selectedCountry, setSelectedCountry] = useState("");
-  const countries = useMemo(() => countryList().getData(), []);
+  // const countries = useMemo(() => countryList().getData(), []);
 
   //   const changeHandler = (value: string) => {
   //     setSelectedCountry(value);
@@ -121,7 +121,7 @@ export default function CheckoutPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // In a real app, you would process the payment here
-    console.log("Processing payment with data:", formData);
+    // ("Processing payment with data:", formData);
     alert("Payment processed successfully!");
   };
 
@@ -130,8 +130,8 @@ export default function CheckoutPage() {
     return `$${price.toFixed(2)}`;
   };
 
-  console.log({ countries });
- 
+  // ({ countries });
+
   return (
     <div className='min-h-screen bg-white'>
       <div className='container mx-auto px-4 py-8'>

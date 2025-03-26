@@ -9,7 +9,7 @@ export default function MyAccount() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted");
+    // ("Form submitted");
   };
 
   return (

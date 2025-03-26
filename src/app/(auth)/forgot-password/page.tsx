@@ -40,7 +40,7 @@ export default function ForgotPassword() {
       // Simulate API call to send OTP
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      console.log("OTP sent to:", email);
+      // ("OTP sent to:", email);
 
       // Show success message or redirect to OTP verification page
       setOtpSent(true);

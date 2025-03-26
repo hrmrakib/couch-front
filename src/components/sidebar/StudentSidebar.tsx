@@ -11,14 +11,14 @@ export default function StudentSidebar() {
   const handleLogout = () => {
     // In a real app, you would handle logout logic here
     // For example, clearing auth tokens, etc.
-    console.log("Logging out...");
+    // ("Logging out...");
 
     // Redirect to login page
     router.push("/login");
   };
 
   const activePage = pathname.split("/")[2] || undefined;
-  console.log(activePage);
+  // (activePage);
 
   return (
     <div className='bg-gray-50 rounded overflow-hidden'>

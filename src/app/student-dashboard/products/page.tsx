@@ -112,11 +112,11 @@ export default function ProductTable() {
               <td className='py-6'>
                 <button
                   className='text-blue-600 font-medium'
-                  onClick={() =>
-                    product.action === "View"
-                      ? onView(product)
-                      : onEdit(product)
-                  }
+                  // onClick={() =>
+                  //   product.action === "View"
+                  //     ? onView(product)
+                  //     : onEdit(product)
+                  // }
                 >
                   {product.action}
                 </button>

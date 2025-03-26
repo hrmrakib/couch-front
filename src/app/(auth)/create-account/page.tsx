@@ -105,7 +105,7 @@ export default function CreateAccount() {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      console.log("Form submitted:", formData);
+      // // ("Form submitted:", formData);
 
       // Redirect to login page after successful account creation
       router.push("/login");
