@@ -143,7 +143,7 @@ export default function ContactPage() {
               </div>
 
               {/* Right column - Contact form */}
-              <div className='w-full md:w-3/5 p-8 md:p-10 bg-gray-50'>
+              <div className='w-full md:w-3/5 p-8 md:p-10 bg-[#FFFFFF]'>
                 <h2 className='text-2xl md:text-[40px] font-medium text-[#000000] mb-8 text-center'>
                   We would love to hear from you.
                 </h2>
@@ -170,7 +170,7 @@ export default function ContactPage() {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className='md:w-1/2 w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200'
+                      className='md:w-1/2 w-full px-4 py-3 border border-[#545454] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200'
                     />
 
                     <input
@@ -180,7 +180,7 @@ export default function ContactPage() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className='md:w-1/2 w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200'
+                      className='md:w-1/2 w-full px-4 py-3 border border-[#545454] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200'
                     />
                   </div>
 
@@ -192,7 +192,7 @@ export default function ContactPage() {
                       value={formData.subject}
                       onChange={handleChange}
                       required
-                      className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200'
+                      className='w-full px-4 py-3 border border-[#545454] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200'
                     />
                   </div>
 
@@ -204,7 +204,7 @@ export default function ContactPage() {
                       onChange={handleChange}
                       required
                       rows={6}
-                      className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200'
+                      className='w-full px-4 py-3 border border-[#545454] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200'
                     ></textarea>
                   </div>
 

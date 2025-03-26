@@ -121,7 +121,7 @@ export default function CreateAccount() {
   };
 
   return (
-    <main className='h-[calc(100vh-100px)] flex flex-col items-center justify-center px-4 py-12'>
+    <main className='h-screen flex flex-col items-center justify-center px-4 py-12'>
       <div className='w-full max-w-md'>
         <h1 className='text-[40px] font-medium text-[#545454] text-center mb-8'>
           Create Account

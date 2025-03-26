@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Menu } from "lucide-react";
+import { useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -8,8 +11,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <header className='border-b border-gray-200'>
       <div className='container mx-auto px-4 flex items-center justify-between h-20'>
@@ -185,7 +197,7 @@ export default function Navbar() {
             </button>
           </Link>
           <div className='relative'>
-            <button className='flex items-center'>
+            {/* <button className='flex items-center'>
               <div className='h-9 w-9 rounded-full bg-yellow-500 flex items-center justify-center overflow-hidden'>
                 <Image
                   src='/header/user.png'
@@ -195,7 +207,35 @@ export default function Navbar() {
                 />
               </div>
               <ChevronDown className='h-4 w-4 ml-1' />
-            </button>
+            </button> */}
+
+            <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+              <DropdownMenuTrigger className='focus:outline-none'>
+                <div className='flex items-center'>
+                  <Avatar className='h-10 w-10 border-2 border-yellow-400'>
+                    <AvatarImage src='/header/user.png' alt='Profile' />
+                    <AvatarFallback>US</AvatarFallback>
+                  </Avatar>
+                  <ChevronDown
+                    className={`ml-1 h-4 w-4 text-gray-700 transition-transform ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end' className='w-48 mt-1'>
+                <DropdownMenuItem asChild>
+                  <Link href='/my-account' className='cursor-pointer'>
+                    My Account
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href='/student-dashboard' className='cursor-pointer'>
+                    Student Dashboard
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
