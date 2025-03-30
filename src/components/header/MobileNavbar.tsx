@@ -18,9 +18,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { usePathname } from "next/navigation";
 
-export default function Navbar() {
+export default function MobileNavbar() {
   const [isOpen, setIsOpen] = useState(false);
+
+  const pathname = usePathname();
 
   return (
     <header className='border-b border-gray-200'>
@@ -50,37 +53,55 @@ export default function Navbar() {
               <nav className='pl-4 flex flex-col space-y-4 mt-6'>
                 <Link
                   href='/'
-                  className='text-black hover:text-gray-600 font-medium'
+                  className={`${
+                    pathname === "/" ? "text-green-400" : "text-[#333333]"
+                  } hover:text-gray-600 font-medium`}
                 >
                   Home
                 </Link>
                 <Link
                   href='/shop'
-                  className='text-black hover:text-gray-600 font-medium'
+                  className={`${
+                    pathname === "/shop" ? "text-green-400" : "text-[#333333]"
+                  } hover:text-gray-600 font-medium`}
                 >
                   Shop
                 </Link>
                 <Link
                   href='/rent'
-                  className='text-black hover:text-gray-600 font-medium'
+                  className={`${
+                    pathname === "/rent" ? "text-green-400" : "text-[#333333]"
+                  } hover:text-gray-600 font-medium`}
                 >
                   Rent
                 </Link>
                 <Link
                   href='/bundles'
-                  className='text-black hover:text-gray-600 font-medium'
+                  className={`${
+                    pathname === "/bundles"
+                      ? "text-green-400"
+                      : "text-[#333333]"
+                  } hover:text-gray-600 font-medium`}
                 >
                   Bundles
                 </Link>
                 <Link
                   href='/about-us'
-                  className='text-black hover:text-gray-600 font-medium'
+                  className={`${
+                    pathname === "/about-us"
+                      ? "text-green-400"
+                      : "text-[#333333]"
+                  } hover:text-gray-600 font-medium`}
                 >
                   About us
                 </Link>
                 <Link
                   href='/contact'
-                  className='text-black hover:text-gray-600 font-medium'
+                  className={`${
+                    pathname === "/contact"
+                      ? "text-green-400"
+                      : "text-[#333333]"
+                  } hover:text-gray-600 font-medium`}
                 >
                   Contact
                 </Link>
@@ -92,37 +113,61 @@ export default function Navbar() {
           <nav className='hidden md:flex space-x-8'>
             <Link
               href='/'
-              className='text-lg text-[#333333] hover:text-[#232323]'
+              className={`text-lg ${
+                pathname === "/"
+                  ? "text-green-400 hover:text-green-500 font-semibold underline"
+                  : "text-[#333333] hover:text-[#232323]"
+              } `}
             >
               Home
             </Link>
             <Link
               href='/shop'
-              className='text-lg text-[#333333] hover:text-[#232323]'
+              className={`text-lg ${
+                pathname === "/shop"
+                  ? "text-green-400 hover:text-green-500 font-semibold underline"
+                  : "text-[#333333] hover:text-[#232323]"
+              } `}
             >
               Shop
             </Link>
             <Link
               href='/rent'
-              className='text-lg text-[#333333] hover:text-[#232323]'
+              className={`text-lg ${
+                pathname === "/rent"
+                  ? "text-green-400 hover:text-green-500 font-semibold underline"
+                  : "text-[#333333] hover:text-[#232323]"
+              } `}
             >
               Rent
             </Link>
             <Link
               href='/bundles'
-              className='text-lg text-[#333333] hover:text-[#232323]'
+              className={`text-lg ${
+                pathname === "/bundles"
+                  ? "text-green-400 hover:text-green-500 font-semibold underline"
+                  : "text-[#333333] hover:text-[#232323]"
+              } `}
             >
               Bundles
             </Link>
             <Link
               href='/about-us'
-              className='text-lg text-[#333333] hover:text-[#232323]'
+              className={`text-lg ${
+                pathname === "/about-us"
+                  ? "text-green-400 hover:text-green-500 font-semibold underline"
+                  : "text-[#333333] hover:text-[#232323]"
+              } `}
             >
               About us
             </Link>
             <Link
               href='/contact'
-              className='text-lg text-[#333333] hover:text-[#232323]'
+              className={`text-lg ${
+                pathname === "/contact"
+                  ? "text-green-400 hover:text-green-500 font-semibold underline"
+                  : "text-[#333333] hover:text-[#232323]"
+              } `}
             >
               Contact
             </Link>

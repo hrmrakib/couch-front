@@ -80,7 +80,7 @@ const products = [
     category: ["best-selling", "trending-now"],
   },
   {
-    id: 13,
+    id: 134155,
     name: "ComfiTable",
     image: "/home/features/1.png",
     monthlyPrice: 20,
