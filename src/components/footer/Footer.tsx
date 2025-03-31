@@ -107,7 +107,6 @@ export default function SiteFooter() {
               className='rounded-full hover:opacity-80 transition-opacity'
               aria-label='Facebook'
             >
-              {/* <Facebook size={20} /> */}
               <svg
                 width='32'
                 height='32'
@@ -147,7 +146,6 @@ export default function SiteFooter() {
               className='rounded-full hover:opacity-80 transition-opacity'
               aria-label='Instagram'
             >
-              {/* <Instagram size={20} /> */}
               <svg
                 width='32'
                 height='32'
@@ -202,7 +200,6 @@ export default function SiteFooter() {
               className='rounded-full hover:opacity-80 transition-opacity'
               aria-label='LinkedIn'
             >
-              {/* <Linkedin size={20} /> */}
 
               <svg
                 width='32'
