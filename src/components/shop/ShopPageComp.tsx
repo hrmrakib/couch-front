@@ -4,6 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { Heart, LayoutGrid, List, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -45,7 +47,7 @@ const productsWithImages = products.map((product, index) => ({
   image: productImages[index % 3],
 }));
 
-type FilterCategory = "Type" | "Color" | "Price" | "Size" | "Material";
+type FilterCategory = "Category" | "Color" | "Price" | "Size" | "Material";
 
 export default function ShopPageComponent() {
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -73,7 +75,7 @@ export default function ShopPageComponent() {
 
   return (
     <div className='container mx-auto px-4 py-8'>
-      <h1 className='text-2xl font-medium text-center mb-6'>Chair</h1>
+      <h1 className='text-2xl font-medium text-center mb-6'>Shop</h1>
 
       <div className='flex justify-between items-center mb-6'>
         <div className='flex space-x-2'>
@@ -115,7 +117,21 @@ export default function ShopPageComponent() {
       <div className='flex flex-col md:flex-row gap-6'>
         {/* Filters sidebar */}
         <div className='w-full md:w-64 space-y-2'>
-          {["Type", "Color", "Price", "Size", "Material"].map((filter) => (
+          <div className='space-y-2.5 p-4 w-64'>
+            <h3 className='font-medium'>Purchase Options</h3>
+            <div className='flex items-center space-x-2'>
+              <Checkbox id='buyable' />
+              <Label htmlFor='buyable' className='text-sm'>
+                Buyable
+              </Label>
+            </div>
+            <div className='flex items-center space-x-2'>
+              <Checkbox id='rentable' />
+              <Label htmlFor='rentable'>Rentable</Label>
+            </div>
+          </div>
+
+          {["Category", "Color", "Price", "Size", "Material"].map((filter) => (
             <Collapsible
               key={filter}
               open={isFilterExpanded(filter as FilterCategory)}

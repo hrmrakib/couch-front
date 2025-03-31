@@ -34,13 +34,13 @@ export default function HeroSection() {
               <div className='flex flex-wrap gap-4 mb-12'>
                 <button
                   onClick={handleShopNow}
-                  className='px-8  h-12 bg-[#FDB515] text-xl text-[#4A3300] font-semibold rounded hover:bg-[#e9aa10] transition-colors cursor-pointer'
+                  className='w-full md:w-auto px-8 py-3 bg-[#FDB515] text-xl text-[#4A3300] font-semibold rounded hover:bg-[#e9aa10] transition-colors cursor-pointer'
                 >
                   Shop Now
                 </button>
                 <button
                   onClick={handleSellFurniture}
-                  className='px-8 py-3 border-2 border-white text-[#FFFFFF] font-semibold rounded hover:bg-white hover:text-[#2A4190] transition-colors'
+                  className='w-full md:w-auto px-8 py-3 border-2 border-white text-[#FFFFFF] font-semibold rounded hover:bg-white hover:text-[#2A4190] transition-colors'
                 >
                   Sell Your Furniture
                 </button>
