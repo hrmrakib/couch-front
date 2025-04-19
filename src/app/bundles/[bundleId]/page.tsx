@@ -126,7 +126,7 @@ export default function ProductDetailsPage({
 		setHoveredRating(0);
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleReview = (e: React.FormEvent) => {
 		e.preventDefault();
 
 		if (userRating === 0) {
@@ -456,7 +456,7 @@ export default function ProductDetailsPage({
 											are marked
 										</p>
 
-										<form onSubmit={handleSubmit}>
+										<form onSubmit={handleReview}>
 											<div className="mb-6">
 												<label className="block text-gray-700 mb-2">
 													Your rating
