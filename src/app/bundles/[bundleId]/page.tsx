@@ -1,80 +1,80 @@
-'use client';
+"use client";
 
-import { Usable, use, useState } from 'react';
-import Image from 'next/image';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Heart, Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import Link from 'next/link';
-import { useBundleRetrieveQuery } from '@/redux/features/bundle/bundleApi';
-import { TBundle } from '@/redux/features/bundle/bundle.interface';
+import { Usable, use, useState } from "react";
+import Image from "next/image";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Heart, Star } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useBundleRetrieveQuery } from "@/redux/features/bundle/bundleApi";
+import { TBundle } from "@/redux/features/bundle/bundle.interface";
 
 const initialReviews = [
 	{
 		id: 1,
-		name: 'Sarah Khan',
-		avatar: '/users/1.png',
+		name: "Sarah Khan",
+		avatar: "/users/1.png",
 		rating: 4.8,
 		comment:
-			'Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!',
-		date: '02 February, 2025',
+			"Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
+		date: "02 February, 2025",
 	},
 	{
 		id: 2,
-		name: 'Sarah Khan',
-		avatar: '/users/2.png',
+		name: "Sarah Khan",
+		avatar: "/users/2.png",
 		rating: 4.8,
 		comment:
-			'Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!',
-		date: '02 February, 2025',
+			"Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
+		date: "02 February, 2025",
 	},
 	{
 		id: 3,
-		name: 'Sarah Khan',
-		avatar: '/users/3.png',
+		name: "Sarah Khan",
+		avatar: "/users/3.png",
 		rating: 4.8,
 		comment:
-			'Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!',
-		date: '02 February, 2025',
+			"Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
+		date: "02 February, 2025",
 	},
 ];
 
 const initialProduct = [
 	{
 		id: 13,
-		name: 'ComfiTable',
-		image: '/home/features/1.png',
+		name: "ComfiTable",
+		image: "/home/features/1.png",
 		monthlyPrice: 20,
 		buyPrice: 150,
 		rating: 4,
-		category: ['best-selling', 'trending-now'],
+		category: ["best-selling", "trending-now"],
 	},
 	{
 		id: 2,
-		name: 'ComfiTable',
-		image: '/home/features/2.png',
+		name: "ComfiTable",
+		image: "/home/features/2.png",
 		monthlyPrice: 20,
 		buyPrice: 150,
 		rating: 4,
-		category: ['best-selling', 'most-rented'],
+		category: ["best-selling", "most-rented"],
 	},
 	{
 		id: 3,
-		name: 'ComfiTable',
-		image: '/home/features/3.png',
+		name: "ComfiTable",
+		image: "/home/features/3.png",
 		monthlyPrice: 20,
 		buyPrice: 150,
 		rating: 4,
-		category: ['most-rented', 'trending-now'],
+		category: ["most-rented", "trending-now"],
 	},
 	{
 		id: 4,
-		name: 'ComfiTable',
-		image: '/home/features/4.png',
+		name: "ComfiTable",
+		image: "/home/features/4.png",
 		monthlyPrice: 20,
 		buyPrice: 150,
 		rating: 4,
-		category: ['best-selling', 'trending-now'],
+		category: ["best-selling", "trending-now"],
 	},
 ];
 
@@ -91,14 +91,15 @@ export default function ProductDetailsPage({
 
 	const bundle = data?.data as TBundle;
 
-	const [selectedOption, setSelectedOption] = useState<'rent' | 'buy'>('rent');
-	const [quantity, setQuantity] = useState(2);
-	const [rentalLength, setRentalLength] = useState('4 month');
+	const [selectedOption, setSelectedOption] = useState<"rent" | "buy">("buy");
+	const [quantity, setQuantity] = useState(1);
+	const [rentalLength, setRentalLength] = useState(0);
+
 	const [activeImage, setActiveImage] = useState(0);
 	const [reviews, setReviews] = useState(initialReviews);
 	const [userRating, setUserRating] = useState(0);
 	const [hoveredRating, setHoveredRating] = useState(0);
-	const [reviewText, setReviewText] = useState('');
+	const [reviewText, setReviewText] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [submitSuccess, setSubmitSuccess] = useState(false);
 	const [favorites, setFavorites] = useState<number[]>([]);
@@ -127,12 +128,12 @@ export default function ProductDetailsPage({
 		e.preventDefault();
 
 		if (userRating === 0) {
-			alert('Please select a rating');
+			alert("Please select a rating");
 			return;
 		}
 
-		if (reviewText.trim() === '') {
-			alert('Please enter a review');
+		if (reviewText.trim() === "") {
+			alert("Please enter a review");
 			return;
 		}
 
@@ -142,20 +143,20 @@ export default function ProductDetailsPage({
 		setTimeout(() => {
 			const newReview = {
 				id: reviews.length + 1,
-				name: 'You',
-				avatar: '/avatars/default.jpg',
+				name: "You",
+				avatar: "/avatars/default.jpg",
 				rating: userRating,
 				comment: reviewText,
-				date: new Date().toLocaleDateString('en-US', {
-					day: '2-digit',
-					month: 'long',
-					year: 'numeric',
+				date: new Date().toLocaleDateString("en-US", {
+					day: "2-digit",
+					month: "long",
+					year: "numeric",
 				}),
 			};
 
 			setReviews([newReview, ...reviews]);
 			setUserRating(0);
-			setReviewText('');
+			setReviewText("");
 			setIsSubmitting(false);
 			setSubmitSuccess(true);
 
@@ -168,24 +169,16 @@ export default function ProductDetailsPage({
 
 	// Product images
 	const productImages = [
-		'/shop/1.png',
-		'/shop/2.png',
-		'/shop/3.png',
-		'/shop/1.png',
+		"/shop/1.png",
+		"/shop/2.png",
+		"/shop/3.png",
+		"/shop/1.png",
 	];
-
-	const handleAddToCart = () => {
-		alert(
-			`Added to cart: ${quantity} Comfi Sofa(s) - ${
-				selectedOption === 'rent' ? `Rent for ${rentalLength}` : 'Buy'
-			}`
-		);
-	};
 
 	const handleBuyNow = () => {
 		alert(
 			`Proceeding to checkout: ${quantity} Comfi Sofa(s) - ${
-				selectedOption === 'rent' ? `Rent for ${rentalLength}` : 'Buy'
+				selectedOption === "rent" ? `Rent for ${rentalLength}` : "Buy"
 			}`
 		);
 	};
@@ -204,7 +197,7 @@ export default function ProductDetailsPage({
 						<div>
 							<div className="bg-[#F5F5F5] rounded-md mb-4 relative aspect-square">
 								<Image
-									src={productImages[activeImage] || '/placeholder.svg'}
+									src={productImages[activeImage] || "/placeholder.svg"}
 									alt="Comfi Sofa"
 									fill
 									className="object-contain p-4"
@@ -217,14 +210,14 @@ export default function ProductDetailsPage({
 										key={index}
 										onClick={() => setActiveImage(index)}
 										className={cn(
-											'bg-[#F5F5F5] border-2 rounded-md overflow-hidden flex-shrink-0 w-[132px] h-[132px] relative',
+											"bg-[#F5F5F5] border-2 rounded-md overflow-hidden flex-shrink-0 w-[132px] h-[132px] relative",
 											activeImage === index
-												? 'border-yellow-500'
-												: 'border-transparent'
+												? "border-yellow-500"
+												: "border-transparent"
 										)}
 									>
 										<Image
-											src={image || '/placeholder.svg'}
+											src={image || "/placeholder.svg"}
 											alt={`Comfi Sofa view ${index + 1}`}
 											width={132}
 											height={132}
@@ -261,25 +254,25 @@ export default function ProductDetailsPage({
 											<input
 												type="radio"
 												name="pricing"
-												checked={selectedOption === 'rent'}
-												onChange={() => setSelectedOption('rent')}
+												checked={selectedOption === "rent"}
+												onChange={() => setSelectedOption("rent")}
 												className="hidden"
 											/>
 											<span
 												className={cn(
-													'w-5 h-5 rounded-full border flex items-center justify-center mr-2',
-													selectedOption === 'rent'
-														? 'border-yellow-500 bg-white'
-														: 'border-gray-300 bg-white'
+													"w-5 h-5 rounded-full border flex items-center justify-center mr-2",
+													selectedOption === "rent"
+														? "border-yellow-500 bg-white"
+														: "border-gray-300 bg-white"
 												)}
 											>
-												{selectedOption === 'rent' && (
+												{selectedOption === "rent" && (
 													<span className="w-3 h-3 rounded-full bg-yellow-500"></span>
 												)}
 											</span>
 											<span className="rounded-md py-2 px-4 flex items-center">
 												Rent ${bundle?.rentPrice}
-												<span className="text-sm text-[#333333]">/mo</span>
+												<span className="text-[#333333]">/mo</span>
 											</span>
 										</label>
 									)}
@@ -288,56 +281,59 @@ export default function ProductDetailsPage({
 										<input
 											type="radio"
 											name="pricing"
-											checked={selectedOption === 'buy'}
-											onChange={() => setSelectedOption('buy')}
+											checked={selectedOption === "buy"}
+											onChange={() => setSelectedOption("buy")}
 											className="hidden"
 										/>
 										<span
 											className={cn(
-												'w-5 h-5 rounded-full border flex items-center justify-center mr-2',
-												selectedOption === 'buy'
-													? 'border-yellow-500 bg-white'
-													: 'border-gray-300 bg-white'
+												"w-5 h-5 rounded-full border flex items-center justify-center mr-2",
+												selectedOption === "buy"
+													? "border-yellow-500 bg-white"
+													: "border-gray-300 bg-white"
 											)}
 										>
-											{selectedOption === 'buy' && (
+											{selectedOption === "buy" && (
 												<span className="w-3 h-3 rounded-full bg-yellow-500"></span>
 											)}
 										</span>
-										<span className="text-xl text-[#333333]">
-											${bundle?.price} To buy
-										</span>
+										<span className="text-black">${bundle?.price} To buy</span>
 									</label>
 								</div>
 
-								{selectedOption === 'rent' && (
-									<div className="bg-[#FFFFFF] p-4 rounded-md mb-6">
+								<div className="bg-[#FFFFFF] p-4 rounded-md mb-6">
+									{selectedOption === "rent" && (
 										<div className="flex items-center mb-4">
 											<span className="w-4 h-4 rounded-full bg-yellow-500 mr-2"></span>
 											<span>Rent for ${bundle?.rentPrice}/mo</span>
 										</div>
+									)}
 
-										<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-											<div>
-												<label
-													htmlFor="quantity"
-													className="block text-sm text-gray-600 mb-1"
-												>
-													Quantity
-												</label>
-												<select
-													id="quantity"
-													value={quantity}
-													onChange={(e) => setQuantity(Number(e.target.value))}
-													className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-yellow-500"
-												>
-													{[1, 2, 3, 4, 5].map((num) => (
-														<option key={num} value={num}>
-															{num}
-														</option>
-													))}
-												</select>
-											</div>
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+										<div>
+											<label
+												htmlFor="quantity"
+												className="block text-sm text-gray-600 mb-1"
+											>
+												Quantity
+											</label>
+											<input
+												type="number"
+												max={bundle?.stock}
+												min={1}
+												defaultValue={quantity}
+												onBlur={(e) => {
+													e.target.value = Math.max(
+														Math.min(Number(e.target.value), bundle?.stock),
+														1
+													).toString();
+
+													setQuantity(+e.target.value);
+												}}
+												className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-yellow-500"
+											/>
+										</div>
+										{selectedOption === "rent" && (
 											<div>
 												<label
 													htmlFor="rental-length"
@@ -347,31 +343,28 @@ export default function ProductDetailsPage({
 												</label>
 												<select
 													id="rental-length"
-													value={rentalLength}
-													onChange={(e) => setRentalLength(e.target.value)}
+													defaultValue={rentalLength}
+													onChange={(e) => setRentalLength(+e.target.value)}
 													className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-yellow-500"
 												>
-													<option value="1 month">1 month</option>
-													<option value="2 month">2 month</option>
-													<option value="3 month">3 month</option>
-													<option value="4 month">4 month</option>
-													<option value="6 month">6 month</option>
-													<option value="12 month">12 month</option>
+													<option value="0" disabled>
+														Select Rental Length
+													</option>
+													<option value="1">1 month</option>
+													<option value="2">2 month</option>
+													<option value="3">3 month</option>
+													<option value="4">4 month</option>
+													<option value="6">6 month</option>
+													<option value="12">12 month</option>
 												</select>
 											</div>
-										</div>
+										)}
 									</div>
-								)}
+								</div>
 							</div>
 
 							{/* Action Buttons */}
 							<div className="flex space-x-4">
-								<button
-									onClick={handleAddToCart}
-									className="flex-1 bg-primary hover:bg-yellow-600 cursor-pointer text-black font-medium py-3 px-6 rounded-md transition-colors"
-								>
-									Add To Cart
-								</button>
 								<button
 									onClick={handleBuyNow}
 									className="flex-1 border border-gray-300 hover:bg-gray-50 cursor-pointer text-black font-medium py-3 px-6 rounded-md transition-colors"
@@ -457,7 +450,7 @@ export default function ProductDetailsPage({
 													<div className="flex items-start">
 														<div className="relative w-12 h-12 rounded-full overflow-hidden mr-4 flex-shrink-0">
 															<Image
-																src={review.avatar || '/placeholder.svg'}
+																src={review.avatar || "/placeholder.svg"}
 																alt={review.name}
 																fill
 																className="object-cover"
@@ -548,7 +541,7 @@ export default function ProductDetailsPage({
 												disabled={isSubmitting}
 												className="bg-yellow-500 hover:bg-yellow-600 text-black font-medium cursor-pointer py-3 px-6 rounded-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
 											>
-												{isSubmitting ? 'Submitting...' : 'Submit'}
+												{isSubmitting ? "Submitting..." : "Submit"}
 											</button>
 										</form>
 									</div>
@@ -577,15 +570,15 @@ export default function ProductDetailsPage({
 									className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors"
 									aria-label={
 										favorites.includes(product.id)
-											? 'Remove from favorites'
-											: 'Add to favorites'
+											? "Remove from favorites"
+											: "Add to favorites"
 									}
 								>
 									<Heart
 										className={`w-5 h-5 ${
 											favorites.includes(product.id)
-												? 'fill-red-500 text-red-500'
-												: 'text-gray-600'
+												? "fill-red-500 text-red-500"
+												: "text-gray-600"
 										}`}
 									/>
 								</button>
@@ -595,7 +588,7 @@ export default function ProductDetailsPage({
 									className="relative h-full w-full"
 								>
 									<Image
-										src={product.image || '/placeholder.svg'}
+										src={product.image || "/placeholder.svg"}
 										alt={product.name}
 										fill
 										className="object-contain"
@@ -624,8 +617,8 @@ export default function ProductDetailsPage({
 												key={i}
 												className={`w-5 h-5 ${
 													i < product.rating
-														? 'text-yellow-400'
-														: 'text-gray-300'
+														? "text-yellow-400"
+														: "text-gray-300"
 												}`}
 												fill="currentColor"
 												viewBox="0 0 20 20"
