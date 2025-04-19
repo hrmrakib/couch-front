@@ -8,6 +8,7 @@ import { Camera, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useRegisterMutation } from "@/redux/features/auth/AuthenticationAPI";
+import { toast } from "sonner";
 
 export default function CreateAccount() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function CreateAccount() {
     email: "",
     password: "",
   });
+
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -25,8 +27,9 @@ export default function CreateAccount() {
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [register] = useRegisterMutation();
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -54,80 +57,145 @@ export default function CreateAccount() {
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Create a preview URL for the selected image
-      const imageUrl = URL.createObjectURL(file);
-      setProfileImage(imageUrl);
+      setProfileImage(file); // <-- actual file
+      setProfilePreview(URL.createObjectURL(file)); // <-- preview
     }
   };
 
-  const validateForm = () => {
-    let valid = true;
-    const newErrors = { ...errors };
+  // const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     // Create a preview URL for the selected image
+  //     const imageUrl = URL.createObjectURL(file);
+  //     setProfileImage(imageUrl);
+  //   }
+  // };
 
+  const validateForm = () => {
     // Name validation
     if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-      valid = false;
+      setErrors((prev) => ({ ...prev, name: "Name is required" }));
+      toast.error("Name is required");
+      return false;
     }
 
     // Email validation
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-      valid = false;
+      setErrors((prev) => ({ ...prev, email: "Email is required" }));
+      toast.error("Email is required");
+      return false;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-      valid = false;
+      setErrors((prev) => ({ ...prev, email: "Invalid email address" }));
+      toast.error("Please enter a valid email address");
+      return false;
     }
 
     // Password validation
     if (!formData.password) {
-      newErrors.password = "Password is required";
-      valid = false;
+      setErrors((prev) => ({ ...prev, password: "Password is required" }));
+      toast.error("Password is required");
+      return false;
     } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-      valid = false;
+      setErrors((prev) => ({
+        ...prev,
+        password: "Password must be at least 6 characters",
+      }));
+      toast.error("Password must be at least 6 characters");
+      return false;
     }
 
-    setErrors(newErrors);
-    return valid;
+    // Image validation
+    if (!profileImage) {
+      toast.error("Profile image is required");
+      return false;
+    }
+
+    // Terms & Conditions checkbox
+    if (!agreeTerms) {
+      toast.error("You must agree to the terms and conditions");
+      return false;
+    }
+
+    // Clear previous errors if everything's good
+    setErrors({ name: "", email: "", password: "" });
+    return true;
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // if (!validateForm()) return;
-    // if (!agreeTerms) {
-    //   alert("Please agree to the terms and conditions");
-    //   return;
-    // }
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
 
     try {
-      const response = await register({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-      }).unwrap();
+      const form = new FormData();
+      form.append("name", formData.name);
+      form.append("email", formData.email);
+      form.append("password", formData.password);
+      if (profileImage) {
+        form.append("images", profileImage.name);
+      }
 
-      console.log({ formData });
-      console.log({ response });
+      localStorage.setItem("email", formData.email);
 
-      // Redirect to login page after successful account creation
-      // router.push("/login");
+      const response = await register(form).unwrap();
+
+      console.log(response);
+
+      if (response?.success) {
+        toast.success(response.message);
+        router.push("/verify");
+      }
     } catch (error) {
       console.error("Error creating account:", error);
+      toast.error(response.message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // const handleSubmit = async (e: FormEvent) => {
+  //   e.preventDefault();
+
+  //   if (!validateForm()) return;
+  //   // if (!agreeTerms) {
+  //   //   alert("Please agree to the terms and conditions");
+  //   //   return;
+  //   // }
+
+  //   setIsSubmitting(true);
+
+  //   try {
+  //     const response = await register({
+  //       name: formData.name,
+  //       email: formData.email,
+  //       password: formData.password,
+  //     }).unwrap();
+
+  //     toast.success(response.message);
+
+  //     if (response?.success) {
+  //       router.push("/verify");
+  //     }
+
+  //     // Redirect to login page after successful account creation
+  //   } catch (error) {
+  //     console.error("Error creating account:", error);
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
 
+  // console.log(formData);
+  // console.log(profileImage);
+
   return (
-    <main className='h-screen flex flex-col items-center justify-center px-4 py-12'>
+    <main className='min-h-screen flex flex-col items-center justify-center px-4 py-12'>
       <div className='w-full max-w-md'>
         <h1 className='text-[40px] font-medium text-[#545454] text-center mb-8'>
           Create Account
@@ -151,7 +219,7 @@ export default function CreateAccount() {
           >
             {profileImage ? (
               <Image
-                src={profileImage || "/placeholder.svg"}
+                src={profilePreview || "/placeholder.svg"}
                 alt='Profile Preview'
                 fill
                 className='object-cover'

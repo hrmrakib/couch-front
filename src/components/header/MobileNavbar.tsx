@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Menu } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -22,8 +22,17 @@ import { usePathname } from "next/navigation";
 
 export default function MobileNavbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<string | null>(null);
 
   const pathname = usePathname();
+
+  useEffect(() => {
+    const user = localStorage.getItem("user") ?? "";
+
+    if (user) {
+      setUser(user);
+    }
+  }, []);
 
   return (
     <header className='border-b border-gray-200'>
@@ -430,35 +439,47 @@ export default function MobileNavbar() {
                 </svg>
               </button>
             </Link>
-            <div className='relative'>
-              <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-                <DropdownMenuTrigger className='focus:outline-none'>
-                  <div className='flex items-center'>
-                    <Avatar className='h-10 w-10 border-2 border-yellow-400'>
-                      <AvatarImage src='/header/user.png' alt='Profile' />
-                      <AvatarFallback>US</AvatarFallback>
-                    </Avatar>
-                    <ChevronDown
-                      className={`ml-1 h-4 w-4 text-gray-700 transition-transform ${
-                        isOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end' className='w-48 mt-1'>
-                  <DropdownMenuItem asChild>
-                    <Link href='/my-account' className='cursor-pointer'>
-                      My Account
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href='/student-dashboard' className='cursor-pointer'>
-                      Student Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+
+            {!user && <Link
+              href='/login'
+              className='bg-yellow-500 hover:bg-yellow-600 text-black font-medium py-3 px-6 rounded transition-colors cursor-pointer'
+            >
+              Login
+            </Link>}
+            {user && (
+              <div className='relative'>
+                <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+                  <DropdownMenuTrigger className='focus:outline-none'>
+                    <div className='flex items-center'>
+                      <Avatar className='h-10 w-10 border-2 border-yellow-400'>
+                        <AvatarImage src='/header/user.png' alt='Profile' />
+                        <AvatarFallback>US</AvatarFallback>
+                      </Avatar>
+                      <ChevronDown
+                        className={`ml-1 h-4 w-4 text-gray-700 transition-transform ${
+                          isOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align='end' className='w-48 mt-1'>
+                    <DropdownMenuItem asChild>
+                      <Link href='/my-account' className='cursor-pointer'>
+                        My Account
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href='/student-dashboard'
+                        className='cursor-pointer'
+                      >
+                        Student Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
           </div>
         </div>
       </div>

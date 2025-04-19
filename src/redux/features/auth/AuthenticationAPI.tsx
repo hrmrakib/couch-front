@@ -10,10 +10,10 @@ const AuthenticationAPI = baseAPI.injectEndpoints({
       }),
     }),
     register: builder.mutation({
-      query: (body) => ({
+      query: (formData: FormData) => ({
         url: "/auth/register",
         method: "POST",
-        body,
+        body: formData,
       }),
     }),
 
@@ -31,7 +31,7 @@ const AuthenticationAPI = baseAPI.injectEndpoints({
         method: "POST",
         body,
       }),
-    }), 
+    }),
   }),
 });
 

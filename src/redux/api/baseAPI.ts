@@ -17,10 +17,10 @@ export const baseAPI = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_URL,
-    prepareHeaders: (headers) => {
+    prepareHeaders: (headers) => { 
       const token = localStorage.getItem("accessToken");
 
-      // console.log("Current token:", token);
+      console.log("Current token:", token);
 
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);

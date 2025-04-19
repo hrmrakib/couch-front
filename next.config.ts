@@ -1,12 +1,13 @@
-const nextConfig = {
+
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [
-      {
-        protocol: 'http',
-        hostname: '192.168.10.132',
-        port: '3759',
-        pathname: '/images/resized/**',
-      },
+    domains: [
+      "http://192.168.10.132:3759",
+      "http://192.168.10.132:3759/api/v1",
+      "192.168.10.132",
+      "115.127.156.132",
     ],
   },
 };

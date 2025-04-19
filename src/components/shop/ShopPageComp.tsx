@@ -26,41 +26,45 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import Link from "next/link";
-
-// Sample product data
-const products = Array(9).fill({
-  id: 1,
-  name: "ComfiTable",
-  monthlyPrice: 20,
-  buyPrice: 150,
-  rating: 4,
-  image: "/shop/1.png", // We'll alternate images
-});
-
-// Create three different product images
-const productImages = ["/shop/1.png", "/shop/2.png", "/shop/3.png"];
-
-// Assign different images to products
-const productsWithImages = products.map((product, index) => ({
-  ...product,
-  id: index + 1,
-  image: productImages[index % 3],
-}));
+import { useGetAllProductsQuery } from "@/redux/features/product/ProductAPI";
 
 type FilterCategory = "Category" | "Color" | "Price" | "Size" | "Material";
 
 export default function ShopPageComponent() {
-  const [favorites, setFavorites] = useState<number[]>([]);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [expandedFilters, setExpandedFilters] = useState<FilterCategory[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState({
+    categories: [] as string[],
+    colors: [] as string[],
+    sizes: [] as string[],
+    materials: [] as string[],
+  });
 
-  const toggleFavorite = (productId: number) => {
-    setFavorites((prev) =>
-      prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId]
-    );
-  };
+  const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
+
+  const {
+    data: products,
+    isLoading,
+    isError,
+  } = useGetAllProductsQuery({
+    categories: selectedFilters.categories,
+    colors: selectedFilters.colors.join(","),
+    sizes: selectedFilters.sizes,
+    materials: selectedFilters.materials,
+    page: 1,
+    limit: 100,
+    sortBy: "createdAt",
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error</div>;
+  }
+
+  const toggleFavorite = (productId: number) => {};
 
   const toggleFilter = (filter: FilterCategory) => {
     setExpandedFilters((prev) =>
@@ -72,6 +76,8 @@ export default function ShopPageComponent() {
 
   const isFilterExpanded = (filter: FilterCategory) =>
     expandedFilters.includes(filter);
+
+  console.log(products?.data);
 
   return (
     <div className='container mx-auto px-4 py-8'>
@@ -131,51 +137,63 @@ export default function ShopPageComponent() {
             </div>
           </div>
 
-          {["Category", "Color", "Price", "Size", "Material"].map((filter) => (
-            <Collapsible
-              key={filter}
-              open={isFilterExpanded(filter as FilterCategory)}
-              onOpenChange={() => toggleFilter(filter as FilterCategory)}
-              className='bg-[#F5F5F5] rounded-md'
-            >
-              <CollapsibleTrigger className='flex justify-between items-center w-full px-4 py-3 hover:bg-gray-50'>
-                <span className='font-medium'>{filter}</span>
-                {isFilterExpanded(filter as FilterCategory) ? (
-                  <Minus className='h-4 w-4' />
-                ) : (
-                  <Plus className='h-4 w-4' />
-                )}
-              </CollapsibleTrigger>
-              <CollapsibleContent className='px-4 pb-3'>
-                <div className='space-y-2'>
-                  <div className='flex items-center'>
-                    <input
-                      type='checkbox'
-                      id={`${filter}-1`}
-                      className='mr-2'
-                    />
-                    <label htmlFor={`${filter}-1`}>Option 1</label>
+          {["Categories", "Colors", "Sizes", "Materials"].map((filter) => {
+            const options =
+              products?.meta?.filters?.[
+                filter.toLowerCase() as keyof typeof products.meta.filters
+              ] || [];
+
+            return (
+              <Collapsible
+                key={filter}
+                open={isFilterExpanded(filter as FilterCategory)}
+                onOpenChange={() => toggleFilter(filter as FilterCategory)}
+                className='bg-[#F5F5F5] rounded-md'
+              >
+                <CollapsibleTrigger className='flex justify-between items-center w-full px-4 py-3 hover:bg-gray-50'>
+                  <span className='font-medium'>{filter}</span>
+                  {isFilterExpanded(filter as FilterCategory) ? (
+                    <Minus className='h-4 w-4' />
+                  ) : (
+                    <Plus className='h-4 w-4' />
+                  )}
+                </CollapsibleTrigger>
+                <CollapsibleContent className='px-4 pb-3'>
+                  <div className='space-y-2'>
+                    {options.map((option: string, index: number) => {
+                      const filterKey =
+                        filter.toLowerCase() as keyof typeof selectedFilters;
+                      const currentValues = selectedFilters[filterKey] || [];
+
+                      return (
+                        <div key={index} className='flex items-center'>
+                          <input
+                            type='checkbox'
+                            id={`${filter}-${option}`}
+                            className='mr-2'
+                            checked={currentValues.includes(option)}
+                            onChange={(e) => {
+                              const updated = e.target.checked
+                                ? [...currentValues, option]
+                                : currentValues.filter((val) => val !== option);
+
+                              setSelectedFilters((prev) => ({
+                                ...prev,
+                                [filterKey]: updated,
+                              }));
+                            }}
+                          />
+                          <label htmlFor={`${filter}-${option}`}>
+                            {option}
+                          </label>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div className='flex items-center'>
-                    <input
-                      type='checkbox'
-                      id={`${filter}-2`}
-                      className='mr-2'
-                    />
-                    <label htmlFor={`${filter}-2`}>Option 2</label>
-                  </div>
-                  <div className='flex items-center'>
-                    <input
-                      type='checkbox'
-                      id={`${filter}-3`}
-                      className='mr-2'
-                    />
-                    <label htmlFor={`${filter}-3`}>Option 3</label>
-                  </div>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          ))}
+                </CollapsibleContent>
+              </Collapsible>
+            );
+          })}
         </div>
 
         {/* Product grid */}
@@ -187,44 +205,40 @@ export default function ShopPageComponent() {
                 : "grid-cols-1"
             } gap-6`}
           >
-            {productsWithImages.map((product) => (
+            {products?.data.map((product) => (
               <div
-                key={product.id}
+                key={product?._id}
                 className={`group ${viewMode === "list" ? "flex gap-8" : ""}`}
               >
-                <div className='min-w-[397px] h-[432px] relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
+                <div className='min-w-[397px] h-[432px] flex items-center justify-center relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
                   <button
-                    onClick={() => toggleFavorite(product.id)}
+                    onClick={() => toggleFavorite(Number(product?._id))}
                     className='absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors'
-                    aria-label={
-                      favorites.includes(product.id)
-                        ? "Remove from favorites"
-                        : "Add to favorites"
-                    }
+                    // aria-label={
+                    // favorites.includes(product.id)
+                    // ? "Remove from favorites"
+                    // : "Add to favorites"
+                    // }
                   >
                     <Heart
                       className={`w-6 h-6 ${
-                        favorites.includes(product.id)
-                          ? "fill-rose-500 text-rose-500"
-                          : "text-gray-600"
+                        true ? "fill-rose-500 text-rose-500" : "text-gray-600"
                       }`}
                     />
                   </button>
 
-                  {/* <div className='relative h-full w-full'> */}
                   <Link
-                    href={`/shop/${product.id}`}
+                    href={`/shop/${product?._id}`}
                     className='relative h-full w-full'
                   >
                     <Image
-                      src={product.image || "/placeholder.svg"}
+                      src={`${ImageURL}${product?.images[0]}`}
                       alt={product.name}
-                      width={397}
-                      height={432}
+                      width={897}
+                      height={632}
                       className='object-contain p-4'
                     />
                   </Link>
-                  {/* </div> */}
                 </div>
 
                 <div className='w-auto flex flex-col justify-center'>
@@ -234,9 +248,7 @@ export default function ShopPageComponent() {
                     </h3>
 
                     <div className='flex items-center gap-6 mb-3'>
-                      <span className='font-medium'>
-                        ${product.monthlyPrice}/mo
-                      </span>
+                      <span className='font-medium'>${product.price}/mo</span>
                       <span className='text-gray-600'>
                         ${product.buyPrice} to buy
                       </span>
@@ -281,7 +293,6 @@ export default function ShopPageComponent() {
             ))}
           </div>
 
-          {/* Pagination */}
           <Pagination className='mt-8'>
             <PaginationContent>
               <PaginationItem>

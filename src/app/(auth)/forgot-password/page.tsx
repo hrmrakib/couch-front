@@ -4,14 +4,18 @@ import type React from "react";
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useSendOtpMutation } from "@/redux/features/auth/AuthenticationAPI";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 // import { useRouter } from "next/navigation";
 
 export default function ForgotPassword() {
-  //   const router = useRouter();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [forgetPassword] = useSendOtpMutation();
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -37,16 +41,18 @@ export default function ForgotPassword() {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call to send OTP
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await forgetPassword({ email }).unwrap();
 
-      // ("OTP sent to:", email);
+      console.log({ response });
 
-      // Show success message or redirect to OTP verification page
-      setOtpSent(true);
-
-      // In a real application, you might redirect to an OTP verification page
-      // router.push(`/verify-otp?email=${encodeURIComponent(email)}`)
+      if (response?.success) {
+        localStorage.setItem("email", email);
+        setEmail("");
+        toast.success(response?.message, {
+          duration: 3000,
+        });
+        router.push("/verify");
+      }
     } catch (error) {
       console.error("Error sending OTP:", error);
       setEmailError("Failed to send OTP. Please try again.");
@@ -70,7 +76,7 @@ export default function ForgotPassword() {
             <p className='mb-6'>
               Please check your email and enter the OTP to reset your password.
             </p>
-            <Link href='/verify-otp' className='text-blue-600 hover:underline'>
+            <Link href='/verify' className='text-blue-600 hover:underline'>
               Enter OTP
             </Link>
             <div className='mt-4'>

@@ -1,20 +1,16 @@
-"use client";
+"use client"; 
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { User, ShoppingBag, Heart, LogOut } from "lucide-react";
 
 export default function AccountSidebar() {
-  const router = useRouter();
   const pathname = usePathname();
 
   const handleLogout = () => {
-    // In a real app, you would handle logout logic here
-    // For example, clearing auth tokens, etc.
-    // ("Logging out...");
+    localStorage.clear();
 
-    // Redirect to login page
-    router.push("/login");
+    location.replace("/login");
   };
 
   const activePage = pathname.split("/")[2] || undefined;

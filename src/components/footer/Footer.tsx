@@ -200,7 +200,6 @@ export default function SiteFooter() {
               className='rounded-full hover:opacity-80 transition-opacity'
               aria-label='LinkedIn'
             >
-
               <svg
                 width='32'
                 height='32'
