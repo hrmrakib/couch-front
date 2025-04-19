@@ -430,7 +430,9 @@ export default function MobileNavbar() {
                 </svg>
               </button>
             </Link>
-            <div className='relative'>
+
+            <Link href='/login' className="bg-yellow-500 hover:bg-yellow-600 text-black font-medium py-3 px-6 rounded transition-colors cursor-pointer">Login</Link>
+           {false && <div className='relative'>
               <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger className='focus:outline-none'>
                   <div className='flex items-center'>
@@ -458,7 +460,7 @@ export default function MobileNavbar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
+            </div>}
           </div>
         </div>
       </div>

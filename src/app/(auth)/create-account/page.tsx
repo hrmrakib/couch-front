@@ -96,7 +96,7 @@ export default function CreateAccount() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // if (!validateForm()) return;
+    if (!validateForm()) return;
     // if (!agreeTerms) {
     //   alert("Please agree to the terms and conditions");
     //   return;

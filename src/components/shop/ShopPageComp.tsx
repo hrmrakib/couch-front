@@ -26,41 +26,26 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import Link from "next/link";
-
-// Sample product data
-const products = Array(9).fill({
-  id: 1,
-  name: "ComfiTable",
-  monthlyPrice: 20,
-  buyPrice: 150,
-  rating: 4,
-  image: "/shop/1.png", // We'll alternate images
-});
-
-// Create three different product images
-const productImages = ["/shop/1.png", "/shop/2.png", "/shop/3.png"];
-
-// Assign different images to products
-const productsWithImages = products.map((product, index) => ({
-  ...product,
-  id: index + 1,
-  image: productImages[index % 3],
-}));
+import { useGetAllProductsQuery } from "@/redux/features/product/ProductAPI";
 
 type FilterCategory = "Category" | "Color" | "Price" | "Size" | "Material";
 
 export default function ShopPageComponent() {
-  const [favorites, setFavorites] = useState<number[]>([]);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [expandedFilters, setExpandedFilters] = useState<FilterCategory[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState<
+    Record<string, string[]>
+  >({});
 
-  const toggleFavorite = (productId: number) => {
-    setFavorites((prev) =>
-      prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId]
-    );
-  };
+  const { data: products, isLoading, isError } = useGetAllProductsQuery({});
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error</div>;
+  }
 
   const toggleFilter = (filter: FilterCategory) => {
     setExpandedFilters((prev) =>
@@ -131,7 +116,7 @@ export default function ShopPageComponent() {
             </div>
           </div>
 
-          {["Category", "Color", "Price", "Size", "Material"].map((filter) => (
+          {/* {["Category", "Color", "Price", "Size", "Material"].map((filter) => (
             <Collapsible
               key={filter}
               open={isFilterExpanded(filter as FilterCategory)}
@@ -175,7 +160,65 @@ export default function ShopPageComponent() {
                 </div>
               </CollapsibleContent>
             </Collapsible>
-          ))}
+          ))} */}
+
+          {["Categories", "Colors", "Sizes", "Materials"].map((filter) => {
+            const options =
+              products?.meta?.filters?.[
+                filter.toLowerCase() as keyof typeof products.meta.filters
+              ] || [];
+
+            return (
+              <Collapsible
+                key={filter}
+                open={isFilterExpanded(filter as FilterCategory)}
+                onOpenChange={() => toggleFilter(filter as FilterCategory)}
+                className='bg-[#F5F5F5] rounded-md'
+              >
+                <CollapsibleTrigger className='flex justify-between items-center w-full px-4 py-3 hover:bg-gray-50'>
+                  <span className='font-medium'>{filter}</span>
+                  {isFilterExpanded(filter as FilterCategory) ? (
+                    <Minus className='h-4 w-4' />
+                  ) : (
+                    <Plus className='h-4 w-4' />
+                  )}
+                </CollapsibleTrigger>
+                <CollapsibleContent className='px-4 pb-3'>
+                  <div className='space-y-2'>
+                    {options.map((option: string, index: number) => {
+                      const filterKey =
+                        filter.toLowerCase() as keyof typeof selectedFilters;
+                      const currentValues = selectedFilters[filterKey] || [];
+
+                      return (
+                        <div key={index} className='flex items-center'>
+                          <input
+                            type='checkbox'
+                            id={`${filter}-${option}`}
+                            className='mr-2'
+                            checked={currentValues.includes(option)}
+                            onChange={(e) => {
+                              const updated = e.target.checked
+                                ? [...currentValues, option]
+                                : currentValues.filter((val) => val !== option);
+
+                              setSelectedFilters((prev) => ({
+                                ...prev,
+                                [filterKey]: updated,
+                              }));
+                            }}
+                          />
+                          <label htmlFor={`${filter}-${option}`}>
+                            {option}
+                          </label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            );
+          })}
         </div>
 
         {/* Product grid */}
@@ -211,7 +254,6 @@ export default function ShopPageComponent() {
                     />
                   </button>
 
-                  {/* <div className='relative h-full w-full'> */}
                   <Link
                     href={`/shop/${product.id}`}
                     className='relative h-full w-full'
@@ -224,7 +266,6 @@ export default function ShopPageComponent() {
                       className='object-contain p-4'
                     />
                   </Link>
-                  {/* </div> */}
                 </div>
 
                 <div className='w-auto flex flex-col justify-center'>
@@ -281,7 +322,6 @@ export default function ShopPageComponent() {
             ))}
           </div>
 
-          {/* Pagination */}
           <Pagination className='mt-8'>
             <PaginationContent>
               <PaginationItem>
