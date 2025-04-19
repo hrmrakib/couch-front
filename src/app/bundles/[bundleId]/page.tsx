@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Usable, use, useState } from "react";
@@ -8,6 +10,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useBundleRetrieveQuery } from "@/redux/features/bundle/bundleApi";
 import { TBundle } from "@/redux/features/bundle/bundle.interface";
+import { img } from "@/lib/img";
 
 const initialReviews = [
 	{
@@ -95,7 +98,6 @@ export default function ProductDetailsPage({
 	const [quantity, setQuantity] = useState(1);
 	const [rentalLength, setRentalLength] = useState(0);
 
-	const [activeImage, setActiveImage] = useState(0);
 	const [reviews, setReviews] = useState(initialReviews);
 	const [userRating, setUserRating] = useState(0);
 	const [hoveredRating, setHoveredRating] = useState(0);
@@ -167,14 +169,6 @@ export default function ProductDetailsPage({
 		}, 1000);
 	};
 
-	// Product images
-	const productImages = [
-		"/shop/1.png",
-		"/shop/2.png",
-		"/shop/3.png",
-		"/shop/1.png",
-	];
-
 	const handleBuyNow = () => {
 		alert(
 			`Proceeding to checkout: ${quantity} Comfi Sofa(s) - ${
@@ -196,34 +190,25 @@ export default function ProductDetailsPage({
 						{/* Product Images */}
 						<div>
 							<div className="bg-[#F5F5F5] rounded-md mb-4 relative aspect-square">
-								<Image
-									src={productImages[activeImage] || "/placeholder.svg"}
-									alt="Comfi Sofa"
-									fill
-									className="object-contain p-4"
-									priority
+								<img
+									src={img(bundle?.images[0])}
+									alt={bundle?.name}
+									className="p-4"
 								/>
 							</div>
 							<div className="flex space-x-2 overflow-x-auto pb-2">
-								{productImages.map((image, index) => (
-									<button
-										key={index}
-										onClick={() => setActiveImage(index)}
-										className={cn(
-											"bg-[#F5F5F5] border-2 rounded-md overflow-hidden flex-shrink-0 w-[132px] h-[132px] relative",
-											activeImage === index
-												? "border-yellow-500"
-												: "border-transparent"
-										)}
+								{bundle?.products?.map((product: any) => (
+									<Link
+										href={`/shop/${product._id}`}
+										key={product._id}
+										className="bg-[#F5F5F5] border-2 rounded-md overflow-hidden flex-shrink-0 w-[132px] h-[132px] relative"
 									>
-										<Image
-											src={image || "/placeholder.svg"}
-											alt={`Comfi Sofa view ${index + 1}`}
-											width={132}
-											height={132}
-											className="object-cover"
+										<img
+											alt={product.name}
+											src={img(product.images[0])}
+											className="w-[132] h-[132] object-cover"
 										/>
-									</button>
+									</Link>
 								))}
 							</div>
 						</div>
@@ -402,33 +387,15 @@ export default function ProductDetailsPage({
 					<div className="container mx-auto px-4 py-8">
 						<TabsContent value="description" className="mt-0 bg-[#FFF8ED]">
 							<p className="text-gray-700 leading-relaxed">
-								Upgrade your workspace with this sleek and durable Modern Wooden
-								Study Desk. Crafted from high-quality engineered wood, this desk
-								is designed to provide maximum comfort and functionality. Its
-								spacious surface allows you to organize your essentials, while
-								the sturdy legs ensure long-lasting stability.
+								{bundle?.description}
 							</p>
 						</TabsContent>
 
 						<TabsContent value="additional" className="mt-0">
 							<div className="space-y-4">
-								<h3 className="font-medium text-lg">Specifications</h3>
-								<ul className="list-disc pl-5 space-y-2 text-gray-700">
-									<li>Dimensions: 30&quot; H x 32&quot; W x 34&quot; D</li>
-									<li>Weight: 45 lbs</li>
-									<li>Materials: Engineered wood, fabric upholstery</li>
-									<li>Color: Orange/Rust</li>
-									<li>Assembly required: Yes</li>
-									<li>Care instructions: Spot clean only</li>
-								</ul>
-
-								<h3 className="font-medium text-lg mt-6">
-									Shipping Information
-								</h3>
-								<p className="text-gray-700">
-									This item ships within 3-5 business days. White glove delivery
-									service available for an additional fee.
-								</p>
+								{bundle?.notes.map((note, idx) => (
+									<p key={idx}>{note}</p>
+								))}
 							</div>
 						</TabsContent>
 
