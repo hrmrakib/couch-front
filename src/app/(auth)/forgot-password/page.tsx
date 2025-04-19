@@ -14,7 +14,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
+  // const otpSent, setOtpSent] = useState(false);
   const [forgetPassword] = useSendOtpMutation();
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +68,7 @@ export default function ForgotPassword() {
           Forgot Password
         </h1>
 
-        {otpSent ? (
+        {false ? (
           <div className='text-center'>
             <div className='mb-4 p-3 bg-green-100 text-green-700 rounded-md'>
               OTP has been sent to your email address.

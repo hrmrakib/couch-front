@@ -39,7 +39,7 @@ interface ProductsMeta {
     materials: string[];
     availities: string[];
   };
-  current: Record<string, any>;
+  current: Record<string, string | number | boolean | null>;
 }
 
 interface GetAllProductsResponse {

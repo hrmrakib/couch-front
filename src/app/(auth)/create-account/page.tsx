@@ -149,7 +149,11 @@ export default function CreateAccount() {
       }
     } catch (error) {
       console.error("Error creating account:", error);
-      toast.error(response.message);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
     } finally {
       setIsSubmitting(false);
     }

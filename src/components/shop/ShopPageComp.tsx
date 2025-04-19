@@ -64,7 +64,9 @@ export default function ShopPageComponent() {
     return <div>Error</div>;
   }
 
-  const toggleFavorite = (productId: number) => {};
+  const toggleFavorite = (productId: string) => {
+    console.log(productId)
+  };
 
   const toggleFilter = (filter: FilterCategory) => {
     setExpandedFilters((prev) =>
@@ -160,7 +162,7 @@ export default function ShopPageComponent() {
                 </CollapsibleTrigger>
                 <CollapsibleContent className='px-4 pb-3'>
                   <div className='space-y-2'>
-                    {options.map((option: string, index: number) => {
+                    {Array.isArray(options) && options.map((option: string, index: number) => {
                       const filterKey =
                         filter.toLowerCase() as keyof typeof selectedFilters;
                       const currentValues = selectedFilters[filterKey] || [];
@@ -212,7 +214,7 @@ export default function ShopPageComponent() {
               >
                 <div className='min-w-[397px] h-[432px] flex items-center justify-center relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
                   <button
-                    onClick={() => toggleFavorite(Number(product?._id))}
+                    onClick={() => toggleFavorite(product?._id)}
                     className='absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors'
                     // aria-label={
                     // favorites.includes(product.id)
@@ -222,27 +224,27 @@ export default function ShopPageComponent() {
                   >
                     <Heart
                       className={`w-6 h-6 ${
-                        true ? "fill-rose-500 text-rose-500" : "text-gray-600"
+                        false ? "fill-rose-500 text-rose-500" : "text-gray-600"
                       }`}
                     />
                   </button>
 
                   <Link
                     href={`/shop/${product?._id}`}
-                    className='relative h-full w-full'
+                    className='relative h-full w-full flex items-center justify-center rounded-lg overflow-hidden'
                   >
                     <Image
                       src={`${ImageURL}${product?.images[0]}`}
                       alt={product.name}
                       width={897}
                       height={632}
-                      className='object-contain p-4'
+                      className='object-cover p-4'
                     />
                   </Link>
                 </div>
 
                 <div className='w-auto flex flex-col justify-center'>
-                  <Link href={`/shop/${product.id}`}>
+                  <Link href={`/shop/${product._id}`}>
                     <h3 className='text-2xl text-[#000000] font-medium mb-3'>
                       {product.name}
                     </h3>
@@ -250,7 +252,7 @@ export default function ShopPageComponent() {
                     <div className='flex items-center gap-6 mb-3'>
                       <span className='font-medium'>${product.price}/mo</span>
                       <span className='text-gray-600'>
-                        ${product.buyPrice} to buy
+                        ${product.rentPrice} to buy
                       </span>
                     </div>
 
@@ -273,12 +275,7 @@ export default function ShopPageComponent() {
 
                     {viewMode === "list" && (
                       <p className='text-[#545454] text-sm mb-6'>
-                        Upgrade your space with the Comfi Table, this sleek and
-                        sturdy table fits seamlessly into any setting. designed
-                        for modern living. Whether for studying, working,
-                        dining, or relaxing, this sleek and sturdy table fits
-                        seamlessly into any setting. Whether for studying,
-                        working, dining, or relaxing.
+                        {product.description}
                       </p>
                     )}
 
