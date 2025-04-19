@@ -33,11 +33,28 @@ type FilterCategory = "Category" | "Color" | "Price" | "Size" | "Material";
 export default function ShopPageComponent() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [expandedFilters, setExpandedFilters] = useState<FilterCategory[]>([]);
-  const [selectedFilters, setSelectedFilters] = useState<
-    Record<string, string[]>
-  >({});
+  const [selectedFilters, setSelectedFilters] = useState({
+    categories: [] as string[],
+    colors: [] as string[],
+    sizes: [] as string[],
+    materials: [] as string[],
+  });
 
-  const { data: products, isLoading, isError } = useGetAllProductsQuery({});
+  const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
+
+  const {
+    data: products,
+    isLoading,
+    isError,
+  } = useGetAllProductsQuery({
+    categories: selectedFilters.categories,
+    colors: selectedFilters.colors.join(","),
+    sizes: selectedFilters.sizes,
+    materials: selectedFilters.materials,
+    page: 1,
+    limit: 100,
+    sortBy: "createdAt",
+  });
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -193,9 +210,9 @@ export default function ShopPageComponent() {
                 key={product?._id}
                 className={`group ${viewMode === "list" ? "flex gap-8" : ""}`}
               >
-                <div className='min-w-[397px] h-[432px] relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
+                <div className='min-w-[397px] h-[432px] flex items-center justify-center relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
                   <button
-                    onClick={() => toggleFavorite(product?._id)}
+                    onClick={() => toggleFavorite(Number(product?._id))}
                     className='absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors'
                     // aria-label={
                     // favorites.includes(product.id)
@@ -211,14 +228,14 @@ export default function ShopPageComponent() {
                   </button>
 
                   <Link
-                    href={`/shop/${product.id}`}
+                    href={`/shop/${product?._id}`}
                     className='relative h-full w-full'
                   >
                     <Image
-                      src={product.image || "/placeholder.svg"}
+                      src={`${ImageURL}${product?.images[0]}`}
                       alt={product.name}
-                      width={397}
-                      height={432}
+                      width={897}
+                      height={632}
                       className='object-contain p-4'
                     />
                   </Link>

@@ -25,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en' upword-verified='true'>
-      <body className={`${poppins.variable} ${poppins.className}`}>
+      <body
+        className={`${poppins.variable} ${poppins.className}`}
+        cz-shortcut-listen='true'
+      >
         <Toaster />
         <Providers>
           <Navbar />
