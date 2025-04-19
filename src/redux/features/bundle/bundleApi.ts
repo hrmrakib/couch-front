@@ -8,7 +8,14 @@ const bundleApi = baseAPI.injectEndpoints({
 				method: 'GET',
 			}),
 		}),
+
+		bundleRetrieve: builder.query({
+			query: ({ bundleId }) => ({
+				url: `/bundles/${bundleId}`,
+				method: 'GET',
+			}),
+		}),
 	}),
 });
 
-export const { useBundleListQuery } = bundleApi;
+export const { useBundleListQuery, useBundleRetrieveQuery } = bundleApi;
