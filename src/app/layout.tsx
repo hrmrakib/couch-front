@@ -3,6 +3,8 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/header/MobileNavbar";
 import Footer from "@/components/footer/Footer";
+import Providers from "@/redux/features/Provider";
+import { Toaster } from "sonner";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700", "800", "900"],
@@ -24,9 +26,12 @@ export default function RootLayout({
   return (
     <html lang='en' upword-verified='true'>
       <body className={`${poppins.variable} ${poppins.className}`}>
-        <Navbar />
-        {children}
-        <Footer />
+        <Toaster />
+        <Providers>
+          <Navbar />
+          {children}
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

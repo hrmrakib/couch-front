@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Camera, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useRegisterMutation } from "@/redux/features/auth/AuthenticationAPI";
 
 export default function CreateAccount() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function CreateAccount() {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [register] = useRegisterMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -93,22 +95,26 @@ export default function CreateAccount() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
-    if (!agreeTerms) {
-      alert("Please agree to the terms and conditions");
-      return;
-    }
+    // if (!validateForm()) return;
+    // if (!agreeTerms) {
+    //   alert("Please agree to the terms and conditions");
+    //   return;
+    // }
 
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      }).unwrap();
 
-      // // ("Form submitted:", formData);
+      console.log({ formData });
+      console.log({ response });
 
       // Redirect to login page after successful account creation
-      router.push("/login");
+      // router.push("/login");
     } catch (error) {
       console.error("Error creating account:", error);
     } finally {
