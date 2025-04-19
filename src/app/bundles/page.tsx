@@ -25,7 +25,7 @@ export default function FurnitureBundles() {
 					{data?.data?.map((bundle: TBundle) => (
 						<Link
 							key={bundle._id}
-							href={`/bundles/${bundle.slug}`}
+							href={`/bundles/${bundle._id}`}
 							className={`relative overflow-hidden rounded-lg group`}
 						>
 							<div className={`relative w-full h-52 md:h-64 lg:h-80`}>
