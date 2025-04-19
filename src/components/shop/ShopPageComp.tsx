@@ -230,7 +230,7 @@ export default function ShopPageComponent() {
                 : "grid-cols-1"
             } gap-6`}
           >
-            {productsWithImages.map((product) => (
+            {/* {productsWithImages.map((product) => (
               <div
                 key={product.id}
                 className={`group ${viewMode === "list" ? "flex gap-8" : ""}`}
@@ -319,7 +319,7 @@ export default function ShopPageComponent() {
                   </Link>
                 </div>
               </div>
-            ))}
+            ))} */}
           </div>
 
           <Pagination className='mt-8'>
