@@ -8,6 +8,7 @@ import { Camera, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useRegisterMutation } from "@/redux/features/auth/AuthenticationAPI";
+import { toast } from "sonner";
 
 export default function CreateAccount() {
   const router = useRouter();
@@ -110,11 +111,13 @@ export default function CreateAccount() {
         password: formData.password,
       }).unwrap();
 
-      console.log({ formData });
-      console.log({ response });
+      toast.success(response.message);
+
+      if (response?.success) {
+        router.push("/verify");
+      }
 
       // Redirect to login page after successful account creation
-      // router.push("/login");
     } catch (error) {
       console.error("Error creating account:", error);
     } finally {
