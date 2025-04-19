@@ -29,7 +29,7 @@ export default function RootLayout({
         className={`${poppins.variable} ${poppins.className}`}
         cz-shortcut-listen='true'
       >
-        <Toaster />
+        <Toaster position='top-center' />
         <Providers>
           <Navbar />
           {children}

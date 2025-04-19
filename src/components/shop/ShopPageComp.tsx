@@ -248,9 +248,7 @@ export default function ShopPageComponent() {
                     </h3>
 
                     <div className='flex items-center gap-6 mb-3'>
-                      <span className='font-medium'>
-                        ${product.monthlyPrice}/mo
-                      </span>
+                      <span className='font-medium'>${product.price}/mo</span>
                       <span className='text-gray-600'>
                         ${product.buyPrice} to buy
                       </span>

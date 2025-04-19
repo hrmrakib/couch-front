@@ -30,11 +30,14 @@ export default function MyAccount() {
 
     try {
       const response = await login(formData).unwrap();
+      console.log(response);
 
       if (response?.success) {
-        console.log(response);
         localStorage.setItem("accessToken", response?.data?.token);
+        localStorage.setItem("user", JSON.stringify(response?.data?.user));
       }
+
+      location.replace("/");
     } catch (error) {
       console.log(error);
     } finally {
@@ -44,7 +47,7 @@ export default function MyAccount() {
   console.log(formData);
 
   return (
-    <div className='md:flex justify-center items-center h-[calc(100vh-100px)]'>
+    <div className='min-h-screen md:flex justify-center items-center h-[calc(100vh-100px)]'>
       <div className='h-full px-4 py-12 flex justify-center items-center my-auto'>
         <div className='w-full md:w-[600px]'>
           <h1 className='text-[40px] font-medium text-[#545454] text-center mb-8'>
