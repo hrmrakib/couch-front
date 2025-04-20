@@ -19,20 +19,28 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
+import { getCurrentUser } from "@/service/authService";
 
 export default function MobileNavbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<string | null>(null);
+  const [tokenOnCookie, setTokenOnCookie] = useState<string | null>(null);
 
   const pathname = usePathname();
 
   useEffect(() => {
     const user = localStorage.getItem("user") ?? "";
 
+    getCurrentUser().then((res) => {
+      setTokenOnCookie(res ?? null);
+    });
+
     if (user) {
       setUser(user);
     }
   }, []);
+
+  console.log(tokenOnCookie);
 
   return (
     <header className='border-b border-gray-200'>
@@ -440,13 +448,15 @@ export default function MobileNavbar() {
               </button>
             </Link>
 
-            {!user && <Link
-              href='/login'
-              className='bg-yellow-500 hover:bg-yellow-600 text-black font-medium py-3 px-6 rounded transition-colors cursor-pointer'
-            >
-              Login
-            </Link>}
-            {user && (
+            {!user && (
+              <Link
+                href='/login'
+                className='bg-yellow-500 hover:bg-yellow-600 text-black font-medium py-3 px-6 rounded transition-colors cursor-pointer'
+              >
+                Login
+              </Link>
+            )}
+            {user && tokenOnCookie && (
               <div className='relative'>
                 <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                   <DropdownMenuTrigger className='focus:outline-none'>

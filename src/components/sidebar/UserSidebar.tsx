@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { User, ShoppingBag, Heart, LogOut } from "lucide-react";
+import { logout } from "@/service/authService";
 
 export default function AccountSidebar() {
   const pathname = usePathname();
 
-  const handleLogout = () => {
+  const handleLogout = async() => {
     localStorage.clear();
-
+    await logout();
     location.replace("/login");
   };
 

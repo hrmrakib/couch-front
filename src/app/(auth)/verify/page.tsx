@@ -142,6 +142,7 @@ import {
 } from "@/components/ui/input-otp";
 import { useVerifyOtpMutation } from "@/redux/features/auth/AuthenticationAPI";
 import { toast } from "sonner";
+import { saveTokens } from "@/service/authService";
 
 export default function Verify() {
   const [otp, setOtp] = useState("");
@@ -175,6 +176,8 @@ export default function Verify() {
         setOtp("");
         if (res?.data?.token) {
           toast.success("OTP verified successfully!");
+          await saveTokens(res?.data?.token);
+
           localStorage.setItem("accessToken", res?.data?.token);
           localStorage.setItem("user", JSON.stringify(res?.data?.user));
           localStorage.removeItem("email");
