@@ -1,85 +1,25 @@
+"use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
-"use client";
 
 import { Usable, use, useState } from "react";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Star } from "lucide-react";
+import { Heart, Star, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useBundleRetrieveQuery } from "@/redux/features/bundle/bundleApi";
 import { TBundle } from "@/redux/features/bundle/bundle.interface";
 import { img } from "@/lib/img";
-
-const initialReviews = [
-	{
-		id: 1,
-		name: "Sarah Khan",
-		avatar: "/users/1.png",
-		rating: 4.8,
-		comment:
-			"Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
-		date: "02 February, 2025",
-	},
-	{
-		id: 2,
-		name: "Sarah Khan",
-		avatar: "/users/2.png",
-		rating: 4.8,
-		comment:
-			"Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
-		date: "02 February, 2025",
-	},
-	{
-		id: 3,
-		name: "Sarah Khan",
-		avatar: "/users/3.png",
-		rating: 4.8,
-		comment:
-			"Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
-		date: "02 February, 2025",
-	},
-];
-
-const initialProduct = [
-	{
-		id: 13,
-		name: "ComfiTable",
-		image: "/home/features/1.png",
-		monthlyPrice: 20,
-		buyPrice: 150,
-		rating: 4,
-		category: ["best-selling", "trending-now"],
-	},
-	{
-		id: 2,
-		name: "ComfiTable",
-		image: "/home/features/2.png",
-		monthlyPrice: 20,
-		buyPrice: 150,
-		rating: 4,
-		category: ["best-selling", "most-rented"],
-	},
-	{
-		id: 3,
-		name: "ComfiTable",
-		image: "/home/features/3.png",
-		monthlyPrice: 20,
-		buyPrice: 150,
-		rating: 4,
-		category: ["most-rented", "trending-now"],
-	},
-	{
-		id: 4,
-		name: "ComfiTable",
-		image: "/home/features/4.png",
-		monthlyPrice: 20,
-		buyPrice: 150,
-		rating: 4,
-		category: ["best-selling", "trending-now"],
-	},
-];
+import {
+	useDeleteReviewMutation,
+	useGetReviewsQuery,
+	useReviewMutation,
+} from "@/redux/features/review/reviewApi";
+import { toast } from "sonner";
+import moment from "moment";
+import { TReview } from "@/redux/features/review/reivew.interface";
+import { TProduct } from "@/redux/features/product/product.interface";
 
 export default function ProductDetailsPage({
 	params,
@@ -92,21 +32,32 @@ export default function ProductDetailsPage({
 		bundleId,
 	});
 
+	const { data: reviewData } = useGetReviewsQuery({
+		id: bundleId,
+		type: "bundles",
+		limit: 5,
+	});
+
+	const [deleteReview] = useDeleteReviewMutation();
+
+	const reviews = reviewData?.data || [];
+
+	const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+	const [review] = useReviewMutation();
+
 	const bundle = data?.data as TBundle;
 
 	const [selectedOption, setSelectedOption] = useState<"rent" | "buy">("buy");
 	const [quantity, setQuantity] = useState(1);
 	const [rentalLength, setRentalLength] = useState(0);
 
-	const [reviews, setReviews] = useState(initialReviews);
 	const [userRating, setUserRating] = useState(0);
 	const [hoveredRating, setHoveredRating] = useState(0);
 	const [reviewText, setReviewText] = useState("");
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [submitSuccess, setSubmitSuccess] = useState(false);
-	const [favorites, setFavorites] = useState<number[]>([]);
+	const [favorites, setFavorites] = useState<string[]>([]);
 
-	const toggleFavorite = (productId: number) => {
+	const toggleFavorite = (productId: string) => {
 		setFavorites((prev) =>
 			prev.includes(productId)
 				? prev.filter((id) => id !== productId)
@@ -126,7 +77,7 @@ export default function ProductDetailsPage({
 		setHoveredRating(0);
 	};
 
-	const handleReview = (e: React.FormEvent) => {
+	const handleReview = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		if (userRating === 0) {
@@ -139,34 +90,20 @@ export default function ProductDetailsPage({
 			return;
 		}
 
-		setIsSubmitting(true);
+		try {
+			await review({
+				id: bundleId,
+				type: "bundles",
+				review: {
+					rating: userRating,
+					content: reviewText.trim(),
+				},
+			});
 
-		// Simulate API call
-		setTimeout(() => {
-			const newReview = {
-				id: reviews.length + 1,
-				name: "You",
-				avatar: "/avatars/default.jpg",
-				rating: userRating,
-				comment: reviewText,
-				date: new Date().toLocaleDateString("en-US", {
-					day: "2-digit",
-					month: "long",
-					year: "numeric",
-				}),
-			};
-
-			setReviews([newReview, ...reviews]);
-			setUserRating(0);
-			setReviewText("");
-			setIsSubmitting(false);
-			setSubmitSuccess(true);
-
-			// Reset success message after 3 seconds
-			setTimeout(() => {
-				setSubmitSuccess(false);
-			}, 3000);
-		}, 1000);
+			toast.success("Review submitted successfully!");
+		} catch {
+			toast.error("Failed to submit review");
+		}
 	};
 
 	const handleBuyNow = () => {
@@ -175,6 +112,17 @@ export default function ProductDetailsPage({
 				selectedOption === "rent" ? `Rent for ${rentalLength}` : "Buy"
 			}`
 		);
+	};
+
+	const handleReviewDelete = async (id: string) => {
+		try {
+			await deleteReview({
+				id,
+			});
+			toast.success("Review deleted successfully!");
+		} catch {
+			toast.error("Failed to delete review");
+		}
 	};
 
 	return (
@@ -405,20 +353,21 @@ export default function ProductDetailsPage({
 									{/* Reviews List */}
 									<div className="w-full md:w-1/2">
 										<h2 className="text-2xl font-medium mb-6">
-											{reviews.length} Review for living room bundle combo pack
+											{reviewData?.meta?.pagination?.total} Review for{" "}
+											{bundle?.name}
 										</h2>
 
 										<div className="space-y-6">
-											{reviews.map((review) => (
+											{reviews.map((review: TReview) => (
 												<div
-													key={review.id}
+													key={review._id}
 													className="bg-white p-6 rounded-md"
 												>
 													<div className="flex items-start">
 														<div className="relative w-12 h-12 rounded-full overflow-hidden mr-4 flex-shrink-0">
 															<Image
-																src={review.avatar || "/placeholder.svg"}
-																alt={review.name}
+																src={img(review?.user?.avatar)}
+																alt={review?.user?.name}
 																fill
 																className="object-cover"
 															/>
@@ -426,20 +375,30 @@ export default function ProductDetailsPage({
 														<div className="flex-1">
 															<div className="flex justify-between items-center mb-2">
 																<h3 className="font-medium text-lg">
-																	{review.name}
+																	{review?.user?.name}
 																</h3>
 																<div className="flex items-center">
 																	<span className="text-yellow-500 mr-1">
 																		★
 																	</span>
-																	<span>{review.rating}</span>
+																	<span>{review?.rating}</span>
+																	{review?.user?._id === user?._id && (
+																		<button
+																			onClick={() =>
+																				handleReviewDelete(review?._id)
+																			}
+																			className="ml-2 text-red-500"
+																		>
+																			<Trash2 className="text-sm" />
+																		</button>
+																	)}
 																</div>
 															</div>
 															<p className="text-gray-700 mb-3">
-																{review.comment}
+																{review?.content}
 															</p>
 															<p className="text-gray-400 text-sm">
-																{review.date}
+																{moment(review?.updatedAt).fromNow()}
 															</p>
 														</div>
 													</div>
@@ -497,18 +456,11 @@ export default function ProductDetailsPage({
 												></textarea>
 											</div>
 
-											{submitSuccess && (
-												<div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
-													Your review has been submitted successfully!
-												</div>
-											)}
-
 											<button
 												type="submit"
-												disabled={isSubmitting}
 												className="bg-yellow-500 hover:bg-yellow-600 text-black font-medium cursor-pointer py-3 px-6 rounded-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
 											>
-												{isSubmitting ? "Submitting..." : "Submit"}
+												Submit
 											</button>
 										</form>
 									</div>
@@ -529,21 +481,21 @@ export default function ProductDetailsPage({
 					Affordable, Stylish, and Ready for You – Choose to Buy or Rent.
 				</p>
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-					{initialProduct.map((product) => (
-						<div key={product.id} className="group">
+					{data?.meta?.related?.map((product: TProduct) => (
+						<div key={product._id} className="group">
 							<div className="relative h-[332px] bg-[#F5F5F5] flex items-center justify-center rounded-lg overflow-hidden">
 								<button
-									onClick={() => toggleFavorite(product.id)}
+									onClick={() => toggleFavorite(product._id)}
 									className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors"
 									aria-label={
-										favorites.includes(product.id)
+										favorites.includes(product._id)
 											? "Remove from favorites"
 											: "Add to favorites"
 									}
 								>
 									<Heart
 										className={`w-5 h-5 ${
-											favorites.includes(product.id)
+											favorites.includes(product._id)
 												? "fill-red-500 text-red-500"
 												: "text-gray-600"
 										}`}
@@ -551,11 +503,11 @@ export default function ProductDetailsPage({
 								</button>
 								{/* <div className='relative h-full w-full'> */}
 								<Link
-									href={`/shop/${product.id}`}
+									href={`/shop/${product._id}`}
 									className="relative h-full w-full"
 								>
 									<Image
-										src={product.image || "/placeholder.svg"}
+										src={img(product.images[0])}
 										alt={product.name}
 										fill
 										className="object-contain"
@@ -564,17 +516,17 @@ export default function ProductDetailsPage({
 								{/* </div> */}
 							</div>
 							<div className="pt-3">
-								<Link key={product.id} href={`/shop/${product.id}`}>
+								<Link key={product._id} href={`/shop/${product._id}`}>
 									<h3 className="text-xl md:text-[32px] text-[#000000] font-medium mb-1">
 										{product.name}
 									</h3>
 
 									<div className="flex justify-between mb-2">
 										<span className="text-[#000000] text-lg font-medium">
-											${product.monthlyPrice}/mo
+											${product.rentPrice}/mo
 										</span>
 										<span className="text-[#333333] text-lg">
-											${product.buyPrice} to buy
+											${product.price} to buy
 										</span>
 									</div>
 
