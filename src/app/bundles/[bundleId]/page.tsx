@@ -19,45 +19,7 @@ import {
 import { toast } from "sonner";
 import moment from "moment";
 import { TReview } from "@/redux/features/review/reivew.interface";
-
-const initialProduct = [
-	{
-		id: 13,
-		name: "ComfiTable",
-		image: "/home/features/1.png",
-		monthlyPrice: 20,
-		buyPrice: 150,
-		rating: 4,
-		category: ["best-selling", "trending-now"],
-	},
-	{
-		id: 2,
-		name: "ComfiTable",
-		image: "/home/features/2.png",
-		monthlyPrice: 20,
-		buyPrice: 150,
-		rating: 4,
-		category: ["best-selling", "most-rented"],
-	},
-	{
-		id: 3,
-		name: "ComfiTable",
-		image: "/home/features/3.png",
-		monthlyPrice: 20,
-		buyPrice: 150,
-		rating: 4,
-		category: ["most-rented", "trending-now"],
-	},
-	{
-		id: 4,
-		name: "ComfiTable",
-		image: "/home/features/4.png",
-		monthlyPrice: 20,
-		buyPrice: 150,
-		rating: 4,
-		category: ["best-selling", "trending-now"],
-	},
-];
+import { TProduct } from "@/redux/features/product/product.interface";
 
 export default function ProductDetailsPage({
 	params,
@@ -93,9 +55,9 @@ export default function ProductDetailsPage({
 	const [userRating, setUserRating] = useState(0);
 	const [hoveredRating, setHoveredRating] = useState(0);
 	const [reviewText, setReviewText] = useState("");
-	const [favorites, setFavorites] = useState<number[]>([]);
+	const [favorites, setFavorites] = useState<string[]>([]);
 
-	const toggleFavorite = (productId: number) => {
+	const toggleFavorite = (productId: string) => {
 		setFavorites((prev) =>
 			prev.includes(productId)
 				? prev.filter((id) => id !== productId)
@@ -519,21 +481,21 @@ export default function ProductDetailsPage({
 					Affordable, Stylish, and Ready for You – Choose to Buy or Rent.
 				</p>
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-					{initialProduct.map((product) => (
-						<div key={product.id} className="group">
+					{data?.meta?.related?.map((product: TProduct) => (
+						<div key={product._id} className="group">
 							<div className="relative h-[332px] bg-[#F5F5F5] flex items-center justify-center rounded-lg overflow-hidden">
 								<button
-									onClick={() => toggleFavorite(product.id)}
+									onClick={() => toggleFavorite(product._id)}
 									className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors"
 									aria-label={
-										favorites.includes(product.id)
+										favorites.includes(product._id)
 											? "Remove from favorites"
 											: "Add to favorites"
 									}
 								>
 									<Heart
 										className={`w-5 h-5 ${
-											favorites.includes(product.id)
+											favorites.includes(product._id)
 												? "fill-red-500 text-red-500"
 												: "text-gray-600"
 										}`}
@@ -541,11 +503,11 @@ export default function ProductDetailsPage({
 								</button>
 								{/* <div className='relative h-full w-full'> */}
 								<Link
-									href={`/shop/${product.id}`}
+									href={`/shop/${product._id}`}
 									className="relative h-full w-full"
 								>
 									<Image
-										src={product.image || "/placeholder.svg"}
+										src={img(product.images[0])}
 										alt={product.name}
 										fill
 										className="object-contain"
@@ -554,17 +516,17 @@ export default function ProductDetailsPage({
 								{/* </div> */}
 							</div>
 							<div className="pt-3">
-								<Link key={product.id} href={`/shop/${product.id}`}>
+								<Link key={product._id} href={`/shop/${product._id}`}>
 									<h3 className="text-xl md:text-[32px] text-[#000000] font-medium mb-1">
 										{product.name}
 									</h3>
 
 									<div className="flex justify-between mb-2">
 										<span className="text-[#000000] text-lg font-medium">
-											${product.monthlyPrice}/mo
+											${product.rentPrice}/mo
 										</span>
 										<span className="text-[#333333] text-lg">
-											${product.buyPrice} to buy
+											${product.price} to buy
 										</span>
 									</div>
 

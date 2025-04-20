@@ -1,0 +1,25 @@
+export type TProduct = {
+	_id: string;
+	admin: string;
+	name: string;
+	images: string[];
+	description: string;
+	price: number;
+	rentPrice: number;
+	isRentable: boolean;
+	isBuyable: boolean;
+	category: string;
+	type: string;
+	stock: number;
+	notes: string[];
+	color: string;
+	size: string;
+	materials: string[];
+	refProduct: string;
+	rating: number;
+	height: string;
+	width: string;
+	length: string;
+	createdAt: Date;
+	updatedAt: Date;
+};
