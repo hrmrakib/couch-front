@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/pagination";
 import Link from "next/link";
 import { useGetAllProductsQuery } from "@/redux/features/product/ProductAPI";
+import { useAddToWishlistMutation } from "@/redux/features/wishlist/wistlistAPI";
 
 type FilterCategory = "Category" | "Color" | "Price" | "Size" | "Material";
 
@@ -44,6 +45,7 @@ export default function ShopPageComponent() {
 
   const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
 
+  const [addToWishlist] = useAddToWishlistMutation();
   const {
     data: products,
     isLoading,
@@ -243,6 +245,7 @@ export default function ShopPageComponent() {
                     // }
                   >
                     <Heart
+                      onClick={() => addToWishlist(product?._id)}
                       className={`w-6 h-6 ${
                         false ? "fill-rose-500 text-rose-500" : "text-gray-600"
                       }`}

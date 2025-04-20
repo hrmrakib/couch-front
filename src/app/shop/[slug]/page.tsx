@@ -15,36 +15,6 @@ import {
 import { toast } from "sonner";
 import Loading from "@/components/loading/Loading";
 
-const initialReviews = [
-  {
-    id: 1,
-    name: "Sarah Khan",
-    avatar: "/users/1.png",
-    rating: 4.8,
-    comment:
-      "Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
-    date: "02 February, 2025",
-  },
-  {
-    id: 2,
-    name: "Sarah Khan",
-    avatar: "/users/2.png",
-    rating: 4.8,
-    comment:
-      "Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
-    date: "02 February, 2025",
-  },
-  {
-    id: 3,
-    name: "Sarah Khan",
-    avatar: "/users/3.png",
-    rating: 4.8,
-    comment:
-      "Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
-    date: "02 February, 2025",
-  },
-];
-
 export default function ProductDetailsPage() {
   const [selectedOption, setSelectedOption] = useState<"rent" | "buy">("rent");
   const [quantity, setQuantity] = useState(1);
