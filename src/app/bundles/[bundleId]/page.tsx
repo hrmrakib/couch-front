@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 
-import { Usable, use, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, Star, Trash2 } from "lucide-react";
@@ -20,13 +20,10 @@ import { toast } from "sonner";
 import moment from "moment";
 import { TReview } from "@/redux/features/review/reivew.interface";
 import { TProduct } from "@/redux/features/product/product.interface";
+import { TCheckout } from "@/redux/features/checkout/checkout.interface";
 
-export default function ProductDetailsPage({
-	params,
-}: {
-	params: Usable<Record<string, string>>;
-}) {
-	const { bundleId } = use(params) as Record<string, string>;
+export default function ProductDetailsPage({ params }: any) {
+	const { bundleId } = params;
 
 	const { data } = useBundleRetrieveQuery({
 		bundleId,
@@ -107,11 +104,30 @@ export default function ProductDetailsPage({
 	};
 
 	const handleBuyNow = () => {
-		alert(
-			`Proceeding to checkout: ${quantity} Comfi Sofa(s) - ${
-				selectedOption === "rent" ? `Rent for ${rentalLength}` : "Buy"
-			}`
-		);
+		if (selectedOption === "rent" && rentalLength < 1) {
+			toast.error("Please select a rental length");
+			return;
+		}
+
+		const checkoutData: TCheckout = {
+			type: "bundles",
+			bundle: {
+				_id: bundleId,
+				quantity,
+				price: bundle.price!,
+				images: bundle.images,
+				name: bundle.name,
+			},
+		};
+
+		if (selectedOption === "rent")
+			checkoutData.bundle!.rentalLength = rentalLength;
+
+		localStorage.setItem("checkout", JSON.stringify(checkoutData));
+
+		setTimeout(() => {
+			window.location.href = "/checkout";
+		}, 100);
 	};
 
 	const handleReviewDelete = async (id: string) => {
