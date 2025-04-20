@@ -8,6 +8,12 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useGetSingleProductQuery } from "@/redux/features/product/ProductAPI";
 import { useParams } from "next/navigation";
+import {
+  useGetReviewsQuery,
+  useReviewMutation,
+} from "@/redux/features/review/reviewApi";
+import { toast } from "sonner";
+import Loading from "@/components/loading/Loading";
 
 const initialReviews = [
   {
@@ -39,51 +45,11 @@ const initialReviews = [
   },
 ];
 
-const initialProduct = [
-  {
-    id: 13,
-    name: "ComfiTable",
-    image: "/home/features/1.png",
-    monthlyPrice: 20,
-    buyPrice: 150,
-    rating: 4,
-    category: ["best-selling", "trending-now"],
-  },
-  {
-    id: 2,
-    name: "ComfiTable",
-    image: "/home/features/2.png",
-    monthlyPrice: 20,
-    buyPrice: 150,
-    rating: 4,
-    category: ["best-selling", "most-rented"],
-  },
-  {
-    id: 3,
-    name: "ComfiTable",
-    image: "/home/features/3.png",
-    monthlyPrice: 20,
-    buyPrice: 150,
-    rating: 4,
-    category: ["most-rented", "trending-now"],
-  },
-  {
-    id: 4,
-    name: "ComfiTable",
-    image: "/home/features/4.png",
-    monthlyPrice: 20,
-    buyPrice: 150,
-    rating: 4,
-    category: ["best-selling", "trending-now"],
-  },
-];
-
 export default function ProductDetailsPage() {
   const [selectedOption, setSelectedOption] = useState<"rent" | "buy">("rent");
   const [quantity, setQuantity] = useState(1);
   const [rentalLength, setRentalLength] = useState("4 month");
   const [activeImage, setActiveImage] = useState(0);
-  const [reviews, setReviews] = useState(initialReviews);
   const [userRating, setUserRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
@@ -94,16 +60,27 @@ export default function ProductDetailsPage() {
   const slug = params.slug as string;
   const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
 
+  const [review] = useReviewMutation();
+  const { data: reviewData } = useGetReviewsQuery({
+    id: slug,
+    type: "products",
+  });
+
+  console.log(reviewData?.data, "reviewData");
+
   const {
     data: product,
     isLoading,
     isError,
   } = useGetSingleProductQuery({ productId: slug });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
   if (isError) return <div>Error</div>;
-
-  console.log(product?.meta?.related, "product");
 
   const toggleFavorite = (productId: number) => {
     setFavorites((prev) =>
@@ -125,47 +102,45 @@ export default function ProductDetailsPage() {
     setHoveredRating(0);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (userRating === 0) {
-      alert("Please select a rating");
+      toast.success("Please select a rating before submitting");
       return;
     }
 
     if (reviewText.trim() === "") {
-      alert("Please enter a review");
+      toast.success("Please enter a review text before submitting");
       return;
     }
 
-    setIsSubmitting(true);
+    try {
+      const res = await review({
+        id: product?.data?._id || "",
+        type: "products",
+        review: {
+          rating: userRating,
+          content: reviewText,
+        },
+      });
 
-    // Simulate API call
-    setTimeout(() => {
-      const newReview = {
-        id: reviews.length + 1,
-        name: "You",
-        avatar: "/avatars/default.jpg",
-        rating: userRating,
-        comment: reviewText,
-        date: new Date().toLocaleDateString("en-US", {
-          day: "2-digit",
-          month: "long",
-          year: "numeric",
-        }),
-      };
+      console.log(res);
 
-      setReviews([newReview, ...reviews]);
+      if (res.data.success) {
+        toast.success(res.data.message);
+        setSubmitSuccess(true);
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast.error("Failed to submit review. Please try again.");
+      return;
+    } finally {
       setUserRating(0);
       setReviewText("");
       setIsSubmitting(false);
-      setSubmitSuccess(true);
-
-      // Reset success message after 3 seconds
-      setTimeout(() => {
-        setSubmitSuccess(false);
-      }, 3000);
-    }, 1000);
+      setSubmitSuccess(false);
+    }
   };
 
   // Product images
@@ -184,13 +159,7 @@ export default function ProductDetailsPage() {
     );
   };
 
-  const handleBuyNow = () => {
-    alert(
-      `Proceeding to checkout: ${quantity} Comfi Sofa(s) - ${
-        selectedOption === "rent" ? `Rent for ${rentalLength}` : "Buy"
-      }`
-    );
-  };
+  console.log(userRating, hoveredRating, reviewText);
 
   return (
     <div className='min-h-screen'>
@@ -206,7 +175,7 @@ export default function ProductDetailsPage() {
             <div>
               <div className='bg-[#F5F5F5] rounded-md mb-4 relative aspect-square'>
                 <Image
-                  src={productImages[activeImage] || "/placeholder.svg"}
+                  src={`${ImageURL}${product?.data?.images[activeImage]}`}
                   alt='Comfi Sofa'
                   fill
                   className='object-contain p-4'
@@ -214,7 +183,7 @@ export default function ProductDetailsPage() {
                 />
               </div>
               <div className='flex space-x-2 overflow-x-auto pb-2'>
-                {productImages.map((image, index) => (
+                {/* {productImages.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setActiveImage(index)}
@@ -226,14 +195,47 @@ export default function ProductDetailsPage() {
                     )}
                   >
                     <Image
-                      src={image || "/placeholder.svg"}
+                      src={`${ImageURL}${product?.data?.images[index]}`}
                       alt={`Comfi Sofa view ${index + 1}`}
                       width={132}
                       height={132}
                       className='object-cover'
                     />
                   </button>
-                ))}
+                ))} */}
+
+                {productImages.map((image, index) => {
+                  const imageUrl = product?.data?.images?.[index]
+                    ? `${ImageURL}${product.data.images[index]}`
+                    : null;
+
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => setActiveImage(index)}
+                      className={cn(
+                        "bg-[#F5F5F5] border-2 rounded-md overflow-hidden flex-shrink-0 w-[132px] h-[132px] relative",
+                        activeImage === index
+                          ? "border-yellow-500"
+                          : "border-transparent"
+                      )}
+                    >
+                      {imageUrl ? (
+                        <Image
+                          src={imageUrl}
+                          alt={`Comfi Sofa view ${index + 1}`}
+                          width={132}
+                          height={132}
+                          className='object-cover'
+                        />
+                      ) : (
+                        <div className='w-[132px] h-[132px] flex items-center justify-center text-sm text-gray-400'>
+                          No image
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -241,7 +243,7 @@ export default function ProductDetailsPage() {
             <div>
               <div className='flex justify-between items-start mb-2'>
                 <h2 className='text-2xl md:text-[32px] text-[#101010] font-medium'>
-                  Comfi Sofa
+                  {product?.data?.name || "Comfi Sofa"}
                 </h2>
                 <div className='flex items-center'>
                   <Star className='w-5 h-5 fill-yellow-400 text-yellow-400' />
@@ -371,12 +373,12 @@ export default function ProductDetailsPage() {
                 >
                   Add To Cart
                 </button>
-                <button
-                  onClick={handleBuyNow}
-                  className='flex-1 border border-gray-300 hover:bg-gray-50 cursor-pointer text-black font-medium py-3 px-6 rounded-md transition-colors'
+                <Link
+                  href={`/checkout/`}
+                  className='flex-1 border border-gray-300 hover:bg-gray-50 cursor-pointer text-black text-center font-medium py-3 px-6 rounded-md transition-colors'
                 >
                   Buy Now
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -416,10 +418,16 @@ export default function ProductDetailsPage() {
               <div className='space-y-4'>
                 <h3 className='font-medium text-lg'>Specifications</h3>
                 <ul className='list-disc pl-5 space-y-2 text-gray-700'>
-                  <li>Dimensions: 30&quot; H x 32&quot; W x 34&quot; D</li>
+                  <li>
+                    Dimensions: {product?.data?.height}&quot; H x{" "}
+                    {product?.data?.width}&quot; W x{" "}
+                    {Number(product?.data?.width) *
+                      Number(product?.data?.height)}
+                    &quot; D
+                  </li>
                   <li>Weight: 45 lbs</li>
-                  <li>Materials: Engineered wood, fabric upholstery</li>
-                  <li>Color: Orange/Rust</li>
+                  <li>Materials: {product?.data?.materials?.join(", ")}</li>
+                  <li>Color: {product?.data?.color}</li>
                   <li>Assembly required: Yes</li>
                   <li>Care instructions: Spot clean only</li>
                 </ul>
@@ -440,11 +448,12 @@ export default function ProductDetailsPage() {
                   {/* Reviews List */}
                   <div className='w-full md:w-1/2'>
                     <h2 className='text-2xl font-medium mb-6'>
-                      {reviews.length} Review for living room bundle combo pack
+                      {reviewData?.data.length} Review for living room bundle
+                      combo pack
                     </h2>
 
                     <div className='space-y-6'>
-                      {reviews.map((review) => (
+                      {reviewData?.data?.map((review) => (
                         <div
                           key={review.id}
                           className='bg-white p-6 rounded-md'
@@ -452,7 +461,7 @@ export default function ProductDetailsPage() {
                           <div className='flex items-start'>
                             <div className='relative w-12 h-12 rounded-full overflow-hidden mr-4 flex-shrink-0'>
                               <Image
-                                src={review.avatar || "/placeholder.svg"}
+                                src={`${ImageURL}/${review.user.avatar}`}
                                 alt={review.name}
                                 fill
                                 className='object-cover'
@@ -461,7 +470,7 @@ export default function ProductDetailsPage() {
                             <div className='flex-1'>
                               <div className='flex justify-between items-center mb-2'>
                                 <h3 className='font-medium text-lg'>
-                                  {review.name}
+                                  {review.user.name}
                                 </h3>
                                 <div className='flex items-center'>
                                   <span className='text-yellow-500 mr-1'>
@@ -471,7 +480,7 @@ export default function ProductDetailsPage() {
                                 </div>
                               </div>
                               <p className='text-gray-700 mb-3'>
-                                {review.comment}
+                                {review?.content}
                               </p>
                               <p className='text-gray-400 text-sm'>
                                 {review.date}
@@ -586,7 +595,7 @@ export default function ProductDetailsPage() {
                 </button>
                 {/* <div className='relative h-full w-full'> */}
                 <Link
-                  href={`/shop/${product.id}`}
+                  href={`/shop/${product._id}`}
                   className='relative h-full w-full'
                 >
                   <Image

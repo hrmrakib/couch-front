@@ -2,7 +2,7 @@ import ShopPageComponent from "@/components/shop/ShopPageComp";
 
 export default function ShopPageRoute() {
   return (
-    <div>
+    <div className='min-h-screen'>
       <ShopPageComponent />
     </div>
   );

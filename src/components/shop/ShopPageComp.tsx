@@ -39,6 +39,8 @@ export default function ShopPageComponent() {
     sizes: [] as string[],
     materials: [] as string[],
   });
+  const [isBuyable, setIsBuyable] = useState(true);
+  const [isRentable, setIsRentable] = useState(false);
 
   const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
 
@@ -47,14 +49,18 @@ export default function ShopPageComponent() {
     isLoading,
     isError,
   } = useGetAllProductsQuery({
+    isRentable,
+    isBuyable,
     categories: selectedFilters.categories,
     colors: selectedFilters.colors.join(","),
     sizes: selectedFilters.sizes,
     materials: selectedFilters.materials,
     page: 1,
     limit: 100,
-    sortBy: "createdAt",
+    // sortBy: "createdAt",
   });
+
+  console.log(selectedFilters.colors);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -65,7 +71,7 @@ export default function ShopPageComponent() {
   }
 
   const toggleFavorite = (productId: string) => {
-    console.log(productId)
+    console.log(productId);
   };
 
   const toggleFilter = (filter: FilterCategory) => {
@@ -79,7 +85,7 @@ export default function ShopPageComponent() {
   const isFilterExpanded = (filter: FilterCategory) =>
     expandedFilters.includes(filter);
 
-  console.log(products?.data);
+  // console.log(isBuyable, isRentable);
 
   return (
     <div className='container mx-auto px-4 py-8'>
@@ -128,13 +134,21 @@ export default function ShopPageComponent() {
           <div className='space-y-2.5 p-4 w-64'>
             <h3 className='font-medium'>Purchase Options</h3>
             <div className='flex items-center space-x-2'>
-              <Checkbox id='buyable' />
+              <Checkbox
+                checked={isBuyable}
+                id='buyable'
+                onClick={() => setIsBuyable(!isBuyable)}
+              />
               <Label htmlFor='buyable' className='text-sm'>
                 Buyable
               </Label>
             </div>
             <div className='flex items-center space-x-2'>
-              <Checkbox id='rentable' />
+              <Checkbox
+                id='rentable'
+                checked={isRentable}
+                onClick={() => setIsRentable(!isRentable)}
+              />
               <Label htmlFor='rentable'>Rentable</Label>
             </div>
           </div>
@@ -162,35 +176,41 @@ export default function ShopPageComponent() {
                 </CollapsibleTrigger>
                 <CollapsibleContent className='px-4 pb-3'>
                   <div className='space-y-2'>
-                    {Array.isArray(options) && options.map((option: string, index: number) => {
-                      const filterKey =
-                        filter.toLowerCase() as keyof typeof selectedFilters;
-                      const currentValues = selectedFilters[filterKey] || [];
+                    {Array.isArray(options) &&
+                      options.map((option: string, index: number) => {
+                        const filterKey =
+                          filter.toLowerCase() as keyof typeof selectedFilters;
+                        const currentValues = selectedFilters[filterKey] || [];
 
-                      return (
-                        <div key={index} className='flex items-center'>
-                          <input
-                            type='checkbox'
-                            id={`${filter}-${option}`}
-                            className='mr-2'
-                            checked={currentValues.includes(option)}
-                            onChange={(e) => {
-                              const updated = e.target.checked
-                                ? [...currentValues, option]
-                                : currentValues.filter((val) => val !== option);
+                        return (
+                          <div key={index} className='flex items-center'>
+                            <input
+                              type='checkbox'
+                              id={`${filter}-${option}`}
+                              className='mr-2'
+                              checked={currentValues.includes(option)}
+                              onChange={(e) => {
+                                const updated = e.target.checked
+                                  ? [...currentValues, option]
+                                  : currentValues.filter(
+                                      (val) => val !== option
+                                    );
 
-                              setSelectedFilters((prev) => ({
-                                ...prev,
-                                [filterKey]: updated,
-                              }));
-                            }}
-                          />
-                          <label htmlFor={`${filter}-${option}`} className="capitalize">
-                            {option}
-                          </label>
-                        </div>
-                      );
-                    })}
+                                setSelectedFilters((prev) => ({
+                                  ...prev,
+                                  [filterKey]: updated,
+                                }));
+                              }}
+                            />
+                            <label
+                              htmlFor={`${filter}-${option}`}
+                              className='capitalize'
+                            >
+                              {option}
+                            </label>
+                          </div>
+                        );
+                      })}
                   </div>
                 </CollapsibleContent>
               </Collapsible>
@@ -250,10 +270,14 @@ export default function ShopPageComponent() {
                     </h3>
 
                     <div className='flex items-center gap-6 mb-3'>
-                      <span className='font-medium'>${product.price}/mo</span>
-                      <span className='text-gray-600'>
-                        ${product.rentPrice} to buy
-                      </span>
+                      {product?.isRentable && (
+                        <span className='font-medium'>${product.price}/mo</span>
+                      )}
+                      {product?.isBuyable && (
+                        <span className='text-gray-600'>
+                          ${product.price} to Buy
+                        </span>
+                      )}
                     </div>
 
                     <div className='flex mb-3'>
