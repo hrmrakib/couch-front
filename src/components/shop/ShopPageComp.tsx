@@ -185,7 +185,7 @@ export default function ShopPageComponent() {
                               }));
                             }}
                           />
-                          <label htmlFor={`${filter}-${option}`}>
+                          <label htmlFor={`${filter}-${option}`} className="capitalize">
                             {option}
                           </label>
                         </div>

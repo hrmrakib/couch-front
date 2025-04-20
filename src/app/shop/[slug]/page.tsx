@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useGetSingleProductQuery } from "@/redux/features/product/ProductAPI";
+import { useParams } from "next/navigation";
 
 const initialReviews = [
   {
@@ -78,7 +80,7 @@ const initialProduct = [
 
 export default function ProductDetailsPage() {
   const [selectedOption, setSelectedOption] = useState<"rent" | "buy">("rent");
-  const [quantity, setQuantity] = useState(2);
+  const [quantity, setQuantity] = useState(1);
   const [rentalLength, setRentalLength] = useState("4 month");
   const [activeImage, setActiveImage] = useState(0);
   const [reviews, setReviews] = useState(initialReviews);
@@ -88,6 +90,20 @@ export default function ProductDetailsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [favorites, setFavorites] = useState<number[]>([]);
+  const params = useParams();
+  const slug = params.slug as string;
+  const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
+
+  const {
+    data: product,
+    isLoading,
+    isError,
+  } = useGetSingleProductQuery({ productId: slug });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+
+  console.log(product?.meta?.related, "product");
 
   const toggleFavorite = (productId: number) => {
     setFavorites((prev) =>
@@ -240,65 +256,69 @@ export default function ProductDetailsPage() {
 
               {/* Pricing Options */}
               <div className='mb-6'>
-                <div className='flex space-x-4 mb-4'>
-                  <label className='flex items-center'>
-                    <input
-                      type='radio'
-                      name='pricing'
-                      checked={selectedOption === "rent"}
-                      onChange={() => setSelectedOption("rent")}
-                      className='hidden'
-                    />
-                    <span
-                      className={cn(
-                        "w-5 h-5 rounded-full border flex items-center justify-center mr-2",
-                        selectedOption === "rent"
-                          ? "border-yellow-500 bg-white"
-                          : "border-gray-300 bg-white"
-                      )}
-                    >
-                      {selectedOption === "rent" && (
-                        <span className='w-3 h-3 rounded-full bg-yellow-500'></span>
-                      )}
-                    </span>
-                    <span className='border border-yellow-500 rounded-md py-2 px-4 flex items-center'>
-                      <span className='w-4 h-4 rounded-full bg-yellow-500 text-xl text-[#333333] mr-2'></span>
-                      Rent $50{" "}
-                      <span className='text-sm text-[#333333]'>/mo</span>
-                    </span>
-                  </label>
+                <div className='flex space-x-6 lg:space-x-8 mb-4'>
+                  {/* rent */}
+                  {product?.data?.isBuyable && (
+                    <label className='flex items-center'>
+                      <input
+                        type='radio'
+                        name='pricing'
+                        checked={selectedOption === "rent"}
+                        onChange={() => setSelectedOption("rent")}
+                        className='hidden'
+                      />
+                      <span
+                        className={cn(
+                          "w-5 h-5 rounded-full border flex items-center justify-center mr-2",
+                          selectedOption === "rent"
+                            ? "border-yellow-500 bg-white"
+                            : "border-gray-300 bg-white"
+                        )}
+                      >
+                        {selectedOption === "rent" && (
+                          <span className='w-3 h-3 rounded-full bg-yellow-500'></span>
+                        )}
+                      </span>
+                      <span className=' border-yellow-500 rounded-md py-2  flex items-center'>
+                        {/* <span className='w-4 h-4 rounded-full bg-yellow-500 text-xl text-[#333333] mr-2'></span> */}
+                        Rent $50{" "}
+                        <span className='text-sm text-[#333333]'>/mo</span>
+                      </span>
+                    </label>
+                  )}
 
-                  <label className='flex items-center'>
-                    <input
-                      type='radio'
-                      name='pricing'
-                      checked={selectedOption === "buy"}
-                      onChange={() => setSelectedOption("buy")}
-                      className='hidden'
-                    />
-                    <span
-                      className={cn(
-                        "w-5 h-5 rounded-full border flex items-center justify-center mr-2",
-                        selectedOption === "buy"
-                          ? "border-yellow-500 bg-white"
-                          : "border-gray-300 bg-white"
-                      )}
-                    >
-                      {selectedOption === "buy" && (
-                        <span className='w-3 h-3 rounded-full bg-yellow-500'></span>
-                      )}
-                    </span>
-                    <span className='text-xl text-[#333333]'>$150 To buy</span>
-                  </label>
+                  {/* buy */}
+                  {product?.data?.isBuyable && (
+                    <label className='flex items-center'>
+                      <input
+                        type='radio'
+                        name='pricing'
+                        checked={selectedOption === "buy"}
+                        onChange={() => setSelectedOption("buy")}
+                        className='hidden'
+                      />
+                      <span
+                        className={cn(
+                          "w-5 h-5 rounded-full border flex items-center justify-center mr-2",
+                          selectedOption === "buy"
+                            ? "border-yellow-500 bg-white"
+                            : "border-gray-300 bg-white"
+                        )}
+                      >
+                        {selectedOption === "buy" && (
+                          <span className='w-3 h-3 rounded-full bg-yellow-500'></span>
+                        )}
+                      </span>
+                      <span className='text-xl text-[#333333]'>
+                        $150 To buy
+                      </span>
+                    </label>
+                  )}
                 </div>
 
+                {/* rentable data and quantity */}
                 {selectedOption === "rent" && (
                   <div className='bg-[#FFFFFF] p-4 rounded-md mb-6'>
-                    <div className='flex items-center mb-4'>
-                      <span className='w-4 h-4 rounded-full bg-yellow-500 mr-2'></span>
-                      <span>Rent for $50/mo</span>
-                    </div>
-
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                       <div>
                         <label
@@ -307,18 +327,15 @@ export default function ProductDetailsPage() {
                         >
                           Quantity
                         </label>
-                        <select
+
+                        <input
                           id='quantity'
                           value={quantity}
                           onChange={(e) => setQuantity(Number(e.target.value))}
+                          type='number'
                           className='w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-yellow-500'
-                        >
-                          {[1, 2, 3, 4, 5].map((num) => (
-                            <option key={num} value={num}>
-                              {num}
-                            </option>
-                          ))}
-                        </select>
+                          placeholder='0'
+                        />
                       </div>
                       <div>
                         <label
@@ -391,11 +408,7 @@ export default function ProductDetailsPage() {
           <div className='container mx-auto px-4 py-8'>
             <TabsContent value='description' className='mt-0 bg-[#FFF8ED]'>
               <p className='text-gray-700 leading-relaxed'>
-                Upgrade your workspace with this sleek and durable Modern Wooden
-                Study Desk. Crafted from high-quality engineered wood, this desk
-                is designed to provide maximum comfort and functionality. Its
-                spacious surface allows you to organize your essentials, while
-                the sturdy legs ensure long-lasting stability.
+                {product?.data?.description || "Description not available."}
               </p>
             </TabsContent>
 
@@ -551,8 +564,8 @@ export default function ProductDetailsPage() {
           Affordable, Stylish, and Ready for You – Choose to Buy or Rent.
         </p>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-          {initialProduct.map((product) => (
-            <div key={product.id} className='group'>
+          {product?.meta?.related?.map((product) => (
+            <div key={product._id} className='group'>
               <div className='relative h-[332px] bg-[#F5F5F5] flex items-center justify-center rounded-lg overflow-hidden'>
                 <button
                   onClick={() => toggleFavorite(product.id)}
@@ -577,7 +590,7 @@ export default function ProductDetailsPage() {
                   className='relative h-full w-full'
                 >
                   <Image
-                    src={product.image || "/placeholder.svg"}
+                    src={`${ImageURL}${product.images[0]}`}
                     alt={product.name}
                     fill
                     className='object-contain'
@@ -593,7 +606,7 @@ export default function ProductDetailsPage() {
 
                   <div className='flex justify-between mb-2'>
                     <span className='text-[#000000] text-lg font-medium'>
-                      ${product.monthlyPrice}/mo
+                      ${product.price}/mo
                     </span>
                     <span className='text-[#333333] text-lg'>
                       ${product.buyPrice} to buy

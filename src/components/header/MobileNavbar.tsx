@@ -40,8 +40,6 @@ export default function MobileNavbar() {
     }
   }, []);
 
-  console.log(tokenOnCookie);
-
   return (
     <header className='border-b border-gray-200'>
       <div className='relative container mx-auto px-4 flex items-center justify-between h-20'>
