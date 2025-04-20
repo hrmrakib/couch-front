@@ -11,6 +11,8 @@ import Link from "next/link";
 import { useBundleRetrieveQuery } from "@/redux/features/bundle/bundleApi";
 import { TBundle } from "@/redux/features/bundle/bundle.interface";
 import { img } from "@/lib/img";
+import { useReviewMutation } from "@/redux/features/review/reviewApi";
+import { toast } from "sonner";
 
 const initialReviews = [
 	{
@@ -92,6 +94,8 @@ export default function ProductDetailsPage({
 		bundleId,
 	});
 
+	const [review] = useReviewMutation();
+
 	const bundle = data?.data as TBundle;
 
 	const [selectedOption, setSelectedOption] = useState<"rent" | "buy">("buy");
@@ -126,7 +130,7 @@ export default function ProductDetailsPage({
 		setHoveredRating(0);
 	};
 
-	const handleReview = (e: React.FormEvent) => {
+	const handleReview = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		if (userRating === 0) {
@@ -139,34 +143,20 @@ export default function ProductDetailsPage({
 			return;
 		}
 
-		setIsSubmitting(true);
+		try {
+			await review({
+				id: bundleId,
+				type: "bundles",
+				review: {
+					rating: userRating,
+					content: reviewText.trim(),
+				},
+			});
 
-		// Simulate API call
-		setTimeout(() => {
-			const newReview = {
-				id: reviews.length + 1,
-				name: "You",
-				avatar: "/avatars/default.jpg",
-				rating: userRating,
-				comment: reviewText,
-				date: new Date().toLocaleDateString("en-US", {
-					day: "2-digit",
-					month: "long",
-					year: "numeric",
-				}),
-			};
-
-			setReviews([newReview, ...reviews]);
-			setUserRating(0);
-			setReviewText("");
-			setIsSubmitting(false);
-			setSubmitSuccess(true);
-
-			// Reset success message after 3 seconds
-			setTimeout(() => {
-				setSubmitSuccess(false);
-			}, 3000);
-		}, 1000);
+			toast.success("Review submitted successfully!");
+		} catch {
+			toast.error("Failed to submit review");
+		}
 	};
 
 	const handleBuyNow = () => {
