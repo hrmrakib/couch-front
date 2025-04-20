@@ -1,22 +1,24 @@
+"use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
-"use client";
 
 import { Usable, use, useState } from "react";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Star } from "lucide-react";
+import { Heart, Star, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useBundleRetrieveQuery } from "@/redux/features/bundle/bundleApi";
 import { TBundle } from "@/redux/features/bundle/bundle.interface";
 import { img } from "@/lib/img";
 import {
+	useDeleteReviewMutation,
 	useGetReviewsQuery,
 	useReviewMutation,
 } from "@/redux/features/review/reviewApi";
 import { toast } from "sonner";
 import moment from "moment";
+import { TReview } from "@/redux/features/review/reivew.interface";
 
 const initialProduct = [
 	{
@@ -74,9 +76,11 @@ export default function ProductDetailsPage({
 		limit: 5,
 	});
 
+	const [deleteReview] = useDeleteReviewMutation();
+
 	const reviews = reviewData?.data || [];
 
-	console.log(reviewData);
+	const user = JSON.parse(localStorage.getItem("user") || "{}");
 
 	const [review] = useReviewMutation();
 
@@ -89,8 +93,6 @@ export default function ProductDetailsPage({
 	const [userRating, setUserRating] = useState(0);
 	const [hoveredRating, setHoveredRating] = useState(0);
 	const [reviewText, setReviewText] = useState("");
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [submitSuccess, setSubmitSuccess] = useState(false);
 	const [favorites, setFavorites] = useState<number[]>([]);
 
 	const toggleFavorite = (productId: number) => {
@@ -148,6 +150,17 @@ export default function ProductDetailsPage({
 				selectedOption === "rent" ? `Rent for ${rentalLength}` : "Buy"
 			}`
 		);
+	};
+
+	const handleReviewDelete = async (id: string) => {
+		try {
+			await deleteReview({
+				id,
+			});
+			toast.success("Review deleted successfully!");
+		} catch {
+			toast.error("Failed to delete review");
+		}
 	};
 
 	return (
@@ -378,12 +391,12 @@ export default function ProductDetailsPage({
 									{/* Reviews List */}
 									<div className="w-full md:w-1/2">
 										<h2 className="text-2xl font-medium mb-6">
-											{reviewData?.meta?.pagination?.total} Review for living
-											room bundle combo pack
+											{reviewData?.meta?.pagination?.total} Review for{" "}
+											{bundle?.name}
 										</h2>
 
 										<div className="space-y-6">
-											{reviews.map((review) => (
+											{reviews.map((review: TReview) => (
 												<div
 													key={review._id}
 													className="bg-white p-6 rounded-md"
@@ -407,6 +420,16 @@ export default function ProductDetailsPage({
 																		★
 																	</span>
 																	<span>{review?.rating}</span>
+																	{review?.user?._id === user?._id && (
+																		<button
+																			onClick={() =>
+																				handleReviewDelete(review?._id)
+																			}
+																			className="ml-2 text-red-500"
+																		>
+																			<Trash2 className="text-sm" />
+																		</button>
+																	)}
 																</div>
 															</div>
 															<p className="text-gray-700 mb-3">
@@ -471,18 +494,11 @@ export default function ProductDetailsPage({
 												></textarea>
 											</div>
 
-											{submitSuccess && (
-												<div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
-													Your review has been submitted successfully!
-												</div>
-											)}
-
 											<button
 												type="submit"
-												disabled={isSubmitting}
 												className="bg-yellow-500 hover:bg-yellow-600 text-black font-medium cursor-pointer py-3 px-6 rounded-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
 											>
-												{isSubmitting ? "Submitting..." : "Submit"}
+												Submit
 											</button>
 										</form>
 									</div>

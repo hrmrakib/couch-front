@@ -39,7 +39,19 @@ const reviewApi = baseAPI.injectEndpoints({
 			}),
 			providesTags: ["reviews"],
 		}),
+
+		deleteReview: builder.mutation({
+			query: ({ id }: { id: string }) => ({
+				url: `/reviews/${id}/delete`,
+				method: "DELETE",
+			}),
+			invalidatesTags: ["reviews"],
+		}),
 	}),
 });
 
-export const { useReviewMutation, useGetReviewsQuery } = reviewApi;
+export const {
+	useReviewMutation,
+	useGetReviewsQuery,
+	useDeleteReviewMutation,
+} = reviewApi;
