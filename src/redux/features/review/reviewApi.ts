@@ -19,8 +19,27 @@ const reviewApi = baseAPI.injectEndpoints({
 				method: "PATCH",
 				body: review,
 			}),
+			invalidatesTags: ["reviews"],
+		}),
+
+		getReviews: builder.query({
+			query: ({
+				id,
+				type,
+				limit = 10,
+				page = 1,
+			}: {
+				id: string;
+				type: "products" | "bundles";
+				limit?: number;
+				page?: number;
+			}) => ({
+				url: `/${type}/${id}/reviews?page=${page}&limit=${limit}`,
+				method: "GET",
+			}),
+			providesTags: ["reviews"],
 		}),
 	}),
 });
 
-export const { useReviewMutation } = reviewApi;
+export const { useReviewMutation, useGetReviewsQuery } = reviewApi;

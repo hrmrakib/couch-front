@@ -11,38 +11,12 @@ import Link from "next/link";
 import { useBundleRetrieveQuery } from "@/redux/features/bundle/bundleApi";
 import { TBundle } from "@/redux/features/bundle/bundle.interface";
 import { img } from "@/lib/img";
-import { useReviewMutation } from "@/redux/features/review/reviewApi";
+import {
+	useGetReviewsQuery,
+	useReviewMutation,
+} from "@/redux/features/review/reviewApi";
 import { toast } from "sonner";
-
-const initialReviews = [
-	{
-		id: 1,
-		name: "Sarah Khan",
-		avatar: "/users/1.png",
-		rating: 4.8,
-		comment:
-			"Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
-		date: "02 February, 2025",
-	},
-	{
-		id: 2,
-		name: "Sarah Khan",
-		avatar: "/users/2.png",
-		rating: 4.8,
-		comment:
-			"Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
-		date: "02 February, 2025",
-	},
-	{
-		id: 3,
-		name: "Sarah Khan",
-		avatar: "/users/3.png",
-		rating: 4.8,
-		comment:
-			"Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
-		date: "02 February, 2025",
-	},
-];
+import moment from "moment";
 
 const initialProduct = [
 	{
@@ -94,6 +68,16 @@ export default function ProductDetailsPage({
 		bundleId,
 	});
 
+	const { data: reviewData } = useGetReviewsQuery({
+		id: bundleId,
+		type: "bundles",
+		limit: 5,
+	});
+
+	const reviews = reviewData?.data || [];
+
+	console.log(reviewData);
+
 	const [review] = useReviewMutation();
 
 	const bundle = data?.data as TBundle;
@@ -102,7 +86,6 @@ export default function ProductDetailsPage({
 	const [quantity, setQuantity] = useState(1);
 	const [rentalLength, setRentalLength] = useState(0);
 
-	const [reviews, setReviews] = useState(initialReviews);
 	const [userRating, setUserRating] = useState(0);
 	const [hoveredRating, setHoveredRating] = useState(0);
 	const [reviewText, setReviewText] = useState("");
@@ -395,20 +378,21 @@ export default function ProductDetailsPage({
 									{/* Reviews List */}
 									<div className="w-full md:w-1/2">
 										<h2 className="text-2xl font-medium mb-6">
-											{reviews.length} Review for living room bundle combo pack
+											{reviewData?.meta?.pagination?.total} Review for living
+											room bundle combo pack
 										</h2>
 
 										<div className="space-y-6">
 											{reviews.map((review) => (
 												<div
-													key={review.id}
+													key={review._id}
 													className="bg-white p-6 rounded-md"
 												>
 													<div className="flex items-start">
 														<div className="relative w-12 h-12 rounded-full overflow-hidden mr-4 flex-shrink-0">
 															<Image
-																src={review.avatar || "/placeholder.svg"}
-																alt={review.name}
+																src={img(review?.user?.avatar)}
+																alt={review?.user?.name}
 																fill
 																className="object-cover"
 															/>
@@ -416,20 +400,20 @@ export default function ProductDetailsPage({
 														<div className="flex-1">
 															<div className="flex justify-between items-center mb-2">
 																<h3 className="font-medium text-lg">
-																	{review.name}
+																	{review?.user?.name}
 																</h3>
 																<div className="flex items-center">
 																	<span className="text-yellow-500 mr-1">
 																		★
 																	</span>
-																	<span>{review.rating}</span>
+																	<span>{review?.rating}</span>
 																</div>
 															</div>
 															<p className="text-gray-700 mb-3">
-																{review.comment}
+																{review?.content}
 															</p>
 															<p className="text-gray-400 text-sm">
-																{review.date}
+																{moment(review?.updatedAt).fromNow()}
 															</p>
 														</div>
 													</div>
