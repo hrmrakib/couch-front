@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import type React from "react";
@@ -11,28 +13,7 @@ import {
 import { img } from "@/lib/img";
 import { TCustomer } from "@/redux/features/checkout/customer.interface";
 import { useBundleCheckoutMutation } from "@/redux/features/bundle/bundleApi";
-// import countryList from "react-select-country-list";
-
-// Define types
-
-interface CheckoutFormData {
-	email: string;
-	emailOffers: boolean;
-	country: string;
-	firstName: string;
-	lastName: string;
-	address: string;
-	apartment: string;
-	postalCode: string;
-	city: string;
-	saveInfo: boolean;
-	paymentMethod: "creditCard" | "applePay" | "venmo";
-	cardNumber: string;
-	expirationDate: string;
-	cvc: string;
-	nameOnCard: string;
-	useShippingAsBilling: boolean;
-}
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
 	const [checkoutData, setCheckoutData] = useState<TCheckout>();
@@ -41,19 +22,25 @@ export default function CheckoutPage() {
 		setCheckoutData(JSON.parse(localStorage?.getItem("checkout") || "{}"));
 	}, []);
 
+	const [customer, setCustomer] = useState<TCustomer | null>(null);
+
+	const [saveInfo, setSaveInfo] = useState(false);
+
+	useEffect(() => {
+		const savedCustomer = JSON.parse(localStorage?.getItem("customer") || "{}");
+		setCustomer(savedCustomer);
+		if (Object.keys(savedCustomer ?? {}).length) setSaveInfo(true);
+	}, []);
+
 	const getTotal = () => {
 		let total = 0;
-		// checkoutData.products?.forEach((product) => {
-		// 	total += product.price * product.quantity;
-		// });
 
 		if (!checkoutData) return 0;
 
 		if (checkoutData.type === "bundles") {
 			total = checkoutData.bundle!.price * checkoutData.bundle!.quantity;
-			if (checkoutData.bundle!.rentalLength) {
+			if (checkoutData.bundle!.rentalLength)
 				total *= checkoutData.bundle!.rentalLength;
-			}
 		}
 		return total;
 	};
@@ -62,79 +49,38 @@ export default function CheckoutPage() {
 
 	const [bundleCheckout] = useBundleCheckoutMutation();
 
-	// Form state
-	const [formData, setFormData] = useState<CheckoutFormData>({
-		email: "",
-		emailOffers: false,
-		country: "",
-		firstName: "",
-		lastName: "",
-		address: "",
-		apartment: "",
-		postalCode: "",
-		city: "",
-		saveInfo: false,
-		paymentMethod: "creditCard",
-		cardNumber: "",
-		expirationDate: "",
-		cvc: "",
-		nameOnCard: "",
-		useShippingAsBilling: false,
-	});
-
-	// Calculate totals
-
-	// Handle input changes
-	const handleInputChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-	) => {
-		const { name, value, type } = e.target as HTMLInputElement;
-		const checked =
-			type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
-
-		setFormData((prev) => ({
-			...prev,
-			[name]: type === "checkbox" ? checked : value,
-		}));
-	};
-
-	// Handle payment method selection
-
-	// Handle form submission
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		// In a real app, you would process the payment here
-		// ("Processing payment with data:", formData);
-		alert("Payment processed successfully!");
-	};
-
 	// Format price to always show 2 decimal places
 	const formatPrice = (price: number) => {
 		return `$${price.toFixed(2)}`;
 	};
 
 	const handlePayment = async () => {
-		const customer: TCustomer = {
-			name: formData.firstName + " " + formData.lastName,
-			contact: formData.email,
-			address: {
-				country: formData.country,
-				city: formData.city,
-				zip: formData.postalCode,
-				street: formData.address,
-			},
-		};
+		if (!checkoutData) {
+			toast.error("No checkout data");
+			return;
+		}
 
-		if (!checkoutData) return;
+		if (!Object.keys(customer ?? {}).length) {
+			toast.error("Please fill customer data.");
+			return;
+		}
+
+		if (saveInfo) localStorage.setItem("customer", JSON.stringify(customer));
+		else localStorage.removeItem("customer");
 
 		if (checkoutData.type === "bundles") {
-			await bundleCheckout({
+			const data = await bundleCheckout({
 				bundleId: checkoutData.bundle!._id,
 				data: {
-					customer,
+					customer: {
+						...customer,
+						name: `${customer?.name?.firstName} ${customer?.name?.lastName}`,
+					},
 					method,
 				},
-			});
+			}).unwrap();
+
+			location.href = data?.data?.checkout_url;
 		} else {
 			// const details: TOrderDetails | null = null;
 		}
@@ -154,7 +100,7 @@ export default function CheckoutPage() {
 				<div className="border-t"></div>
 
 				<form
-					onSubmit={handleSubmit}
+					onSubmit={(e) => e.preventDefault()}
 					className="flex flex-col lg:flex-row mt-6"
 				>
 					{/* Left Column - Customer Information */}
@@ -173,10 +119,13 @@ export default function CheckoutPage() {
 							</label>
 							<input
 								type="text"
-								id="email"
-								name="email"
-								value={formData.email}
-								onChange={handleInputChange}
+								defaultValue={customer?.contact}
+								onChange={(e) =>
+									setCustomer((prevCustomer: any) => ({
+										...prevCustomer,
+										contact: e.target.value,
+									}))
+								}
 								placeholder="E-mail/phone"
 								className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400"
 							/>
@@ -186,8 +135,6 @@ export default function CheckoutPage() {
 									<input
 										type="checkbox"
 										name="emailOffers"
-										checked={formData.emailOffers}
-										onChange={handleInputChange}
 										className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
 									/>
 									<span className="ml-2 block text-lg text-[#333333]">
@@ -215,16 +162,24 @@ export default function CheckoutPage() {
 									<select
 										id="country"
 										name="country"
-										value={formData.country}
-										onChange={handleInputChange}
+										value={customer?.address?.country}
+										onChange={(e) =>
+											setCustomer((prevCustomer: any) => ({
+												...prevCustomer,
+												address: {
+													...prevCustomer.address,
+													country: e.target.value,
+												},
+											}))
+										}
 										className="w-full border border-gray-300 rounded px-3 py-2 appearance-none focus:outline-none focus:ring-1 focus:ring-gray-400"
 									>
 										<option value="" disabled>
 											Country region
 										</option>
-										<option value="us">United States</option>
-										<option value="ca">Canada</option>
-										<option value="uk">United Kingdom</option>
+										<option value="United States">United States</option>
+										<option value="Canada">Canada</option>
+										<option value="United Kingdom">United Kingdom</option>
 									</select>
 									<div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
 										<svg
@@ -251,8 +206,16 @@ export default function CheckoutPage() {
 										type="text"
 										id="firstName"
 										name="firstName"
-										value={formData.firstName}
-										onChange={handleInputChange}
+										defaultValue={customer?.name?.firstName}
+										onChange={(e) =>
+											setCustomer((prevCustomer: any) => ({
+												...prevCustomer,
+												name: {
+													...prevCustomer.name,
+													firstName: e.target.value,
+												},
+											}))
+										}
 										placeholder="First name"
 										className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400"
 									/>
@@ -268,8 +231,16 @@ export default function CheckoutPage() {
 										type="text"
 										id="lastName"
 										name="lastName"
-										value={formData.lastName}
-										onChange={handleInputChange}
+										defaultValue={customer?.name?.lastName}
+										onChange={(e) =>
+											setCustomer((prevCustomer: any) => ({
+												...prevCustomer,
+												name: {
+													...prevCustomer.name,
+													lastName: e.target.value,
+												},
+											}))
+										}
 										placeholder="Last name"
 										className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400"
 									/>
@@ -288,8 +259,16 @@ export default function CheckoutPage() {
 									type="text"
 									id="address"
 									name="address"
-									value={formData.address}
-									onChange={handleInputChange}
+									defaultValue={customer?.address?.street}
+									onChange={(e) =>
+										setCustomer((prevCustomer: any) => ({
+											...prevCustomer,
+											address: {
+												...prevCustomer.address,
+												street: e.target.value,
+											},
+										}))
+									}
 									placeholder="Address"
 									className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400"
 								/>
@@ -307,8 +286,16 @@ export default function CheckoutPage() {
 									type="text"
 									id="apartment"
 									name="apartment"
-									value={formData.apartment}
-									onChange={handleInputChange}
+									defaultValue={customer?.address?.apartment}
+									onChange={(e) =>
+										setCustomer((prevCustomer: any) => ({
+											...prevCustomer,
+											address: {
+												...prevCustomer.address,
+												apartment: e.target.value,
+											},
+										}))
+									}
 									placeholder="Apartment, suite, etc. (optional)"
 									className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400"
 								/>
@@ -327,8 +314,16 @@ export default function CheckoutPage() {
 										type="text"
 										id="postalCode"
 										name="postalCode"
-										value={formData.postalCode}
-										onChange={handleInputChange}
+										value={customer?.address?.zip}
+										onChange={(e) =>
+											setCustomer((prevCustomer: any) => ({
+												...prevCustomer,
+												address: {
+													...prevCustomer.address,
+													zip: e.target.value,
+												},
+											}))
+										}
 										placeholder="Postal code"
 										className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400"
 									/>
@@ -344,8 +339,16 @@ export default function CheckoutPage() {
 										type="text"
 										id="city"
 										name="city"
-										value={formData.city}
-										onChange={handleInputChange}
+										value={customer?.address?.city}
+										onChange={(e) =>
+											setCustomer((prevCustomer: any) => ({
+												...prevCustomer,
+												address: {
+													...prevCustomer.address,
+													city: e.target.value,
+												},
+											}))
+										}
 										placeholder="City"
 										className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400"
 									/>
@@ -358,8 +361,8 @@ export default function CheckoutPage() {
 									<input
 										type="checkbox"
 										name="saveInfo"
-										checked={formData.saveInfo}
-										onChange={handleInputChange}
+										checked={saveInfo}
+										onChange={(e) => setSaveInfo(e.target.checked)}
 										className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
 									/>
 									<span className="ml-2 text-lg text-[#333333]">
@@ -526,8 +529,8 @@ export default function CheckoutPage() {
 													y2="15.0898"
 													gradientUnits="userSpaceOnUse"
 												>
-													<stop stop-color="#222357" />
-													<stop offset="1" stop-color="#254AA5" />
+													<stop stopColor="#222357" />
+													<stop offset="1" stopColor="#254AA5" />
 												</linearGradient>
 											</defs>
 										</svg>
