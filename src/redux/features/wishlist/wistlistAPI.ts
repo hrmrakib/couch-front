@@ -11,11 +11,12 @@ const wishlistAPI = baseAPI.injectEndpoints({
     }),
 
     addToWishlist: builder.mutation({
-      query: (productId) => ({
+      query: ({ productId }: { productId: string }) => ({
         url: `/wishlist/${productId}`,
         method: "POST",
         body: { productId },
       }),
+      invalidatesTags: ["Wishlist"],
     }),
 
     updateWishlist: builder.mutation({
@@ -23,12 +24,21 @@ const wishlistAPI = baseAPI.injectEndpoints({
         url: `/wishlist/sync/${productId}`,
         method: "PATCH",
       }),
+      invalidatesTags: ["Wishlist"],
     }),
 
     removeFromWishlist: builder.mutation({
-      query: (productId) => ({
-        url: `/wishlist/${productId}`,
+      query: ({ productId }: { productId: string }) => ({
+        url: `/wishlist/${productId}/remove`,
         method: "DELETE",
+      }),
+      invalidatesTags: ["Wishlist"],
+    }),
+
+    existWishlist: builder.query({
+      query: ({ productId }: { productId: string }) => ({
+        url: `/wishlist/exists/${productId}`,
+        method: "GET",
       }),
     }),
   }),
@@ -38,4 +48,6 @@ export const {
   useGetWishlistQuery,
   useAddToWishlistMutation,
   useRemoveFromWishlistMutation,
+  useUpdateWishlistMutation,
+  useExistWishlistQuery,
 } = wishlistAPI;

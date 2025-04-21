@@ -153,27 +153,6 @@ export default function ProductDetailsPage() {
                 />
               </div>
               <div className='flex space-x-2 overflow-x-auto pb-2'>
-                {/* {productImages.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setActiveImage(index)}
-                    className={cn(
-                      "bg-[#F5F5F5] border-2 rounded-md overflow-hidden flex-shrink-0 w-[132px] h-[132px] relative",
-                      activeImage === index
-                        ? "border-yellow-500"
-                        : "border-transparent"
-                    )}
-                  >
-                    <Image
-                      src={`${ImageURL}${product?.data?.images[index]}`}
-                      alt={`Comfi Sofa view ${index + 1}`}
-                      width={132}
-                      height={132}
-                      className='object-cover'
-                    />
-                  </button>
-                ))} */}
-
                 {productImages.map((image, index) => {
                   const imageUrl = product?.data?.images?.[index]
                     ? `${ImageURL}${product.data.images[index]}`
@@ -353,6 +332,7 @@ export default function ProductDetailsPage() {
             </div>
           </div>
         </div>
+        
         {/* Product Tabs */}
         <Tabs defaultValue='description' className='w-full'>
           <TabsList className='bg-[#FFFFFF] w-full justify-start border-b rounded-none h-auto pt-10 pb-8 mb-6'>

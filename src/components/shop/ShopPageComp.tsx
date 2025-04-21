@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -27,7 +28,13 @@ import {
 } from "@/components/ui/pagination";
 import Link from "next/link";
 import { useGetAllProductsQuery } from "@/redux/features/product/ProductAPI";
-import { useAddToWishlistMutation } from "@/redux/features/wishlist/wistlistAPI";
+import {
+  useAddToWishlistMutation,
+  useExistWishlistQuery,
+  useRemoveFromWishlistMutation,
+} from "@/redux/features/wishlist/wistlistAPI";
+import { toast } from "sonner";
+import Loading from "../loading/Loading";
 
 type FilterCategory = "Category" | "Color" | "Price" | "Size" | "Material";
 
@@ -47,6 +54,9 @@ export default function ShopPageComponent() {
   const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
 
   const [addToWishlist] = useAddToWishlistMutation();
+  const [deleteToWishlist] = useRemoveFromWishlistMutation();
+  // const [] = useUpdateWishlistMutation();
+
   const {
     data: products,
     isLoading,
@@ -59,7 +69,7 @@ export default function ShopPageComponent() {
     sizes: selectedFilters.sizes,
     materials: selectedFilters.materials,
     page: 1,
-    limit: 100,
+    limit: 10,
     sortBy,
   });
 
@@ -69,15 +79,25 @@ export default function ShopPageComponent() {
   console.log(selectedFilters.colors);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div><Loading /></div>;
   }
 
   if (isError) {
     return <div>Error</div>;
   }
 
-  const toggleFavorite = (productId: string) => {
-    console.log(productId);
+  const toggleFavorite = async (productId: string, isFavorite: boolean) => {
+    try {
+      if (isFavorite) {
+        const data = await deleteToWishlist({ productId }).unwrap();
+        console.log(data);
+      } else {
+        const data = await addToWishlist({ productId }).unwrap();
+        console.log(data);
+      }
+    } catch {
+      toast.error("Error toggling favorite");
+    }
   };
 
   const toggleFilter = (filter: FilterCategory) => {
@@ -91,7 +111,92 @@ export default function ShopPageComponent() {
   const isFilterExpanded = (filter: FilterCategory) =>
     expandedFilters.includes(filter);
 
-  // console.log(isBuyable, isRentable);
+  const ProductCard = ({ product }: { product: any }) => {
+    const { data, refetch } = useExistWishlistQuery({
+      productId: product?._id,
+    });
+
+    return (
+      <div
+        key={product?._id}
+        className={`group ${viewMode === "list" ? "flex gap-8" : ""}`}
+      >
+        <div className='min-w-[397px] h-[432px] flex items-center justify-center relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
+          <button
+            onClick={() => (
+              toggleFavorite(product?._id, data?.data?.wishlist), refetch()
+            )}
+            className='absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors'
+          >
+            <Heart
+              className={`w-6 h-6 ${
+                data?.data?.wishlist
+                  ? "fill-rose-500 text-rose-500"
+                  : "text-gray-600"
+              }`}
+            />
+          </button>
+
+          <Link
+            href={`/shop/${product?._id}`}
+            className='relative h-full w-full flex items-center justify-center rounded-lg overflow-hidden'
+          >
+            <Image
+              src={`${ImageURL}${product?.images[0]}`}
+              alt={product.name}
+              width={897}
+              height={632}
+              className='object-cover p-4'
+            />
+          </Link>
+        </div>
+
+        <div className='w-auto flex flex-col justify-center'>
+          <Link href={`/shop/${product._id}`}>
+            <h3 className='text-2xl text-[#000000] font-medium mb-3'>
+              {product.name}
+            </h3>
+
+            <div className='flex items-center gap-6 mb-3'>
+              {product?.isRentable && (
+                <span className='font-medium'>${product.price}/mo</span>
+              )}
+              {product?.isBuyable && (
+                <span className='text-gray-600'>${product.price} to Buy</span>
+              )}
+            </div>
+
+            <div className='flex mb-3'>
+              {[...Array(5)].map((_, i) => (
+                <svg
+                  key={i}
+                  className={`w-5 h-5 ${
+                    i < product.rating ? "text-yellow-400" : "text-gray-300"
+                  }`}
+                  fill='currentColor'
+                  viewBox='0 0 20 20'
+                >
+                  <path d='M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z' />
+                </svg>
+              ))}
+            </div>
+
+            {viewMode === "list" && (
+              <p className='text-[#545454] text-sm mb-6'>
+                {product.description}
+              </p>
+            )}
+
+            {viewMode === "list" && (
+              <Button className='w-[126px] h-[43px] bg-primary text-base text-[#4A3300] cursor-pointer rounded-none'>
+                See Details
+              </Button>
+            )}
+          </Link>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className='container mx-auto px-4 py-8'>
@@ -120,27 +225,14 @@ export default function ShopPageComponent() {
         </div>
 
         <div className='w-48'>
-          {/* <Select defaultValue='latest'>
-            <SelectTrigger className='h-9 ml-auto'>
-              <SelectValue placeholder='Sort by' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='latest'>Sort by latest</SelectItem>
-              <SelectItem value='-price'>Price: Low to High</SelectItem>
-              <SelectItem value='price'>Price: High to Low</SelectItem>
-              <SelectItem value='rating'>Most Popular</SelectItem>
-            </SelectContent>
-          </Select> */}
-
           <Select
             defaultValue='latest'
             onValueChange={(value) => {
-              // Convert UI-friendly "latest" to backend-friendly "createdAt"
               const sortMapping: Record<string, string> = {
                 latest: "createdAt",
                 "-price": "-price",
                 price: "price",
-                rating: "rating",
+                rating: "-rating",
               };
               setSortBy(sortMapping[value]);
             }}
@@ -152,7 +244,7 @@ export default function ShopPageComponent() {
               <SelectItem value='latest'>Sort by latest</SelectItem>
               <SelectItem value='-price'>Price: Low to High</SelectItem>
               <SelectItem value='price'>Price: High to Low</SelectItem>
-              <SelectItem value='rating'>Most Popular</SelectItem>
+              <SelectItem value='-rating'>Most Popular</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -258,114 +350,33 @@ export default function ShopPageComponent() {
             } gap-6`}
           >
             {products?.data.map((product) => (
-              <div
-                key={product?._id}
-                className={`group ${viewMode === "list" ? "flex gap-8" : ""}`}
-              >
-                <div className='min-w-[397px] h-[432px] flex items-center justify-center relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
-                  <button
-                    onClick={() => toggleFavorite(product?._id)}
-                    className='absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors'
-                    // aria-label={
-                    // favorites.includes(product.id)
-                    // ? "Remove from favorites"
-                    // : "Add to favorites"
-                    // }
-                  >
-                    <Heart
-                      onClick={() => addToWishlist(product?._id)}
-                      className={`w-6 h-6 ${
-                        false ? "fill-rose-500 text-rose-500" : "text-gray-600"
-                      }`}
-                    />
-                  </button>
-
-                  <Link
-                    href={`/shop/${product?._id}`}
-                    className='relative h-full w-full flex items-center justify-center rounded-lg overflow-hidden'
-                  >
-                    <Image
-                      src={`${ImageURL}${product?.images[0]}`}
-                      alt={product.name}
-                      width={897}
-                      height={632}
-                      className='object-cover p-4'
-                    />
-                  </Link>
-                </div>
-
-                <div className='w-auto flex flex-col justify-center'>
-                  <Link href={`/shop/${product._id}`}>
-                    <h3 className='text-2xl text-[#000000] font-medium mb-3'>
-                      {product.name}
-                    </h3>
-
-                    <div className='flex items-center gap-6 mb-3'>
-                      {product?.isRentable && (
-                        <span className='font-medium'>${product.price}/mo</span>
-                      )}
-                      {product?.isBuyable && (
-                        <span className='text-gray-600'>
-                          ${product.price} to Buy
-                        </span>
-                      )}
-                    </div>
-
-                    <div className='flex mb-3'>
-                      {[...Array(5)].map((_, i) => (
-                        <svg
-                          key={i}
-                          className={`w-5 h-5 ${
-                            i < product.rating
-                              ? "text-yellow-400"
-                              : "text-gray-300"
-                          }`}
-                          fill='currentColor'
-                          viewBox='0 0 20 20'
-                        >
-                          <path d='M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z' />
-                        </svg>
-                      ))}
-                    </div>
-
-                    {viewMode === "list" && (
-                      <p className='text-[#545454] text-sm mb-6'>
-                        {product.description}
-                      </p>
-                    )}
-
-                    {viewMode === "list" && (
-                      <Button className='w-[126px] h-[43px] bg-primary text-base text-[#4A3300] cursor-pointer rounded-none'>
-                        See Details
-                      </Button>
-                    )}
-                  </Link>
-                </div>
-              </div>
+              <ProductCard product={product} key={product?._id} />
             ))}
           </div>
 
-          <Pagination className='mt-8'>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationLink
-                  href='#'
-                  className='bg-yellow-500 text-black hover:bg-yellow-600'
-                >
-                  1
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href='#'>2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href='#'>3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href='#' />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+          {products?.data && products.data.length > 0 && (
+            <Pagination className='mt-8'>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationLink
+                    href='#'
+                    className='bg-yellow-500 text-black hover:bg-yellow-600'
+                  >
+                    1
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink href='#'>2</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink href='#'>3</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext href='#' />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
       </div>
     </div>
