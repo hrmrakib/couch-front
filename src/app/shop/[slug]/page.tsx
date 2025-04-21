@@ -6,88 +6,51 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-
-const initialReviews = [
-  {
-    id: 1,
-    name: "Sarah Khan",
-    avatar: "/users/1.png",
-    rating: 4.8,
-    comment:
-      "Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
-    date: "02 February, 2025",
-  },
-  {
-    id: 2,
-    name: "Sarah Khan",
-    avatar: "/users/2.png",
-    rating: 4.8,
-    comment:
-      "Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
-    date: "02 February, 2025",
-  },
-  {
-    id: 3,
-    name: "Sarah Khan",
-    avatar: "/users/3.png",
-    rating: 4.8,
-    comment:
-      "Absolutely love this table! The wood quality is excellent, and the chairs are super comfy. It fits perfectly in my dining space!",
-    date: "02 February, 2025",
-  },
-];
-
-const initialProduct = [
-  {
-    id: 13,
-    name: "ComfiTable",
-    image: "/home/features/1.png",
-    monthlyPrice: 20,
-    buyPrice: 150,
-    rating: 4,
-    category: ["best-selling", "trending-now"],
-  },
-  {
-    id: 2,
-    name: "ComfiTable",
-    image: "/home/features/2.png",
-    monthlyPrice: 20,
-    buyPrice: 150,
-    rating: 4,
-    category: ["best-selling", "most-rented"],
-  },
-  {
-    id: 3,
-    name: "ComfiTable",
-    image: "/home/features/3.png",
-    monthlyPrice: 20,
-    buyPrice: 150,
-    rating: 4,
-    category: ["most-rented", "trending-now"],
-  },
-  {
-    id: 4,
-    name: "ComfiTable",
-    image: "/home/features/4.png",
-    monthlyPrice: 20,
-    buyPrice: 150,
-    rating: 4,
-    category: ["best-selling", "trending-now"],
-  },
-];
+import { useGetSingleProductQuery } from "@/redux/features/product/ProductAPI";
+import { useParams } from "next/navigation";
+import {
+  useGetReviewsQuery,
+  useReviewMutation,
+} from "@/redux/features/review/reviewApi";
+import { toast } from "sonner";
+import Loading from "@/components/loading/Loading";
 
 export default function ProductDetailsPage() {
   const [selectedOption, setSelectedOption] = useState<"rent" | "buy">("rent");
-  const [quantity, setQuantity] = useState(2);
+  const [quantity, setQuantity] = useState(1);
   const [rentalLength, setRentalLength] = useState("4 month");
   const [activeImage, setActiveImage] = useState(0);
-  const [reviews, setReviews] = useState(initialReviews);
   const [userRating, setUserRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [favorites, setFavorites] = useState<number[]>([]);
+  const params = useParams();
+  const slug = params.slug as string;
+  const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
+
+  const [review] = useReviewMutation();
+  const { data: reviewData } = useGetReviewsQuery({
+    id: slug,
+    type: "products",
+  });
+
+  console.log(reviewData?.data, "reviewData");
+
+  const {
+    data: product,
+    isLoading,
+    isError,
+  } = useGetSingleProductQuery({ productId: slug });
+
+  if (isLoading)
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+  if (isError) return <div>Error</div>;
 
   const toggleFavorite = (productId: number) => {
     setFavorites((prev) =>
@@ -109,47 +72,45 @@ export default function ProductDetailsPage() {
     setHoveredRating(0);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (userRating === 0) {
-      alert("Please select a rating");
+      toast.success("Please select a rating before submitting");
       return;
     }
 
     if (reviewText.trim() === "") {
-      alert("Please enter a review");
+      toast.success("Please enter a review text before submitting");
       return;
     }
 
-    setIsSubmitting(true);
+    try {
+      const res = await review({
+        id: product?.data?._id || "",
+        type: "products",
+        review: {
+          rating: userRating,
+          content: reviewText,
+        },
+      });
 
-    // Simulate API call
-    setTimeout(() => {
-      const newReview = {
-        id: reviews.length + 1,
-        name: "You",
-        avatar: "/avatars/default.jpg",
-        rating: userRating,
-        comment: reviewText,
-        date: new Date().toLocaleDateString("en-US", {
-          day: "2-digit",
-          month: "long",
-          year: "numeric",
-        }),
-      };
+      console.log(res);
 
-      setReviews([newReview, ...reviews]);
+      if (res.data.success) {
+        toast.success(res.data.message);
+        setSubmitSuccess(true);
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast.error("Failed to submit review. Please try again.");
+      return;
+    } finally {
       setUserRating(0);
       setReviewText("");
       setIsSubmitting(false);
-      setSubmitSuccess(true);
-
-      // Reset success message after 3 seconds
-      setTimeout(() => {
-        setSubmitSuccess(false);
-      }, 3000);
-    }, 1000);
+      setSubmitSuccess(false);
+    }
   };
 
   // Product images
@@ -168,13 +129,7 @@ export default function ProductDetailsPage() {
     );
   };
 
-  const handleBuyNow = () => {
-    alert(
-      `Proceeding to checkout: ${quantity} Comfi Sofa(s) - ${
-        selectedOption === "rent" ? `Rent for ${rentalLength}` : "Buy"
-      }`
-    );
-  };
+  console.log(userRating, hoveredRating, reviewText);
 
   return (
     <div className='min-h-screen'>
@@ -190,7 +145,7 @@ export default function ProductDetailsPage() {
             <div>
               <div className='bg-[#F5F5F5] rounded-md mb-4 relative aspect-square'>
                 <Image
-                  src={productImages[activeImage] || "/placeholder.svg"}
+                  src={`${ImageURL}${product?.data?.images[activeImage]}`}
                   alt='Comfi Sofa'
                   fill
                   className='object-contain p-4'
@@ -198,7 +153,7 @@ export default function ProductDetailsPage() {
                 />
               </div>
               <div className='flex space-x-2 overflow-x-auto pb-2'>
-                {productImages.map((image, index) => (
+                {/* {productImages.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setActiveImage(index)}
@@ -210,14 +165,47 @@ export default function ProductDetailsPage() {
                     )}
                   >
                     <Image
-                      src={image || "/placeholder.svg"}
+                      src={`${ImageURL}${product?.data?.images[index]}`}
                       alt={`Comfi Sofa view ${index + 1}`}
                       width={132}
                       height={132}
                       className='object-cover'
                     />
                   </button>
-                ))}
+                ))} */}
+
+                {productImages.map((image, index) => {
+                  const imageUrl = product?.data?.images?.[index]
+                    ? `${ImageURL}${product.data.images[index]}`
+                    : null;
+
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => setActiveImage(index)}
+                      className={cn(
+                        "bg-[#F5F5F5] border-2 rounded-md overflow-hidden flex-shrink-0 w-[132px] h-[132px] relative",
+                        activeImage === index
+                          ? "border-yellow-500"
+                          : "border-transparent"
+                      )}
+                    >
+                      {imageUrl ? (
+                        <Image
+                          src={imageUrl}
+                          alt={`Comfi Sofa view ${index + 1}`}
+                          width={132}
+                          height={132}
+                          className='object-cover'
+                        />
+                      ) : (
+                        <div className='w-[132px] h-[132px] flex items-center justify-center text-sm text-gray-400'>
+                          No image
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -225,7 +213,7 @@ export default function ProductDetailsPage() {
             <div>
               <div className='flex justify-between items-start mb-2'>
                 <h2 className='text-2xl md:text-[32px] text-[#101010] font-medium'>
-                  Comfi Sofa
+                  {product?.data?.name || "Comfi Sofa"}
                 </h2>
                 <div className='flex items-center'>
                   <Star className='w-5 h-5 fill-yellow-400 text-yellow-400' />
@@ -240,65 +228,69 @@ export default function ProductDetailsPage() {
 
               {/* Pricing Options */}
               <div className='mb-6'>
-                <div className='flex space-x-4 mb-4'>
-                  <label className='flex items-center'>
-                    <input
-                      type='radio'
-                      name='pricing'
-                      checked={selectedOption === "rent"}
-                      onChange={() => setSelectedOption("rent")}
-                      className='hidden'
-                    />
-                    <span
-                      className={cn(
-                        "w-5 h-5 rounded-full border flex items-center justify-center mr-2",
-                        selectedOption === "rent"
-                          ? "border-yellow-500 bg-white"
-                          : "border-gray-300 bg-white"
-                      )}
-                    >
-                      {selectedOption === "rent" && (
-                        <span className='w-3 h-3 rounded-full bg-yellow-500'></span>
-                      )}
-                    </span>
-                    <span className='border border-yellow-500 rounded-md py-2 px-4 flex items-center'>
-                      <span className='w-4 h-4 rounded-full bg-yellow-500 text-xl text-[#333333] mr-2'></span>
-                      Rent $50{" "}
-                      <span className='text-sm text-[#333333]'>/mo</span>
-                    </span>
-                  </label>
+                <div className='flex space-x-6 lg:space-x-8 mb-4'>
+                  {/* rent */}
+                  {product?.data?.isBuyable && (
+                    <label className='flex items-center'>
+                      <input
+                        type='radio'
+                        name='pricing'
+                        checked={selectedOption === "rent"}
+                        onChange={() => setSelectedOption("rent")}
+                        className='hidden'
+                      />
+                      <span
+                        className={cn(
+                          "w-5 h-5 rounded-full border flex items-center justify-center mr-2",
+                          selectedOption === "rent"
+                            ? "border-yellow-500 bg-white"
+                            : "border-gray-300 bg-white"
+                        )}
+                      >
+                        {selectedOption === "rent" && (
+                          <span className='w-3 h-3 rounded-full bg-yellow-500'></span>
+                        )}
+                      </span>
+                      <span className=' border-yellow-500 rounded-md py-2  flex items-center'>
+                        {/* <span className='w-4 h-4 rounded-full bg-yellow-500 text-xl text-[#333333] mr-2'></span> */}
+                        Rent $50{" "}
+                        <span className='text-sm text-[#333333]'>/mo</span>
+                      </span>
+                    </label>
+                  )}
 
-                  <label className='flex items-center'>
-                    <input
-                      type='radio'
-                      name='pricing'
-                      checked={selectedOption === "buy"}
-                      onChange={() => setSelectedOption("buy")}
-                      className='hidden'
-                    />
-                    <span
-                      className={cn(
-                        "w-5 h-5 rounded-full border flex items-center justify-center mr-2",
-                        selectedOption === "buy"
-                          ? "border-yellow-500 bg-white"
-                          : "border-gray-300 bg-white"
-                      )}
-                    >
-                      {selectedOption === "buy" && (
-                        <span className='w-3 h-3 rounded-full bg-yellow-500'></span>
-                      )}
-                    </span>
-                    <span className='text-xl text-[#333333]'>$150 To buy</span>
-                  </label>
+                  {/* buy */}
+                  {product?.data?.isBuyable && (
+                    <label className='flex items-center'>
+                      <input
+                        type='radio'
+                        name='pricing'
+                        checked={selectedOption === "buy"}
+                        onChange={() => setSelectedOption("buy")}
+                        className='hidden'
+                      />
+                      <span
+                        className={cn(
+                          "w-5 h-5 rounded-full border flex items-center justify-center mr-2",
+                          selectedOption === "buy"
+                            ? "border-yellow-500 bg-white"
+                            : "border-gray-300 bg-white"
+                        )}
+                      >
+                        {selectedOption === "buy" && (
+                          <span className='w-3 h-3 rounded-full bg-yellow-500'></span>
+                        )}
+                      </span>
+                      <span className='text-xl text-[#333333]'>
+                        $150 To buy
+                      </span>
+                    </label>
+                  )}
                 </div>
 
+                {/* rentable data and quantity */}
                 {selectedOption === "rent" && (
                   <div className='bg-[#FFFFFF] p-4 rounded-md mb-6'>
-                    <div className='flex items-center mb-4'>
-                      <span className='w-4 h-4 rounded-full bg-yellow-500 mr-2'></span>
-                      <span>Rent for $50/mo</span>
-                    </div>
-
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                       <div>
                         <label
@@ -307,18 +299,15 @@ export default function ProductDetailsPage() {
                         >
                           Quantity
                         </label>
-                        <select
+
+                        <input
                           id='quantity'
                           value={quantity}
                           onChange={(e) => setQuantity(Number(e.target.value))}
+                          type='number'
                           className='w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-yellow-500'
-                        >
-                          {[1, 2, 3, 4, 5].map((num) => (
-                            <option key={num} value={num}>
-                              {num}
-                            </option>
-                          ))}
-                        </select>
+                          placeholder='0'
+                        />
                       </div>
                       <div>
                         <label
@@ -354,12 +343,12 @@ export default function ProductDetailsPage() {
                 >
                   Add To Cart
                 </button>
-                <button
-                  onClick={handleBuyNow}
-                  className='flex-1 border border-gray-300 hover:bg-gray-50 cursor-pointer text-black font-medium py-3 px-6 rounded-md transition-colors'
+                <Link
+                  href={`/checkout/`}
+                  className='flex-1 border border-gray-300 hover:bg-gray-50 cursor-pointer text-black text-center font-medium py-3 px-6 rounded-md transition-colors'
                 >
                   Buy Now
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -391,11 +380,7 @@ export default function ProductDetailsPage() {
           <div className='container mx-auto px-4 py-8'>
             <TabsContent value='description' className='mt-0 bg-[#FFF8ED]'>
               <p className='text-gray-700 leading-relaxed'>
-                Upgrade your workspace with this sleek and durable Modern Wooden
-                Study Desk. Crafted from high-quality engineered wood, this desk
-                is designed to provide maximum comfort and functionality. Its
-                spacious surface allows you to organize your essentials, while
-                the sturdy legs ensure long-lasting stability.
+                {product?.data?.description || "Description not available."}
               </p>
             </TabsContent>
 
@@ -403,10 +388,16 @@ export default function ProductDetailsPage() {
               <div className='space-y-4'>
                 <h3 className='font-medium text-lg'>Specifications</h3>
                 <ul className='list-disc pl-5 space-y-2 text-gray-700'>
-                  <li>Dimensions: 30&quot; H x 32&quot; W x 34&quot; D</li>
+                  <li>
+                    Dimensions: {product?.data?.height}&quot; H x{" "}
+                    {product?.data?.width}&quot; W x{" "}
+                    {Number(product?.data?.width) *
+                      Number(product?.data?.height)}
+                    &quot; D
+                  </li>
                   <li>Weight: 45 lbs</li>
-                  <li>Materials: Engineered wood, fabric upholstery</li>
-                  <li>Color: Orange/Rust</li>
+                  <li>Materials: {product?.data?.materials?.join(", ")}</li>
+                  <li>Color: {product?.data?.color}</li>
                   <li>Assembly required: Yes</li>
                   <li>Care instructions: Spot clean only</li>
                 </ul>
@@ -427,11 +418,12 @@ export default function ProductDetailsPage() {
                   {/* Reviews List */}
                   <div className='w-full md:w-1/2'>
                     <h2 className='text-2xl font-medium mb-6'>
-                      {reviews.length} Review for living room bundle combo pack
+                      {reviewData?.data.length} Review for living room bundle
+                      combo pack
                     </h2>
 
                     <div className='space-y-6'>
-                      {reviews.map((review) => (
+                      {reviewData?.data?.map((review) => (
                         <div
                           key={review.id}
                           className='bg-white p-6 rounded-md'
@@ -439,7 +431,7 @@ export default function ProductDetailsPage() {
                           <div className='flex items-start'>
                             <div className='relative w-12 h-12 rounded-full overflow-hidden mr-4 flex-shrink-0'>
                               <Image
-                                src={review.avatar || "/placeholder.svg"}
+                                src={`${ImageURL}/${review.user.avatar}`}
                                 alt={review.name}
                                 fill
                                 className='object-cover'
@@ -448,7 +440,7 @@ export default function ProductDetailsPage() {
                             <div className='flex-1'>
                               <div className='flex justify-between items-center mb-2'>
                                 <h3 className='font-medium text-lg'>
-                                  {review.name}
+                                  {review.user.name}
                                 </h3>
                                 <div className='flex items-center'>
                                   <span className='text-yellow-500 mr-1'>
@@ -458,7 +450,7 @@ export default function ProductDetailsPage() {
                                 </div>
                               </div>
                               <p className='text-gray-700 mb-3'>
-                                {review.comment}
+                                {review?.content}
                               </p>
                               <p className='text-gray-400 text-sm'>
                                 {review.date}
@@ -551,8 +543,8 @@ export default function ProductDetailsPage() {
           Affordable, Stylish, and Ready for You – Choose to Buy or Rent.
         </p>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-          {initialProduct.map((product) => (
-            <div key={product.id} className='group'>
+          {product?.meta?.related?.map((product) => (
+            <div key={product._id} className='group'>
               <div className='relative h-[332px] bg-[#F5F5F5] flex items-center justify-center rounded-lg overflow-hidden'>
                 <button
                   onClick={() => toggleFavorite(product.id)}
@@ -573,11 +565,11 @@ export default function ProductDetailsPage() {
                 </button>
                 {/* <div className='relative h-full w-full'> */}
                 <Link
-                  href={`/shop/${product.id}`}
+                  href={`/shop/${product._id}`}
                   className='relative h-full w-full'
                 >
                   <Image
-                    src={product.image || "/placeholder.svg"}
+                    src={`${ImageURL}${product.images[0]}`}
                     alt={product.name}
                     fill
                     className='object-contain'
@@ -593,7 +585,7 @@ export default function ProductDetailsPage() {
 
                   <div className='flex justify-between mb-2'>
                     <span className='text-[#000000] text-lg font-medium'>
-                      ${product.monthlyPrice}/mo
+                      ${product.price}/mo
                     </span>
                     <span className='text-[#333333] text-lg'>
                       ${product.buyPrice} to buy

@@ -1,6 +1,6 @@
 import baseAPI from '@/redux/api/baseAPI';
 
-const cartApi = baseAPI.injectEndpoints({
+const cartAPI = baseAPI.injectEndpoints({
 	endpoints: (builder) => ({
 		cartSync: builder.mutation({
 			query: ({ details }) => ({
@@ -12,4 +12,4 @@ const cartApi = baseAPI.injectEndpoints({
 	}),
 });
 
-export const { useCartSyncMutation } = cartApi;
+export const { useCartSyncMutation } = cartAPI;

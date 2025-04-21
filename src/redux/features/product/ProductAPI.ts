@@ -21,6 +21,27 @@ interface Product {
   height?: string;
   width?: string;
   length?: string;
+  data: {
+    _id: string;
+    name: string;
+    description: string;
+    price: number;
+    rentPrice: number;
+    stock: number;
+    rating: number;
+    isBuyable: boolean;
+    isRentable: boolean;
+    category: string;
+    color: string;
+    size: string;
+    materials: string[];
+    images: string[];
+    notes: string[];
+    type: string;
+    height: string;
+    width: string;
+    length: string;
+  };
 }
 
 interface ProductsMeta {
@@ -61,6 +82,8 @@ interface ProductQueryParams {
   sortBy?: string;
   page?: number;
   limit?: number;
+  isRentable?: boolean;
+  isBuyable?: boolean;
 }
 
 const productAPI = baseAPI.injectEndpoints({
@@ -68,6 +91,13 @@ const productAPI = baseAPI.injectEndpoints({
     getAllProducts: builder.query<GetAllProductsResponse, ProductQueryParams>({
       query: (params) => {
         const queryParams = new URLSearchParams();
+
+        if (params.isRentable) {
+          queryParams.append("isRentable", params.isRentable.toString());
+        }
+        if (params.isBuyable) {
+          queryParams.append("isBuyable", params.isBuyable.toString());
+        }
 
         // Comma-separated filters
         if (params.categories?.length) {
@@ -115,8 +145,11 @@ const productAPI = baseAPI.injectEndpoints({
       },
     }),
 
-    getSingleProduct: builder.query<Product, string>({
-      query: (id) => `/products/${id}`,
+    getSingleProduct: builder.query<Product, { productId: string }>({
+      query: ({ productId }) => ({
+        url: `/products/${productId}`,
+        method: "GET",
+      }),
     }),
   }),
 });
