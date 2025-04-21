@@ -130,8 +130,9 @@ const productAPI = baseAPI.injectEndpoints({
 
         // Sorting and pagination
         if (params.sortBy) {
-          queryParams.append("sortBy", params.sortBy);
+          queryParams.append("sort", params.sortBy);
         }
+
         if (params.page !== undefined) {
           queryParams.append("page", params.page.toString());
         }

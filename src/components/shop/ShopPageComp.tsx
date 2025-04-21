@@ -42,6 +42,7 @@ export default function ShopPageComponent() {
   });
   const [isBuyable, setIsBuyable] = useState(true);
   const [isRentable, setIsRentable] = useState(false);
+  const [sortBy, setSortBy] = useState("createdAt");
 
   const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
 
@@ -59,8 +60,11 @@ export default function ShopPageComponent() {
     materials: selectedFilters.materials,
     page: 1,
     limit: 100,
-    // sortBy: "createdAt",
+    sortBy,
   });
+
+  console.log({ sortBy });
+  console.log(products);
 
   console.log(selectedFilters.colors);
 
@@ -116,15 +120,39 @@ export default function ShopPageComponent() {
         </div>
 
         <div className='w-48'>
-          <Select defaultValue='latest'>
+          {/* <Select defaultValue='latest'>
             <SelectTrigger className='h-9 ml-auto'>
               <SelectValue placeholder='Sort by' />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value='latest'>Sort by latest</SelectItem>
-              <SelectItem value='price-low'>Price: Low to High</SelectItem>
-              <SelectItem value='price-high'>Price: High to Low</SelectItem>
-              <SelectItem value='popular'>Most Popular</SelectItem>
+              <SelectItem value='-price'>Price: Low to High</SelectItem>
+              <SelectItem value='price'>Price: High to Low</SelectItem>
+              <SelectItem value='rating'>Most Popular</SelectItem>
+            </SelectContent>
+          </Select> */}
+
+          <Select
+            defaultValue='latest'
+            onValueChange={(value) => {
+              // Convert UI-friendly "latest" to backend-friendly "createdAt"
+              const sortMapping: Record<string, string> = {
+                latest: "createdAt",
+                "-price": "-price",
+                price: "price",
+                rating: "rating",
+              };
+              setSortBy(sortMapping[value]);
+            }}
+          >
+            <SelectTrigger className='h-9 ml-auto'>
+              <SelectValue placeholder='Sort by' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='latest'>Sort by latest</SelectItem>
+              <SelectItem value='-price'>Price: Low to High</SelectItem>
+              <SelectItem value='price'>Price: High to Low</SelectItem>
+              <SelectItem value='rating'>Most Popular</SelectItem>
             </SelectContent>
           </Select>
         </div>
