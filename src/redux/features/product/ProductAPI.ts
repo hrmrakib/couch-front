@@ -42,6 +42,18 @@ interface Product {
     width: string;
     length: string;
   };
+  meta: {
+    _id: string;
+    name: string;
+    description: string;
+    price: number;
+    rentPrice: number;
+    stock: number;
+    rating: number;
+    isBuyable: boolean;
+    isRentable: boolean;
+    category: string;
+  };
 }
 
 interface ProductsMeta {
@@ -150,6 +162,14 @@ const productAPI = baseAPI.injectEndpoints({
       query: ({ productId }) => ({
         url: `/products/${productId}`,
         method: "GET",
+      }),
+    }),
+
+    productCheckout: builder.mutation({
+      query: ({ data }) => ({
+        url: `/orders/checkout`,
+        method: "POST",
+        body: data,
       }),
     }),
   }),

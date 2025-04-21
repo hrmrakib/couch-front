@@ -12,8 +12,8 @@ const Loading = () => {
       >
         <defs>
           <linearGradient id='grad' x1='0' y1='0' x2='0' y2='1'>
-            <stop offset='0%' stop-color='#000'></stop>
-            <stop offset='100%' stop-color='#fff'></stop>
+            <stop offset='0%' stopColor='#000'></stop>
+            <stop offset='100%' stopColor='#fff'></stop>
           </linearGradient>
           <mask id='mask1'>
             <rect x='0' y='0' width='160' height='160' fill='url(#grad)'></rect>

@@ -160,7 +160,7 @@ export default function CheckoutPage() {
 								</label>
 								<div className="relative">
 									<select
-										id="country"
+										id="country" 
 										name="country"
 										value={customer?.address?.country}
 										onChange={(e) =>

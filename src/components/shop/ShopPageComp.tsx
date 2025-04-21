@@ -55,7 +55,6 @@ export default function ShopPageComponent() {
 
   const [addToWishlist] = useAddToWishlistMutation();
   const [deleteToWishlist] = useRemoveFromWishlistMutation();
-  // const [] = useUpdateWishlistMutation();
 
   const {
     data: products,
@@ -73,13 +72,12 @@ export default function ShopPageComponent() {
     sortBy,
   });
 
-  console.log({ sortBy });
-  console.log(products);
-
-  console.log(selectedFilters.colors);
-
   if (isLoading) {
-    return <div><Loading /></div>;
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
   }
 
   if (isError) {

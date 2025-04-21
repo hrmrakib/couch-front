@@ -1,19 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useGetSingleProductQuery } from "@/redux/features/product/ProductAPI";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   useGetReviewsQuery,
   useReviewMutation,
 } from "@/redux/features/review/reviewApi";
 import { toast } from "sonner";
 import Loading from "@/components/loading/Loading";
+import {
+  useAddToWishlistMutation,
+  useExistWishlistQuery,
+  useRemoveFromWishlistMutation,
+} from "@/redux/features/wishlist/wistlistAPI";
 
 export default function ProductDetailsPage() {
   const [selectedOption, setSelectedOption] = useState<"rent" | "buy">("rent");
@@ -25,10 +30,19 @@ export default function ProductDetailsPage() {
   const [reviewText, setReviewText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [favorites, setFavorites] = useState<number[]>([]);
+  const [user, setUser] = useState(null);
   const params = useParams();
   const slug = params.slug as string;
   const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
+  const router = useRouter();
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      setUser(JSON.parse(user));
+    }
+  }, []);
 
   const [review] = useReviewMutation();
   const { data: reviewData } = useGetReviewsQuery({
@@ -36,13 +50,13 @@ export default function ProductDetailsPage() {
     type: "products",
   });
 
-  console.log(reviewData?.data, "reviewData");
-
   const {
     data: product,
     isLoading,
     isError,
   } = useGetSingleProductQuery({ productId: slug });
+  const [addToWishlist] = useAddToWishlistMutation();
+  const [deleteToWishlist] = useRemoveFromWishlistMutation();
 
   if (isLoading)
     return (
@@ -52,12 +66,18 @@ export default function ProductDetailsPage() {
     );
   if (isError) return <div>Error</div>;
 
-  const toggleFavorite = (productId: number) => {
-    setFavorites((prev) =>
-      prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId]
-    );
+  const toggleFavorite = async (productId: string, isFavorite: boolean) => {
+    try {
+      if (isFavorite) {
+        const data = await deleteToWishlist({ productId }).unwrap();
+        console.log(data);
+      } else {
+        const data = await addToWishlist({ productId }).unwrap();
+        console.log(data);
+      }
+    } catch {
+      toast.error("Error toggling favorite");
+    }
   };
 
   const handleRatingClick = (rating: number) => {
@@ -70,6 +90,31 @@ export default function ProductDetailsPage() {
 
   const handleRatingLeave = () => {
     setHoveredRating(0);
+  };
+
+  const handleBuyNow = () => {
+    const data = {
+      details: [
+        {
+          product: product?.data?._id || "",
+          quantity: quantity,
+          rentalLength: rentalLength,
+        },
+      ],
+      customer: {
+        name: "John Doe",
+        contact: "+1234567890",
+        address: {
+          country: "USA",
+          city: "New York",
+          zip: "10001",
+          street: "1234 Broadway St.",
+        },
+      },
+    };
+    localStorage.setItem("checkoutProduct", product?.data?._id || "");
+
+    router.push("/checkout");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -113,14 +158,6 @@ export default function ProductDetailsPage() {
     }
   };
 
-  // Product images
-  const productImages = [
-    "/shop/1.png",
-    "/shop/2.png",
-    "/shop/3.png",
-    "/shop/1.png",
-  ];
-
   const handleAddToCart = () => {
     alert(
       `Added to cart: ${quantity} Comfi Sofa(s) - ${
@@ -129,7 +166,91 @@ export default function ProductDetailsPage() {
     );
   };
 
-  console.log(userRating, hoveredRating, reviewText);
+  const ProductCard = ({ product }: { product: any }) => {
+    const { data, refetch } = useExistWishlistQuery({
+      productId: product?._id,
+    });
+
+    return (
+      <div key={product?._id} className={`group`}>
+        <div className='min-w-[397px] h-[432px] flex items-center justify-center relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
+          <button
+            onClick={() => (
+              toggleFavorite(product?._id, data?.data?.wishlist), refetch()
+            )}
+            className='absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors'
+          >
+            <Heart
+              className={`w-6 h-6 ${
+                data?.data?.wishlist
+                  ? "fill-rose-500 text-rose-500"
+                  : "text-gray-600"
+              }`}
+            />
+          </button>
+
+          <Link
+            href={`/shop/${product?._id}`}
+            className='relative h-full w-full flex items-center justify-center rounded-lg overflow-hidden'
+          >
+            <Image
+              src={`${ImageURL}${product?.images[0]}`}
+              alt={product.name}
+              width={897}
+              height={632}
+              className='object-cover p-4'
+            />
+          </Link>
+        </div>
+
+        <div className='w-auto flex flex-col justify-center'>
+          <Link href={`/shop/${product._id}`}>
+            <h3 className='text-2xl text-[#000000] font-medium mb-3'>
+              {product.name}
+            </h3>
+
+            <div className='flex items-center gap-6 mb-3'>
+              {product?.isRentable && (
+                <span className='font-medium'>${product.price}/mo</span>
+              )}
+              {product?.isBuyable && (
+                <span className='text-gray-600'>${product.price} to Buy</span>
+              )}
+            </div>
+
+            <div className='flex mb-3'>
+              {[...Array(5)].map((_, i) => (
+                <svg
+                  key={i}
+                  className={`w-5 h-5 ${
+                    i < product.rating ? "text-yellow-400" : "text-gray-300"
+                  }`}
+                  fill='currentColor'
+                  viewBox='0 0 20 20'
+                >
+                  <path d='M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z' />
+                </svg>
+              ))}
+            </div>
+
+            {/* {viewMode === "list" && (
+              <p className='text-[#545454] text-sm mb-6'>
+                {product.description}
+              </p>
+            )}
+
+            {viewMode === "list" && (
+              <Button className='w-[126px] h-[43px] bg-primary text-base text-[#4A3300] cursor-pointer rounded-none'>
+                See Details
+              </Button>
+            )} */}
+          </Link>
+        </div>
+      </div>
+    );
+  };
+
+  console.log({ user });
 
   return (
     <div className='min-h-screen'>
@@ -153,7 +274,7 @@ export default function ProductDetailsPage() {
                 />
               </div>
               <div className='flex space-x-2 overflow-x-auto pb-2'>
-                {productImages.map((image, index) => {
+                {product?.data?.images?.map((image, index) => {
                   const imageUrl = product?.data?.images?.[index]
                     ? `${ImageURL}${product.data.images[index]}`
                     : null;
@@ -209,7 +330,7 @@ export default function ProductDetailsPage() {
               <div className='mb-6'>
                 <div className='flex space-x-6 lg:space-x-8 mb-4'>
                   {/* rent */}
-                  {product?.data?.isBuyable && (
+                  {product?.data?.isRentable && (
                     <label className='flex items-center'>
                       <input
                         type='radio'
@@ -230,10 +351,10 @@ export default function ProductDetailsPage() {
                           <span className='w-3 h-3 rounded-full bg-yellow-500'></span>
                         )}
                       </span>
-                      <span className=' border-yellow-500 rounded-md py-2  flex items-center'>
+                      <span className='border-yellow-500 rounded-md py-2 text-base flex items-center'>
                         {/* <span className='w-4 h-4 rounded-full bg-yellow-500 text-xl text-[#333333] mr-2'></span> */}
-                        Rent $50{" "}
-                        <span className='text-sm text-[#333333]'>/mo</span>
+                        Rent ${product?.price}{" "}
+                        <span className='text-base text-[#333333]'>/mo</span>
                       </span>
                     </label>
                   )}
@@ -260,58 +381,64 @@ export default function ProductDetailsPage() {
                           <span className='w-3 h-3 rounded-full bg-yellow-500'></span>
                         )}
                       </span>
-                      <span className='text-xl text-[#333333]'>
-                        $150 To buy
+                      <span className='text-base text-[#333333]'>
+                        ${product?.price} To Buy
                       </span>
                     </label>
                   )}
                 </div>
 
                 {/* rentable data and quantity */}
-                {selectedOption === "rent" && (
-                  <div className='bg-[#FFFFFF] p-4 rounded-md mb-6'>
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                      <div>
-                        <label
-                          htmlFor='quantity'
-                          className='block text-sm text-gray-600 mb-1'
-                        >
-                          Quantity
-                        </label>
+                {
+                  // selectedOption === "buy"
+                  product?.data?.isRentable && selectedOption !== "buy" && (
+                    <div className='bg-[#FFFFFF] p-4 rounded-md mb-6'>
+                      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                        <div>
+                          <label
+                            htmlFor='quantity'
+                            className='block text-sm text-gray-600 mb-1'
+                          >
+                            Quantity
+                          </label>
 
-                        <input
-                          id='quantity'
-                          value={quantity}
-                          onChange={(e) => setQuantity(Number(e.target.value))}
-                          type='number'
-                          className='w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-yellow-500'
-                          placeholder='0'
-                        />
-                      </div>
-                      <div>
-                        <label
-                          htmlFor='rental-length'
-                          className='block text-sm text-gray-600 mb-1'
-                        >
-                          Rental Length
-                        </label>
-                        <select
-                          id='rental-length'
-                          value={rentalLength}
-                          onChange={(e) => setRentalLength(e.target.value)}
-                          className='w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-yellow-500'
-                        >
-                          <option value='1 month'>1 month</option>
-                          <option value='2 month'>2 month</option>
-                          <option value='3 month'>3 month</option>
-                          <option value='4 month'>4 month</option>
-                          <option value='6 month'>6 month</option>
-                          <option value='12 month'>12 month</option>
-                        </select>
+                          <input
+                            id='quantity'
+                            value={quantity}
+                            min={1}
+                            onChange={(e) =>
+                              setQuantity(Number(e.target.value))
+                            }
+                            type='number'
+                            className='w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-yellow-500'
+                            placeholder='0'
+                          />
+                        </div>
+                        <div>
+                          <label
+                            htmlFor='rental-length'
+                            className='block text-sm text-gray-600 mb-1'
+                          >
+                            Rental Length
+                          </label>
+                          <select
+                            id='rental-length'
+                            value={rentalLength}
+                            onChange={(e) => setRentalLength(e.target.value)}
+                            className='w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-yellow-500'
+                          >
+                            <option value='1'>1 month</option>
+                            <option value='2'>2 month</option>
+                            <option value='3'>3 month</option>
+                            <option value='4'>4 month</option>
+                            <option value='6'>6 month</option>
+                            <option value='12'>12 month</option>
+                          </select>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )
+                }
               </div>
 
               {/* Action Buttons */}
@@ -322,17 +449,17 @@ export default function ProductDetailsPage() {
                 >
                   Add To Cart
                 </button>
-                <Link
-                  href={`/checkout/`}
+                <button
+                  onClick={handleBuyNow}
                   className='flex-1 border border-gray-300 hover:bg-gray-50 cursor-pointer text-black text-center font-medium py-3 px-6 rounded-md transition-colors'
                 >
                   Buy Now
-                </Link>
+                </button>
               </div>
             </div>
           </div>
         </div>
-        
+
         {/* Product Tabs */}
         <Tabs defaultValue='description' className='w-full'>
           <TabsList className='bg-[#FFFFFF] w-full justify-start border-b rounded-none h-auto pt-10 pb-8 mb-6'>
@@ -524,73 +651,7 @@ export default function ProductDetailsPage() {
         </p>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
           {product?.meta?.related?.map((product) => (
-            <div key={product._id} className='group'>
-              <div className='relative h-[332px] bg-[#F5F5F5] flex items-center justify-center rounded-lg overflow-hidden'>
-                <button
-                  onClick={() => toggleFavorite(product.id)}
-                  className='absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white transition-colors'
-                  aria-label={
-                    favorites.includes(product.id)
-                      ? "Remove from favorites"
-                      : "Add to favorites"
-                  }
-                >
-                  <Heart
-                    className={`w-5 h-5 ${
-                      favorites.includes(product.id)
-                        ? "fill-red-500 text-red-500"
-                        : "text-gray-600"
-                    }`}
-                  />
-                </button>
-                {/* <div className='relative h-full w-full'> */}
-                <Link
-                  href={`/shop/${product._id}`}
-                  className='relative h-full w-full'
-                >
-                  <Image
-                    src={`${ImageURL}${product.images[0]}`}
-                    alt={product.name}
-                    fill
-                    className='object-contain'
-                  />
-                </Link>
-                {/* </div> */}
-              </div>
-              <div className='pt-3'>
-                <Link key={product.id} href={`/shop/${product.id}`}>
-                  <h3 className='text-xl md:text-[32px] text-[#000000] font-medium mb-1'>
-                    {product.name}
-                  </h3>
-
-                  <div className='flex justify-between mb-2'>
-                    <span className='text-[#000000] text-lg font-medium'>
-                      ${product.price}/mo
-                    </span>
-                    <span className='text-[#333333] text-lg'>
-                      ${product.buyPrice} to buy
-                    </span>
-                  </div>
-
-                  <div className='flex'>
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        className={`w-5 h-5 ${
-                          i < product.rating
-                            ? "text-yellow-400"
-                            : "text-gray-300"
-                        }`}
-                        fill='currentColor'
-                        viewBox='0 0 20 20'
-                      >
-                        <path d='M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z' />
-                      </svg>
-                    ))}
-                  </div>
-                </Link>
-              </div>
-            </div>
+            <ProductCard key={product._id} product={product} />
           ))}
         </div>
       </div>
