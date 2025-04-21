@@ -1,10 +1,14 @@
 export type TCustomer = {
-	name: string;
+	name: {
+		firstName: string;
+		lastName: string;
+	};
 	contact: string;
 	address: {
 		country: string;
 		city: string;
 		zip: string;
 		street: string;
+		apartment: string;
 	};
 };
