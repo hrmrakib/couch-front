@@ -5,6 +5,7 @@ import type React from "react";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { Pencil } from "lucide-react";
+import { useGetProfileQuery } from "@/redux/features/profile/profileAPI";
 
 interface Address {
   name: string;
@@ -14,11 +15,19 @@ interface Address {
   zip: string;
 }
 
+interface ProfileData {
+  name: string;
+  email: string;
+  avatar: string;
+  phone: string;
+  // Add other fields as necessary
+}
+
 export default function MyAccountPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isEditingAddress, setIsEditingAddress] = useState(false);
-  const [isEditingShippingAddress, setIsEditingShippingAddress] =
-    useState(false);
+  // const [isEditingShippingAddress, setIsEditingShippingAddress] =
+  useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
@@ -30,13 +39,17 @@ export default function MyAccountPage() {
     zip: "526",
   });
 
-  const [shippingAddress, setShippingAddress] = useState<Address>({
-    name: "Johan Smaith",
-    street: "1388 Market st, suite 400",
-    city: "san fransisco",
-    state: "CA",
-    zip: "526",
-  });
+  // const [shippingAddress, setShippingAddress] = useState<Address>({
+  //   name: "Johan Smaith",
+  //   street: "1388 Market st, suite 400",
+  //   city: "san fransisco",
+  //   state: "CA",
+  //   zip: "526",
+  // });
+
+  const { data: profile } = useGetProfileQuery();
+
+  const ImageURl = process.env.NEXT_PUBLIC_IMAGE_URL;
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhoneNumber(e.target.value);
@@ -46,9 +59,9 @@ export default function MyAccountPage() {
     setAddress((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleShippingAddressChange = (field: keyof Address, value: string) => {
-    setShippingAddress((prev) => ({ ...prev, [field]: value }));
-  };
+  // const handleShippingAddressChange = (field: keyof Address, value: string) => {
+  //   setShippingAddress((prev) => ({ ...prev, [field]: value }));
+  // };
 
   const formatAddress = (address: Address) => {
     return `${address.street} ${address.city}, ${address.state} ${address.zip}`;
@@ -62,6 +75,8 @@ export default function MyAccountPage() {
       setProfileImage(imageUrl);
     }
   };
+
+  console.log(profile?.data?.avatar);
 
   return (
     <div className='bg-[#FFFFFF]'>
@@ -78,10 +93,15 @@ export default function MyAccountPage() {
               <div className='relative'>
                 <div className='w-20 h-20 rounded-full overflow-hidden bg-gray-200'>
                   <Image
-                    src={profileImage || "/clients/user.png"}
+                    src={
+                      profileImage ||
+                      (ImageURl && profile?.data?.avatar
+                        ? `${ImageURl}${profile.data.avatar}`
+                        : "/default-avatar.png")
+                    }
                     alt='Profile'
-                    width={80}
-                    height={80}
+                    width={280}
+                    height={280}
                     className='object-cover'
                   />
                 </div>
@@ -101,8 +121,12 @@ export default function MyAccountPage() {
                 </button>
               </div>
               <div>
-                <h3 className='text-xl font-medium'>Johan Smaith</h3>
-                <p className='text-gray-600'>info123@gmail.com</p>
+                <h3 className='text-xl font-medium'>
+                  {profile?.data?.name || "Name not available"}
+                </h3>
+                <p className='text-gray-600'>
+                  {profile?.data?.email || "Email not available"}
+                </p>
               </div>
             </div>
 
@@ -202,7 +226,7 @@ export default function MyAccountPage() {
               </div>
 
               {/* Shipping Address */}
-              <div>
+              {/* <div>
                 <div className='flex items-center justify-between mb-2'>
                   <h3 className='text-lg font-medium'>Shipping Address</h3>
                   <button
@@ -282,7 +306,7 @@ export default function MyAccountPage() {
                     </p>
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
