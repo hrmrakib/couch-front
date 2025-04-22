@@ -278,7 +278,7 @@ export default function ProductDetailsPage() {
     );
   };
 
-  console.log(product);
+  console.log(quantity, rentalLength);
 
   return (
     <div className='min-h-screen'>
@@ -419,53 +419,54 @@ export default function ProductDetailsPage() {
                 {/* rentable data and quantity */}
                 {
                   // selectedOption === "buy"
-                  product?.data?.isRentable && selectedOption !== "buy" && (
-                    <div className='bg-[#FFFFFF] p-4 rounded-md mb-6'>
-                      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                        <div>
-                          <label
-                            htmlFor='quantity'
-                            className='block text-sm text-gray-600 mb-1'
-                          >
-                            Quantity
-                          </label>
+                  // product?.data?.isRentable && selectedOption !== "buy" && (
+                  <div className='bg-[#FFFFFF] p-4 rounded-md mb-6'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                      <div>
+                        <label
+                          htmlFor='quantity'
+                          className='block text-sm text-gray-600 mb-1'
+                        >
+                          Quantity
+                        </label>
 
-                          <input
-                            id='quantity'
-                            value={quantity}
-                            min={1}
-                            onChange={(e) =>
-                              setQuantity(Number(e.target.value))
-                            }
-                            type='number'
-                            className='w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-yellow-500'
-                            placeholder='0'
-                          />
-                        </div>
-                        <div>
-                          <label
-                            htmlFor='rental-length'
-                            className='block text-sm text-gray-600 mb-1'
-                          >
-                            Rental Length
-                          </label>
-                          <select
-                            id='rental-length'
-                            value={rentalLength}
-                            onChange={(e) => setRentalLength(e.target.value)}
-                            className='w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-yellow-500'
-                          >
-                            <option value='1'>1 month</option>
-                            <option value='2'>2 month</option>
-                            <option value='3'>3 month</option>
-                            <option value='4'>4 month</option>
-                            <option value='6'>6 month</option>
-                            <option value='12'>12 month</option>
-                          </select>
-                        </div>
+                        <input
+                          id='quantity'
+                          value={quantity}
+                          min={1}
+                          onChange={(e) => setQuantity(Number(e.target.value))}
+                          type='number'
+                          className='w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-yellow-500'
+                          placeholder='0'
+                        />
                       </div>
+                      {product?.data?.isRentable &&
+                        selectedOption === "rent" && (
+                          <div>
+                            <label
+                              htmlFor='rental-length'
+                              className='block text-sm text-gray-600 mb-1'
+                            >
+                              Rental Length
+                            </label>
+                            <select
+                              id='rental-length'
+                              value={rentalLength}
+                              onChange={(e) => setRentalLength(e.target.value)}
+                              className='w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-yellow-500'
+                            >
+                              <option value='1'>1 month</option>
+                              <option value='2'>2 month</option>
+                              <option value='3'>3 month</option>
+                              <option value='4'>4 month</option>
+                              <option value='6'>6 month</option>
+                              <option value='12'>12 month</option>
+                            </select>
+                          </div>
+                        )}
                     </div>
-                  )
+                  </div>
+                  // )
                 }
               </div>
 

@@ -38,27 +38,6 @@ interface CartDataItem {
 
 export default function CartPage() {
   const router = useRouter();
-  // Initial cart items
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: "1",
-      name: "Williey chair",
-      material: "Wooden",
-      color: "Orange",
-      price: 120.0,
-      quantity: 2,
-      image: "/cart/1.png",
-    },
-    {
-      id: "2",
-      name: "Williey chair",
-      material: "Wooden",
-      color: "Orange",
-      price: 120.0,
-      quantity: 2,
-      image: "/cart/1.png",
-    },
-  ]);
 
   const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
 
@@ -132,7 +111,7 @@ export default function CartPage() {
   console.log(cartData?.data);
 
   return (
-    <div className='bg-[#FFF] h-screen'>
+    <div className='bg-[#FFF] min-h-screen pb-8 lg:pb-20'>
       <div className='container mx-auto px-4 pt-16 max-w-6xl'>
         <h1 className='text-3xl font-medium text-center mb-8'>My Cart</h1>
 
@@ -228,9 +207,8 @@ export default function CartPage() {
                     </div>
                     <div className='col-span-2 text-center'>
                       <span className='font-medium text-[#333333] text-lg'>
-                        {formatPrice(
-                          item?.product?.price * item?.product?.quantity
-                        )}
+                        {Number(item?.product?.price) *
+                          Number(Number(item?.quantity).toFixed(2))}
                       </span>
                     </div>
                     <div className='col-span-1 text-right'>
@@ -262,14 +240,14 @@ export default function CartPage() {
 
             {/* Cart items - mobile */}
             <div className='md:hidden space-y-6'>
-              {cartItems.map((item) => (
+              {cartData?.data?.map((item: CartDataItem) => (
                 <div key={item.id} className='border-b pb-6'>
                   <div className='flex items-start mb-4'>
                     <div className='bg-gray-100 rounded-md w-20 h-20 flex items-center justify-center mr-3'>
                       <div className='relative w-16 h-16'>
                         <Image
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
+                          src={`${ImageURL}${item.product?.images[0]}`}
+                          alt={item.product?.name}
                           fill
                           className='object-contain'
                         />
@@ -277,9 +255,9 @@ export default function CartPage() {
                     </div>
                     <div className='flex-1'>
                       <div className='flex justify-between'>
-                        <h3 className='font-medium'>{item.name}</h3>
+                        <h3 className='font-medium'>{item.product?.name}</h3>
                         <button
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => removeItem(item?.product?._id)}
                           className='text-gray-500'
                           aria-label='Remove item'
                         >
@@ -300,16 +278,21 @@ export default function CartPage() {
                         </button>
                       </div>
                       <p className='text-gray-600 text-sm'>
-                        Material : {item.material}
+                        Material : {item.product?.materials.join(", ")}
                       </p>
                       <p className='text-gray-600 text-sm'>
-                        Color : {item.color}
+                        Color : {item.product?.color}
                       </p>
 
                       <div className='flex justify-between items-center mt-3'>
                         <div className='flex items-center border rounded-md'>
                           <button
-                            onClick={() => increaseQuantity(item.id)}
+                            onClick={() =>
+                              increaseQuantity(
+                                item.product?._id,
+                                item?.quantity
+                              )
+                            }
                             className='px-2 py-0.5 text-lg'
                             aria-label='Increase quantity'
                           >
@@ -319,7 +302,12 @@ export default function CartPage() {
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() => decreaseQuantity(item.id)}
+                            onClick={() =>
+                              decreaseQuantity(
+                                item.product?._id,
+                                item?.quantity
+                              )
+                            }
                             className='px-2 py-0.5 text-lg'
                             aria-label='Decrease quantity'
                           >
@@ -327,7 +315,8 @@ export default function CartPage() {
                           </button>
                         </div>
                         <span className='font-medium'>
-                          {formatPrice(item.price * item.quantity)}
+                          {Number(item?.product?.price) *
+                            Number(Number(item?.quantity).toFixed(2))}
                         </span>
                       </div>
                     </div>

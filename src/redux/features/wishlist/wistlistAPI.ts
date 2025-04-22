@@ -32,7 +32,7 @@ const wishlistAPI = baseAPI.injectEndpoints({
         url: `/wishlist/${productId}/remove`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Wishlist"],
+      invalidatesTags: ["Wishlist"], 
     }),
 
     existWishlist: builder.query({
