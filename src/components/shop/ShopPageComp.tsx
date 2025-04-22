@@ -94,7 +94,7 @@ export default function ShopPageComponent() {
         console.log(data);
       }
     } catch {
-      toast.error("Error toggling favorite");
+      toast.error("Failed to update wishlist. Please try to login.");
     }
   };
 

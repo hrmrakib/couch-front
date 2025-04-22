@@ -2,7 +2,7 @@ import React from "react";
 
 const Loading = () => {
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className='flex justify-center items-center h-screen'>
       <svg
         className='pl'
         viewBox='0 0 160 160'
@@ -38,10 +38,10 @@ const Loading = () => {
               r='72'
               fill='none'
               stroke='hsl(223,90%,55%)'
-              stroke-width='16'
-              stroke-dasharray='452.39 452.39'
-              stroke-dashoffset='452'
-              stroke-linecap='round'
+              strokeWidth='16'
+              strokeDasharray='452.39 452.39'
+              strokeDashoffset='452'
+              strokeLinecap='round'
               transform='rotate(-45,80,80)'
             ></circle>
           </g>
@@ -55,10 +55,10 @@ const Loading = () => {
               r='72'
               fill='none'
               stroke='hsl(193,90%,55%)'
-              stroke-width='16'
-              stroke-dasharray='452.39 452.39'
-              stroke-dashoffset='452'
-              stroke-linecap='round'
+              strokeWidth='16'
+              strokeDasharray='452.39 452.39'
+              strokeDashoffset='452'
+              strokeLinecap='round'
               transform='rotate(-45,80,80)'
             ></circle>
           </g>
@@ -66,10 +66,10 @@ const Loading = () => {
 
         <g>
           <g
-            stroke-width='4'
-            stroke-dasharray='12 12'
-            stroke-dashoffset='12'
-            stroke-linecap='round'
+            strokeWidth='4'
+            strokeDasharray='12 12'
+            strokeDashoffset='12'
+            strokeLinecap='round'
             transform='translate(80,80)'
           >
             <polyline
@@ -124,10 +124,10 @@ const Loading = () => {
         </g>
         <g mask='url(#mask1)'>
           <g
-            stroke-width='4'
-            stroke-dasharray='12 12'
-            stroke-dashoffset='12'
-            stroke-linecap='round'
+            strokeWidth='4'
+            strokeDasharray='12 12'
+            strokeDashoffset='12'
+            strokeLinecap='round'
             transform='translate(80,80)'
           >
             <polyline

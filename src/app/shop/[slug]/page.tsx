@@ -6,7 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heart, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useGetSingleProductQuery } from "@/redux/features/product/ProductAPI";
+import {
+  useAddToCartMutation,
+  useGetSingleProductQuery,
+} from "@/redux/features/product/ProductAPI";
 import { useParams, useRouter } from "next/navigation";
 import {
   useGetReviewsQuery,
@@ -19,11 +22,12 @@ import {
   useExistWishlistQuery,
   useRemoveFromWishlistMutation,
 } from "@/redux/features/wishlist/wistlistAPI";
+import { getCurrentUser } from "@/service/authService";
 
 export default function ProductDetailsPage() {
   const [selectedOption, setSelectedOption] = useState<"rent" | "buy">("rent");
   const [quantity, setQuantity] = useState(1);
-  const [rentalLength, setRentalLength] = useState("4 month");
+  const [rentalLength, setRentalLength] = useState<string | undefined>();
   const [activeImage, setActiveImage] = useState(0);
   const [userRating, setUserRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
@@ -54,9 +58,11 @@ export default function ProductDetailsPage() {
     data: product,
     isLoading,
     isError,
+    refetch,
   } = useGetSingleProductQuery({ productId: slug });
   const [addToWishlist] = useAddToWishlistMutation();
   const [deleteToWishlist] = useRemoveFromWishlistMutation();
+  const [addToCart] = useAddToCartMutation();
 
   if (isLoading)
     return (
@@ -76,7 +82,7 @@ export default function ProductDetailsPage() {
         console.log(data);
       }
     } catch {
-      toast.error("Error toggling favorite");
+      toast.error("Failed to update wishlist. Please try to login.");
     }
   };
 
@@ -93,25 +99,31 @@ export default function ProductDetailsPage() {
   };
 
   const handleBuyNow = () => {
-    const data = {
-      details: [
-        {
-          product: product?.data?._id || "",
-          quantity: quantity,
-          rentalLength: rentalLength,
-        },
-      ],
-      customer: {
-        name: "John Doe",
-        contact: "+1234567890",
-        address: {
-          country: "USA",
-          city: "New York",
-          zip: "10001",
-          street: "1234 Broadway St.",
-        },
-      },
-    };
+    getCurrentUser().then((res) => {
+      if (!res) {
+        toast.error("Please login to buy items.");
+        router.push("/login");
+      }
+    });
+    // const data = {
+    //   details: [
+    //     {
+    //       product: product?.data?._id || "",
+    //       quantity: quantity,
+    //       rentalLength: rentalLength,
+    //     },
+    //   ],
+    //   customer: {
+    //     name: "John Doe",
+    //     contact: "+1234567890",
+    //     address: {
+    //       country: "USA",
+    //       city: "New York",
+    //       zip: "10001",
+    //       street: "1234 Broadway St.",
+    //     },
+    //   },
+    // };
     localStorage.setItem("checkoutProduct", product?.data?._id || "");
 
     router.push("/checkout");
@@ -158,12 +170,28 @@ export default function ProductDetailsPage() {
     }
   };
 
-  const handleAddToCart = () => {
-    alert(
-      `Added to cart: ${quantity} Comfi Sofa(s) - ${
-        selectedOption === "rent" ? `Rent for ${rentalLength}` : "Buy"
-      }`
-    );
+  const handleAddToCart = async () => {
+    getCurrentUser().then((res) => {
+      if (!res) {
+        toast.error("Please login to add items to your cart.");
+        router.push("/login");
+      }
+    });
+
+    const res = await addToCart({
+      productId: product?.data?._id || "",
+      data: {
+        quantity: quantity,
+        rentalLength: rentalLength,
+      },
+    }).unwrap();
+
+    if (res?.success) {
+      toast.success(res.message);
+      refetch();
+    } else {
+      toast.error("Failed to add to cart. Please try again.");
+    }
   };
 
   const ProductCard = ({ product }: { product: any }) => {
@@ -198,7 +226,7 @@ export default function ProductDetailsPage() {
               alt={product.name}
               width={897}
               height={632}
-              className='object-cover p-4'
+              className='object-cover p-8'
             />
           </Link>
         </div>
@@ -250,7 +278,7 @@ export default function ProductDetailsPage() {
     );
   };
 
-  console.log({ user });
+  console.log(product);
 
   return (
     <div className='min-h-screen'>
@@ -351,9 +379,9 @@ export default function ProductDetailsPage() {
                           <span className='w-3 h-3 rounded-full bg-yellow-500'></span>
                         )}
                       </span>
-                      <span className='border-yellow-500 rounded-md py-2 text-base flex items-center'>
+                      <span className='border-yellow-500 rounded-md py-2 text-base font-medium flex items-center'>
                         {/* <span className='w-4 h-4 rounded-full bg-yellow-500 text-xl text-[#333333] mr-2'></span> */}
-                        Rent ${product?.price}{" "}
+                        Rent ${product?.data?.rentPrice}{" "}
                         <span className='text-base text-[#333333]'>/mo</span>
                       </span>
                     </label>
@@ -381,8 +409,8 @@ export default function ProductDetailsPage() {
                           <span className='w-3 h-3 rounded-full bg-yellow-500'></span>
                         )}
                       </span>
-                      <span className='text-base text-[#333333]'>
-                        ${product?.price} To Buy
+                      <span className='text-base text-[#333333] font-medium'>
+                        ${product?.data?.price} To Buy
                       </span>
                     </label>
                   )}
@@ -649,9 +677,15 @@ export default function ProductDetailsPage() {
         <p className='text-[#545454] text-lg mb-12'>
           Affordable, Stylish, and Ready for You – Choose to Buy or Rent.
         </p>
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
+        {/* <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 space-x-8 border-4 p-5'>
           {product?.meta?.related?.map((product) => (
             <ProductCard key={product._id} product={product} />
+          ))}
+        </div> */}
+
+        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6`}>
+          {product?.meta?.related.map((product) => (
+            <ProductCard product={product} key={product?._id} />
           ))}
         </div>
       </div>

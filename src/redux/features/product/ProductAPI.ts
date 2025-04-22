@@ -1,4 +1,5 @@
 import baseAPI from "@/redux/api/baseAPI";
+import { get } from "http";
 
 interface Product {
   _id: string;
@@ -172,7 +173,38 @@ const productAPI = baseAPI.injectEndpoints({
         body: data,
       }),
     }),
+
+    addToCart: builder.mutation({
+      query: ({ productId, data }) => ({
+        url: `/cart/${productId}/add`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Cart"],
+    }),
+
+    getCart: builder.query({
+
+      query: () => ({
+        url: `/cart`,
+        method: "GET",
+      }),
+      providesTags: ["Cart"],
+    }),
+
+    removeFromCart: builder.mutation({
+      query: ({ productId }) => ({
+        url: `/cart/${productId}/remove`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
-export const { useGetAllProductsQuery, useGetSingleProductQuery } = productAPI;
+export const {
+  useGetAllProductsQuery,
+  useGetSingleProductQuery,
+  useAddToCartMutation,
+  useGetCartQuery,
+  useRemoveFromCartMutation,
+} = productAPI;

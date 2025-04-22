@@ -1,9 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  useAddToCartMutation,
+  useGetCartQuery,
+  useRemoveFromCartMutation,
+} from "@/redux/features/product/ProductAPI";
+import Loading from "@/components/loading/Loading";
+import { toast } from "sonner";
 // Define the cart item type
 interface CartItem {
   id: string;
@@ -13,6 +20,20 @@ interface CartItem {
   price: number;
   quantity: number;
   image: string;
+}
+
+interface CartDataItem {
+  id: string;
+  product: {
+    _id: string;
+    name: string;
+    images: string[];
+    materials: string[];
+    color: string;
+    price: number;
+    quantity: number;
+  };
+  quantity: number;
 }
 
 export default function CartPage() {
@@ -39,40 +60,63 @@ export default function CartPage() {
     },
   ]);
 
+  const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
+
+  const [addToCartMutation] = useAddToCartMutation();
+  const { data: cartData, isLoading, isError, refetch } = useGetCartQuery({});
+  const [removeCartItem] = useRemoveFromCartMutation();
   const [subtotal, setSubtotal] = useState(0);
 
-  // Calculate subtotal whenever cart items change
-  useEffect(() => {
-    const total = cartItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
+  if (isLoading) {
+    return (
+      <div>
+        <Loading />
+      </div>
     );
-    setSubtotal(total);
-  }, [cartItems]);
+  }
 
-  // Increase item quantity
-  const increaseQuantity = (id: string) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+  if (isError) {
+    return <div>Error loading cart data</div>;
+  }
+
+  const increaseQuantity = async (id: string, quantity: number) => {
+    const data = {
+      quantity: quantity + 1,
+      // rentalLength: 2,
+    };
+
+    try {
+      const res = await addToCartMutation({ productId: id, data }).unwrap();
+      refetch();
+      console.log(res);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
   };
 
   // Decrease item quantity
-  const decreaseQuantity = (id: string) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
+  const decreaseQuantity = async (id: string, quantity: number) => {
+    const data = {
+      quantity: quantity - 1,
+      // rentalLength: 2,
+    };
+
+    try {
+      const res = await addToCartMutation({ productId: id, data }).unwrap();
+      refetch();
+      console.log(res);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
   };
 
   // Remove item from cart
-  const removeItem = (id: string) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  const removeItem = async (productId: string) => {
+    const res = await removeCartItem({ productId }).unwrap();
+    if (res.success) {
+      refetch();
+      toast.success("Item removed from cart successfully");
+    }
   };
 
   // Format price to always show 2 decimal places
@@ -85,12 +129,14 @@ export default function CartPage() {
     router.push("/checkout");
   };
 
+  console.log(cartData?.data);
+
   return (
     <div className='bg-[#FFF] h-screen'>
       <div className='container mx-auto px-4 pt-16 max-w-6xl'>
         <h1 className='text-3xl font-medium text-center mb-8'>My Cart</h1>
 
-        {cartItems.length === 0 ? (
+        {cartData?.data.length === 0 ? (
           <div className='text-center py-12'>
             <p className='text-gray-600 mb-6'>Your cart is empty</p>
             <Link
@@ -127,7 +173,7 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {cartItems.map((item) => (
+              {cartData?.data.map((item: CartDataItem) => (
                 <div key={item.id} className='py-6 border-b'>
                   <div className='grid grid-cols-12 gap-4 items-center'>
                     <div className='col-span-6'>
@@ -135,8 +181,8 @@ export default function CartPage() {
                         <div className='bg-gray-100 rounded-md w-24 h-24 flex items-center justify-center mr-4'>
                           <div className='relative w-20 h-20'>
                             <Image
-                              src={item.image || "/placeholder.svg"}
-                              alt={item.name}
+                              src={`${ImageURL}${item.product?.images[0]}`}
+                              alt={item.product?.name}
                               fill
                               className='object-contain'
                             />
@@ -144,13 +190,13 @@ export default function CartPage() {
                         </div>
                         <div>
                           <h3 className='font-medium text-[#333333] text-lg'>
-                            {item.name}
+                            {item?.product?.name}
                           </h3>
                           <p className='font-medium text-[#333333] text-lg'>
-                            Material : {item.material}
+                            Material : {item?.product?.materials.join(", ")}
                           </p>
                           <p className='font-medium text-[#333333] text-lg'>
-                            Color : {item.color}
+                            Color : {item?.product?.color}
                           </p>
                         </div>
                       </div>
@@ -158,17 +204,21 @@ export default function CartPage() {
                     <div className='col-span-3 flex justify-center'>
                       <div className='flex items-center border border-[#8A8A8A] rounded-md'>
                         <button
-                          onClick={() => increaseQuantity(item.id)}
+                          onClick={() =>
+                            increaseQuantity(item.product?._id, item?.quantity)
+                          }
                           className='px-3 py-1 text-xl'
                           aria-label='Increase quantity'
                         >
                           +
                         </button>
                         <span className='px-4 py-1 text-center min-w-[40px]'>
-                          {item.quantity}
+                          {item?.quantity}
                         </span>
                         <button
-                          onClick={() => decreaseQuantity(item.id)}
+                          onClick={() =>
+                            decreaseQuantity(item.product?._id, item?.quantity)
+                          }
                           className='px-3 py-1 text-xl'
                           aria-label='Decrease quantity'
                         >
@@ -178,12 +228,14 @@ export default function CartPage() {
                     </div>
                     <div className='col-span-2 text-center'>
                       <span className='font-medium text-[#333333] text-lg'>
-                        {formatPrice(item.price * item.quantity)}
+                        {formatPrice(
+                          item?.product?.price * item?.product?.quantity
+                        )}
                       </span>
                     </div>
                     <div className='col-span-1 text-right'>
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item?.product?._id)}
                         className='text-[#333333] hover:text-[#202020] cursor-pointer'
                         aria-label='Remove item'
                       >

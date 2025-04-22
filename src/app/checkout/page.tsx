@@ -82,7 +82,18 @@ export default function CheckoutPage() {
 
 			location.href = data?.data?.checkout_url;
 		} else {
-			// const details: TOrderDetails | null = null;
+			// const data = await productCheckout({
+			// 	bundleId: checkoutData.bundle!._id,
+			// 	data: {
+			// 		customer: {
+			// 			...customer,
+			// 			name: `${customer?.name?.firstName} ${customer?.name?.lastName}`,
+			// 		},
+			// 		method,
+			// 	},
+			// }).unwrap();
+
+			// location.href = data?.data?.checkout_url;
 		}
 
 		console.log({ customer, method });

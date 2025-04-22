@@ -446,7 +446,7 @@ export default function MobileNavbar() {
               </button>
             </Link>
 
-            {!user && (
+            {!tokenOnCookie && (
               <Link
                 href='/login'
                 className='bg-yellow-500 hover:bg-yellow-600 text-black font-medium py-3 px-6 rounded transition-colors cursor-pointer'
@@ -454,7 +454,7 @@ export default function MobileNavbar() {
                 Login
               </Link>
             )}
-            {user && tokenOnCookie && (
+            {tokenOnCookie && (
               <div className='relative'>
                 <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                   <DropdownMenuTrigger className='focus:outline-none'>
