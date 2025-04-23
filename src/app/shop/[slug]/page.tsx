@@ -23,11 +23,12 @@ import {
   useRemoveFromWishlistMutation,
 } from "@/redux/features/wishlist/wistlistAPI";
 import { getCurrentUser } from "@/service/authService";
+import { TCheckout } from "@/redux/features/checkout/checkout.interface";
 
 export default function ProductDetailsPage() {
-  const [selectedOption, setSelectedOption] = useState<"rent" | "buy">("rent");
+  const [selectedOption, setSelectedOption] = useState<"rent" | "buy">("buy");
   const [quantity, setQuantity] = useState(1);
-  const [rentalLength, setRentalLength] = useState<string | undefined>();
+  const [rentalLength, setRentalLength] = useState<string | undefined>("1");
   const [activeImage, setActiveImage] = useState(0);
   const [userRating, setUserRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
@@ -105,26 +106,39 @@ export default function ProductDetailsPage() {
         router.push("/login");
       }
     });
-    // const data = {
-    //   details: [
-    //     {
-    //       product: product?.data?._id || "",
-    //       quantity: quantity,
-    //       rentalLength: rentalLength,
-    //     },
-    //   ],
-    //   customer: {
-    //     name: "John Doe",
-    //     contact: "+1234567890",
-    //     address: {
-    //       country: "USA",
-    //       city: "New York",
-    //       zip: "10001",
-    //       street: "1234 Broadway St.",
-    //     },
-    //   },
-    // };
-    localStorage.setItem("checkoutProduct", product?.data?._id || "");
+
+    const data = {
+      productId: product?.data?._id || "",
+      quantity: quantity,
+      rentalLength: Number(rentalLength),
+    };
+
+    if (!product?.data) {
+      toast.error("Product not found.");
+      return;
+    }
+
+    const checkoutData: TCheckout = {
+      type: "products",
+      products: [
+        {
+          _id: product.data._id,
+          name: product.data.name,
+          price:
+            Number(rentalLength) > 0 && selectedOption === "rent"
+              ? product.data.rentPrice
+              : product.data.price,
+          images: product.data.images,
+          quantity,
+          rentalLength:
+            Number(rentalLength) > 0 && selectedOption === "rent"
+              ? Number(rentalLength)
+              : undefined,
+        },
+      ],
+    };
+
+    localStorage.setItem("checkout", JSON.stringify(checkoutData));
 
     router.push("/checkout");
   };

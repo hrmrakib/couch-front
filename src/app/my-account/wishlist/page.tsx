@@ -1,5 +1,6 @@
 "use client";
 
+import Loading from "@/components/loading/Loading";
 import { useAddToCartMutation } from "@/redux/features/product/ProductAPI";
 import {
   useGetWishlistQuery,
@@ -29,7 +30,7 @@ const Wishlist = () => {
   });
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div><Loading /></div>;
   }
   if (!wishlistItems || wishlistItems.length === 0) {
     return (

@@ -10,12 +10,25 @@ interface OrderDetailsModalProps {
   onClose: () => void;
   orderDetails?: {
     id: number;
+    productId: string;
     productName: string;
-    color: string;
     date: string;
     total: string;
-    shippingAddress: string;
+    status: string;
     imageUrl: string;
+    quantity: number;
+    customer: {
+      name: string;
+      contact: string;
+      address: {
+        street: string;
+        city: string;
+        state: string;
+        zip: string;
+        apartment?: string;
+        country: string;
+      };
+    };
   };
 }
 
@@ -25,6 +38,10 @@ export default function OrderDetailsModal({
   orderDetails,
 }: OrderDetailsModalProps) {
   if (!orderDetails) return null;
+
+  const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
+
+  console.log(orderDetails);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -42,7 +59,7 @@ export default function OrderDetailsModal({
         <div className='p-6 flex flex-col sm:flex-row gap-6'>
           <div className='flex-shrink-0 bg-gray-50 p-4 rounded-md flex items-center justify-center'>
             <Image
-              src={orderDetails.imageUrl || "/placeholder.svg"}
+              src={`${ImageURL}${orderDetails.imageUrl}`}
               alt={orderDetails.productName}
               width={150}
               height={200}
@@ -57,8 +74,13 @@ export default function OrderDetailsModal({
 
             <div className='space-y-2'>
               <p className='text-gray-700'>
-                <span className='font-medium'>Color : </span>
-                {orderDetails.color}
+                <span className='font-medium'>My Name: </span>
+                {orderDetails.customer.name}
+              </p>
+
+              <p className='text-gray-700'>
+                <span className='font-medium'>My Email: </span>
+                {orderDetails.customer.contact}
               </p>
 
               <p className='text-gray-700'>
@@ -73,7 +95,11 @@ export default function OrderDetailsModal({
 
               <p className='text-gray-700'>
                 <span className='font-medium'>Shipping Address : </span>
-                {orderDetails.shippingAddress}
+                {orderDetails.customer.address.street},{" "}
+                {orderDetails.customer.address.city},{" "}
+                {orderDetails.customer.address.apartment},{" "}
+                {orderDetails.customer.address.country},{" "}
+                {orderDetails.customer.address.zip}
               </p>
             </div>
           </div>

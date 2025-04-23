@@ -50,6 +50,7 @@ export default function ShopPageComponent() {
   const [isBuyable, setIsBuyable] = useState(true);
   const [isRentable, setIsRentable] = useState(false);
   const [sortBy, setSortBy] = useState("createdAt");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
 
@@ -67,7 +68,7 @@ export default function ShopPageComponent() {
     colors: selectedFilters.colors.join(","),
     sizes: selectedFilters.sizes,
     materials: selectedFilters.materials,
-    page: 1,
+    page: currentPage,
     limit: 10,
     sortBy,
   });
@@ -113,6 +114,8 @@ export default function ShopPageComponent() {
     const { data, refetch } = useExistWishlistQuery({
       productId: product?._id,
     });
+
+    console.log(products);
 
     return (
       <div
@@ -347,12 +350,17 @@ export default function ShopPageComponent() {
                 : "grid-cols-1"
             } gap-6`}
           >
+            {products?.data.length === 0 && (
+              <div className='col-span-full text-center text-gray-500'>
+                No products found.
+              </div>
+            )}
             {products?.data.map((product) => (
               <ProductCard product={product} key={product?._id} />
             ))}
           </div>
 
-          {products?.data && products.data.length > 0 && (
+          {/* {products?.data && products.data.length > 0 && (
             <Pagination className='mt-8'>
               <PaginationContent>
                 <PaginationItem>
@@ -364,7 +372,7 @@ export default function ShopPageComponent() {
                   </PaginationLink>
                 </PaginationItem>
                 <PaginationItem>
-                  <PaginationLink href='#'>2</PaginationLink>
+                  <PaginationLink href='page=1'>2</PaginationLink>
                 </PaginationItem>
                 <PaginationItem>
                   <PaginationLink href='#'>3</PaginationLink>
@@ -372,6 +380,51 @@ export default function ShopPageComponent() {
                 <PaginationItem>
                   <PaginationNext href='#' />
                 </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )} */}
+
+          {products?.data && products.data.length > 0 && (
+            <Pagination className='mt-8'>
+              <PaginationContent>
+                {Array.from({
+                  length: Math.ceil(
+                    products.meta.pagination.total /
+                      products.meta.pagination.limit
+                  ),
+                }).map((_, i) => (
+                  <PaginationItem key={i}>
+                    <PaginationLink
+                      href='#'
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(i + 1);
+                      }}
+                      className={`${
+                        currentPage === i + 1
+                          ? "bg-yellow-500 text-black hover:bg-yellow-600"
+                          : ""
+                      }`}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                {currentPage <
+                  Math.ceil(
+                    products.meta.pagination.total /
+                      products.meta.pagination.limit
+                  ) && (
+                  <PaginationItem>
+                    <PaginationNext
+                      href='#'
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage((prev) => prev + 1);
+                      }}
+                    />
+                  </PaginationItem>
+                )}
               </PaginationContent>
             </Pagination>
           )}

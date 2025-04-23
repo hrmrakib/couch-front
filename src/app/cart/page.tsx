@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -11,16 +12,10 @@ import {
 } from "@/redux/features/product/ProductAPI";
 import Loading from "@/components/loading/Loading";
 import { toast } from "sonner";
+import { useEffect } from "react";
+import { TCheckout } from "@/redux/features/checkout/checkout.interface";
+
 // Define the cart item type
-interface CartItem {
-  id: string;
-  name: string;
-  material: string;
-  color: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
 
 interface CartDataItem {
   id: string;
@@ -32,6 +27,9 @@ interface CartDataItem {
     color: string;
     price: number;
     quantity: number;
+    isRentable?: boolean;
+    isBuyable?: boolean;
+    rentPrice?: number; // Optional property for rental price
   };
   quantity: number;
 }
@@ -45,6 +43,19 @@ export default function CartPage() {
   const { data: cartData, isLoading, isError, refetch } = useGetCartQuery({});
   const [removeCartItem] = useRemoveFromCartMutation();
   const [subtotal, setSubtotal] = useState(0);
+
+  useEffect(() => {
+    if (cartData?.data) {
+      const total = cartData.data.reduce((acc: number, item: CartDataItem) => {
+        const { quantity } = item;
+        const product = item.product;
+
+        return acc + product.price * quantity;
+      }, 0);
+
+      setSubtotal(total);
+    }
+  }, [cartData]);
 
   if (isLoading) {
     return (
@@ -75,6 +86,8 @@ export default function CartPage() {
 
   // Decrease item quantity
   const decreaseQuantity = async (id: string, quantity: number) => {
+    if (quantity <= 1) return;
+
     const data = {
       quantity: quantity - 1,
       // rentalLength: 2,
@@ -103,12 +116,42 @@ export default function CartPage() {
     return `$${price.toFixed(2)}`;
   };
 
-  const handleCheckout = () => {
-    alert("Proceeding to checkout");
-    router.push("/checkout");
-  };
+  const handleCheckout = async () => {
+    try {
+      const products: any[] = [];
 
-  console.log(cartData?.data);
+      cartData?.data?.forEach((el: any) => {
+        const product: any = {
+          _id: el.product?._id,
+          quantity: el.quantity,
+          images: el.product?.images,
+          name: el.product?.name,
+        };
+
+        if (el.rentalLength) {
+          product.rentalLength = el.rentalLength;
+          product.price = el.product?.rentPrice;
+        } else {
+          product.price = el.product?.price;
+        }
+
+        products.push(product);
+      });
+
+      const chekcoutData: TCheckout = {
+        type: "products",
+        products,
+      };
+
+      localStorage?.setItem("checkout", JSON.stringify(chekcoutData));
+
+      setTimeout(() => {
+        router.push("/checkout");
+      }, 100);
+    } catch (error) {
+      console.dir(error);
+    }
+  };
 
   return (
     <div className='bg-[#FFF] min-h-screen pb-8 lg:pb-20'>
@@ -153,7 +196,7 @@ export default function CartPage() {
               </div>
 
               {cartData?.data.map((item: CartDataItem) => (
-                <div key={item.id} className='py-6 border-b'>
+                <div key={item?.product?._id} className='py-6 border-b'>
                   <div className='grid grid-cols-12 gap-4 items-center'>
                     <div className='col-span-6'>
                       <div className='flex items-center'>
@@ -241,7 +284,7 @@ export default function CartPage() {
             {/* Cart items - mobile */}
             <div className='md:hidden space-y-6'>
               {cartData?.data?.map((item: CartDataItem) => (
-                <div key={item.id} className='border-b pb-6'>
+                <div key={item?.product?._id} className='border-b pb-6'>
                   <div className='flex items-start mb-4'>
                     <div className='bg-gray-100 rounded-md w-20 h-20 flex items-center justify-center mr-3'>
                       <div className='relative w-16 h-16'>

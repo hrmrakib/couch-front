@@ -2,43 +2,26 @@
 
 import { useState } from "react";
 import OrderDetailsModal from "@/components/modal/order-details-modal";
+import { useGetOrdersQuery } from "@/redux/features/order/orderAPI";
+import Loading from "@/components/loading/Loading";
 
 export default function MyAccount() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
 
-  const orders = [
-    {
-      id: 1,
-      date: "Feb 21, 2025",
-      status: "Pending",
-      total: "$420.00",
-      productName: "Williey chair",
-      color: "Orange",
-      shippingAddress: "1388 Market st, suite 400 san fransisco, CA 526",
-      imageUrl: "/placeholder.svg?height=200&width=150",
-    },
-    {
-      id: 1,
-      date: "Mar 11, 2025",
-      status: "Approve",
-      total: "$420.00",
-      productName: "Williey chair",
-      color: "Orange",
-      shippingAddress: "1388 Market st, suite 400 san fransisco, CA 526",
-      imageUrl: "/placeholder.svg?height=200&width=150",
-    },
-    {
-      id: 1,
-      date: "Apr 21, 2025",
-      status: "Cancel",
-      total: "$420.00",
-      productName: "Williey chair",
-      color: "Orange",
-      shippingAddress: "1388 Market st, suite 400 san fransisco, CA 526",
-      imageUrl: "/placeholder.svg?height=200&width=150",
-    },
-  ];
+  const { data: orders, isLoading } = useGetOrdersQuery({});
+
+  const { data: orderById } = useGetOrdersQuery({
+    orderId: selectedOrder,
+  });
+
+  if (isLoading) {
+    return (
+      <div>
+        <Loading />{" "}
+      </div>
+    );
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -53,10 +36,15 @@ export default function MyAccount() {
     }
   };
 
-  const handleViewOrder = (index: number) => {
-    setSelectedOrder(index);
+  const handleViewOrder = (id: string) => {
+    setSelectedOrder(id);
     setIsModalOpen(true);
   };
+
+  console.log(
+    "orders?.data",
+    orderById?.data[0]?.details[0]?.product?.images[0]
+  );
 
   return (
     <div className='max-w-6xl mx-auto px-4 py-8 md:py-12'>
@@ -85,34 +73,41 @@ export default function MyAccount() {
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order, index) => (
-                  <tr key={index}>
-                    <td className='py-4 px-6 border border-gray-200'>
-                      {order.id}
-                    </td>
-                    <td className='py-4 px-6 border border-gray-200'>
-                      {order.date}
-                    </td>
-                    <td
-                      className={`py-4 px-6 border border-gray-200 ${getStatusColor(
-                        order.status
-                      )}`}
-                    >
-                      {order.status}
-                    </td>
-                    <td className='py-4 px-6 border border-gray-200'>
-                      {order.total}
-                    </td>
-                    <td className='py-4 px-6 border border-gray-200'>
-                      <button
-                        onClick={() => handleViewOrder(index)}
-                        className='text-blue-600 hover:underline cursor-pointer'
+                {orders?.data?.map(
+                  (order: {
+                    _id: string;
+                    createdAt: string;
+                    state: string;
+                    amount: number;
+                  }) => (
+                    <tr key={order._id}>
+                      <td className='py-4 px-6 border border-gray-200'>
+                        {order._id}
+                      </td>
+                      <td className='py-4 px-6 border border-gray-200'>
+                        {order.createdAt.split("T")[0]}
+                      </td>
+                      <td
+                        className={`py-4 px-6 border border-gray-200 ${getStatusColor(
+                          order.state
+                        )}`}
                       >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        {order.state}
+                      </td>
+                      <td className='py-4 px-6 border border-gray-200'>
+                        {order.amount}
+                      </td>
+                      <td className='py-4 px-6 border border-gray-200'>
+                        <button
+                          onClick={() => handleViewOrder(order._id)}
+                          className='text-blue-600 hover:underline cursor-pointer'
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                )}
               </tbody>
             </table>
           </div>
@@ -128,13 +123,15 @@ export default function MyAccount() {
             // setSelectedOrder(null);
           }}
           orderDetails={{
-            id: orders[selectedOrder].id,
-            productName: "Williey chair",
-            color: "Orange",
-            date: "12 Mar, 2024",
-            total: "$120.00",
-            shippingAddress: "1388 Market st, suite 400 san fransisco, CA 526",
-            imageUrl: "/order/1.png",
+            id: orders?.data?.[selectedOrder]?._id || 0,
+            productName: orderById?.data[0].name,
+            productId: orderById?.data[0]?.productId || 0,
+            date: orderById?.data[0]?.createdAt.split("T")[0],
+            total: orderById?.data[0]?.amount || 0,
+            customer: orderById?.data[0]?.customer,
+            status: orderById?.data[0]?.state,
+            imageUrl: orderById?.data[0]?.details[0]?.product?.images[0],
+            quantity: orderById?.data[0]?.quantity || 1,
           }}
         />
       )}

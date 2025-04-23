@@ -30,6 +30,7 @@ export default function RootLayout({
         cz-shortcut-listen='true'
         data-new-gr-c-s-check-loaded='14.1232.0'
         data-gr-ext-installed=''
+        upword-verified='true'
       >
         <Toaster position='top-center' />
         <Providers>

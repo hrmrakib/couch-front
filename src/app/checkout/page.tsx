@@ -8,12 +8,14 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   TCheckout,
+  TOrderDetails,
   // TOrderDetails,
 } from "@/redux/features/checkout/checkout.interface";
 import { img } from "@/lib/img";
 import { TCustomer } from "@/redux/features/checkout/customer.interface";
 import { useBundleCheckoutMutation } from "@/redux/features/bundle/bundleApi";
 import { toast } from "sonner";
+import { useProductCheckoutMutation } from "@/redux/features/product/ProductAPI";
 
 export default function CheckoutPage() {
   const [checkoutData, setCheckoutData] = useState<TCheckout>();
@@ -21,6 +23,8 @@ export default function CheckoutPage() {
   useEffect(() => {
     setCheckoutData(JSON.parse(localStorage?.getItem("checkout") || "{}"));
   }, []);
+
+  console.log({ checkoutData });
 
   const [customer, setCustomer] = useState<TCustomer | null>(null);
 
@@ -41,13 +45,25 @@ export default function CheckoutPage() {
       total = checkoutData.bundle!.price * checkoutData.bundle!.quantity;
       if (checkoutData.bundle!.rentalLength)
         total *= checkoutData.bundle!.rentalLength;
+    } else {
+      if (!checkoutData.products) return 0;
+
+      total = checkoutData.products.reduce((acc, product) => {
+        const productTotal = product.price * product.quantity;
+        if (product.rentalLength) {
+          return acc + productTotal * (product.rentalLength || 1);
+        }
+        return acc + productTotal;
+      }, 0);
     }
+
     return total;
   };
 
   const [method, setMethod] = useState<"card" | "apple_pay">("card");
 
   const [bundleCheckout] = useBundleCheckoutMutation();
+  const [productCheckout] = useProductCheckoutMutation();
 
   // Format price to always show 2 decimal places
   const formatPrice = (price: number) => {
@@ -82,17 +98,31 @@ export default function CheckoutPage() {
 
       location.href = data?.data?.checkout_url;
     } else {
-      // const data = await productCheckout({
-      // 	bundleId: checkoutData.bundle!._id,
-      // 	data: {
-      // 		customer: {
-      // 			...customer,
-      // 			name: `${customer?.name?.firstName} ${customer?.name?.lastName}`,
-      // 		},
-      // 		method,
-      // 	},
-      // }).unwrap();
-      // location.href = data?.data?.checkout_url;
+      const details: TOrderDetails = [];
+
+      checkoutData?.products?.forEach((product) => {
+        const detail: any = {
+          product: product._id,
+          quantity: product.quantity,
+        };
+
+        if (product.rentalLength) detail.rentalLength = product.rentalLength;
+
+        details.push(detail);
+      });
+
+      const data = await productCheckout({
+        data: {
+          details,
+          customer: {
+            ...customer,
+            name: `${customer?.name?.firstName} ${customer?.name?.lastName}`,
+          },
+          method,
+        },
+      }).unwrap();
+
+      location.href = data?.data?.checkout_url;
     }
 
     console.log({ customer, method });
@@ -420,6 +450,7 @@ export default function CheckoutPage() {
 										</div>
 									</div>
 								))} */}
+                
                 {checkoutData && checkoutData.type === "bundles" && (
                   <div className='flex items-start py-4'>
                     <div className='relative bg-gray-200 rounded-md w-16 h-16 flex items-center justify-center mr-4 overflow-hidden'>
@@ -463,6 +494,49 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                 )}
+
+                {checkoutData?.products?.map((product) => (
+                  <div key={product._id} className='flex items-start py-4'>
+                    <div className='relative bg-gray-200 rounded-md w-16 h-16 flex items-center justify-center mr-4 overflow-hidden'>
+                      <div className='absolute top-0 left-0 z-10 bg-gray-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-xs'>
+                        {product.quantity}
+                      </div>
+                      <div className='relative w-12 h-12'>
+                        <Image
+                          src={img(product.images[0])}
+                          alt={product.name}
+                          fill
+                          className='object-contain'
+                        />
+                      </div>
+                    </div>
+                    <div className='flex-1'>
+                      <div className='flex justify-between'>
+                        <div>
+                          <h4 className='font-medium text-lg text-[#333333]'>
+                            {product.name}
+                          </h4>
+                          <p className='font-medium text-lg text-[#333333]'>
+                            {product.rentalLength! > 0 &&
+                              `for ${product.rentalLength} months`}{" "}
+                          </p>
+                        </div>
+                        <div className='font-medium text-lg text-[#333333] flex flex-col'>
+                          <span>
+                            {formatPrice(
+                              product.price *
+                                product.quantity *
+                                (product.rentalLength || 1)
+                            )}
+                          </span>
+                          <span>
+                            {product.rentalLength! > 0 && `$${product.price}/m`}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
 
                 <div className='border-t border-gray-200 pt-4'>
                   <div className='flex justify-between items-center'>
