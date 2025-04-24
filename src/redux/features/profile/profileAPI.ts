@@ -7,13 +7,15 @@ const profileAPI = baseAPI.injectEndpoints({
         url: "/me",
         method: "GET",
       }),
+      providesTags: ["Profile"],
     }),
-    updateProfile: builder.mutation<void, void>({
+    updateProfile: builder.mutation({
       query: (profile) => ({
-        url: "/profile",
-        method: "PUT",
+        url: "/profile/edit",
+        method: "PATCH",
         body: profile,
       }),
+      invalidatesTags: ["Profile"],
     }),
   }),
 });

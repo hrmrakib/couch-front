@@ -24,6 +24,7 @@ export const baseAPI = createApi({
     "Cart",
     "Bundles",
     "Order",
+    "Profile",
   ],
   endpoints: () => ({}),
 });
