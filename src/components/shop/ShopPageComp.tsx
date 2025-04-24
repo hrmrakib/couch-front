@@ -115,8 +115,6 @@ export default function ShopPageComponent() {
       productId: product?._id,
     });
 
-    console.log(products);
-
     return (
       <div
         key={product?._id}
@@ -359,30 +357,6 @@ export default function ShopPageComponent() {
               <ProductCard product={product} key={product?._id} />
             ))}
           </div>
-
-          {/* {products?.data && products.data.length > 0 && (
-            <Pagination className='mt-8'>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationLink
-                    href='#'
-                    className='bg-yellow-500 text-black hover:bg-yellow-600'
-                  >
-                    1
-                  </PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href='page=1'>2</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href='#'>3</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationNext href='#' />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          )} */}
 
           {products?.data && products.data.length > 0 && (
             <Pagination className='mt-8'>

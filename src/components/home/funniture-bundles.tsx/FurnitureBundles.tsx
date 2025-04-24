@@ -4,32 +4,15 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-
-// Room category data
-const roomCategories = [
-  {
-    id: 1,
-    name: "Living Room",
-    image: "/home/furnitures/1.jpg",
-    slug: "living-room",
-  },
-  {
-    id: 2,
-    name: "Bedroom",
-    image: "/home/furnitures/2.jpg",
-    slug: "bedroom",
-  },
-  {
-    id: 3,
-    name: "Dining Room",
-    image: "/home/furnitures/3.jpg",
-    slug: "dining-room",
-    fullWidth: true,
-  },  
-];
+import { useBundleListQuery } from "@/redux/features/bundle/bundleApi";
 
 export default function FurnitureBundles() {
   const [isHovering, setIsHovering] = useState<number | null>(null);
+  const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
+
+  const { data: bundles } = useBundleListQuery({});
+
+  console.log(bundles?.data[0]);
 
   return (
     <section className='py-8 md:py-12'>
@@ -49,59 +32,149 @@ export default function FurnitureBundles() {
         </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
-          {roomCategories.map((category) => (
-            <Link
-              key={category.id}
-              href={`/bundles/${category.slug}`}
-              className={`relative overflow-hidden rounded-lg ${
-                category.fullWidth ? "md:col-span-2" : ""
+          <Link
+            key={bundles?.data[0]._id}
+            href={`/bundles/${bundles?.data[0]._id}`}
+            className={`relative overflow-hidden rounded-lg ${
+              false ? "md:col-span-2" : ""
+            }`}
+            onMouseEnter={() => setIsHovering(bundles?.data[0]._id)}
+            onMouseLeave={() => setIsHovering(null)}
+          >
+            <div
+              className={`relative w-full h-52 md:h-64  ${
+                false ? "lg:h-[600px]" : "lg:h-80"
               }`}
-              onMouseEnter={() => setIsHovering(category.id)}
-              onMouseLeave={() => setIsHovering(null)}
             >
-              <div
-                className={`relative w-full h-52 md:h-64  ${
-                  category.fullWidth ? "lg:h-[600px]" : "lg:h-80"
-                }`}
-              >
-                {category.fullWidth && (
-                  <div className='md:pt-[30%] lg:pt-[25%]' />
-                )}
+              {false && <div className='md:pt-[30%] lg:pt-[25%]' />}
+
+              {ImageURL && bundles?.data[0]?.images?.[0] && (
                 <Image
-                  src={category.image || "/placeholder.svg"}
-                  alt={category.name}
+                  src={`${ImageURL}${bundles.data[0].images[0]}`}
+                  alt={bundles.data[0].name || "Furniture bundle"}
                   fill
                   className={`object-cover transition-transform duration-700 ${
-                    isHovering === category.id ? "scale-110" : "scale-100"
-                  } `}
-                  sizes={
-                    category.fullWidth
-                      ? "100vw"
-                      : "(max-width: 768px) 100vw, 50vw"
-                  }
+                    isHovering === bundles?.data[0]._id
+                      ? "scale-110"
+                      : "scale-100"
+                  }`}
+                  sizes='100vw'
                   priority
                 />
+              )}
 
-                {/* Dark overlay for text readability */}
-                {/* <div className='absolute inset-0 bg-gray-500 bg-opacity-100'></div> */}
-                {/* Smooth opacity transition on hover */}
-                <div
-                  className={`absolute inset-0 bg-black transition-opacity duration-500 ${
-                    isHovering === category.id
-                      ? "opacity-50"
-                      : "opacity-30"
-                  }`}
-                ></div>
+              <div
+                className={`absolute inset-0 bg-black transition-opacity duration-500 ${
+                  isHovering === bundles?.data[0]._id
+                    ? "opacity-50"
+                    : "opacity-30"
+                }`}
+              ></div>
 
-                {/* Text overlay */}
-                <div className='absolute inset-0 flex items-center justify-center'>
-                  <h3 className='text-white text-3xl md:text-4xl font-bold'>
-                    {category.name}
-                  </h3>
-                </div>
+              {/* Text overlay */}
+              <div className='absolute inset-0 flex items-center justify-center'>
+                <h3 className='text-white text-3xl md:text-4xl font-bold'>
+                  {bundles?.data[0]._id.name}
+                </h3>
               </div>
-            </Link>
-          ))}
+            </div>
+          </Link>
+
+          <Link
+            key={bundles?.data[1]._id}
+            href={`/bundles/${bundles?.data[1]._id}`}
+            className={`relative overflow-hidden rounded-lg ${
+              false ? "md:col-span-2" : ""
+            }`}
+            onMouseEnter={() => setIsHovering(bundles?.data[1]._id)}
+            onMouseLeave={() => setIsHovering(null)}
+          >
+            <div
+              className={`relative w-full h-52 md:h-64  ${
+                false ? "lg:h-[600px]" : "lg:h-80"
+              }`}
+            >
+              {false && <div className='md:pt-[30%] lg:pt-[25%]' />}
+
+              {ImageURL && bundles?.data[1]?.images?.[1] && (
+                <Image
+                  src={`${ImageURL}${bundles.data[1].images[0]}`}
+                  alt={bundles.data[1].name || "Furniture bundle"}
+                  fill
+                  className={`object-cover transition-transform duration-700 ${
+                    isHovering === bundles?.data[1]._id
+                      ? "scale-110"
+                      : "scale-100"
+                  }`}
+                  sizes='100vw'
+                  priority
+                />
+              )}
+
+              <div
+                className={`absolute inset-0 bg-black transition-opacity duration-500 ${
+                  isHovering === bundles?.data[1]._id
+                    ? "opacity-50"
+                    : "opacity-30"
+                }`}
+              ></div>
+
+              {/* Text overlay */}
+              <div className='absolute inset-0 flex items-center justify-center'>
+                <h3 className='text-white text-3xl md:text-4xl font-bold'>
+                  {bundles?.data[1]._id.name}
+                </h3>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            key={bundles?.data[2]._id}
+            href={`/bundles/${bundles?.data[2]._id}`}
+            className={`relative overflow-hidden rounded-lg ${
+              true ? "md:col-span-2" : ""
+            }`}
+            onMouseEnter={() => setIsHovering(bundles?.data[2]._id)}
+            onMouseLeave={() => setIsHovering(null)}
+          >
+            <div
+              className={`relative w-full h-52 md:h-64  ${
+                true ? "lg:h-[600px]" : "lg:h-80"
+              }`}
+            >
+              {true && <div className='md:pt-[30%] lg:pt-[25%]' />}
+
+              {ImageURL && bundles?.data[2]?.images?.[0] && (
+                <Image
+                  src={`${ImageURL}${bundles.data[2].images[0]}`}
+                  alt={bundles.data[2].name || "Furniture bundle"}
+                  fill
+                  className={`object-cover transition-transform duration-700 ${
+                    isHovering === bundles?.data[2]._id
+                      ? "scale-110"
+                      : "scale-100"
+                  }`}
+                  sizes='100vw'
+                  priority
+                />
+              )}
+
+              <div
+                className={`absolute inset-0 bg-black transition-opacity duration-500 ${
+                  isHovering === bundles?.data[2]._id
+                    ? "opacity-50"
+                    : "opacity-30"
+                }`}
+              ></div>
+
+              {/* Text overlay */}
+              <div className='absolute inset-0 flex items-center justify-center'>
+                <h3 className='text-white text-3xl md:text-4xl font-bold'>
+                  {bundles?.data[2]._id.name}
+                </h3>
+              </div>
+            </div>
+          </Link>
         </div>
       </div>
     </section>

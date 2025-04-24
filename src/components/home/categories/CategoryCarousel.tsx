@@ -68,18 +68,18 @@ export default function CategoryCarousel() {
                   <path
                     d='M62.3438 33.9062V51.25H17.6562V33.9062C17.6562 31.0586 15.3477 28.75 12.5 28.75H8.59375C5.14203 28.75 2.34375 31.5483 2.34375 35V47.5C2.34375 54.4036 7.94016 60 14.8438 60H65.1562C72.0598 60 77.6562 54.4036 77.6562 47.5V35C77.6562 31.5483 74.858 28.75 71.4062 28.75H67.5C64.6523 28.75 62.3438 31.0586 62.3438 33.9062Z'
                     stroke='#545454'
-                    stroke-width='4'
-                    stroke-miterlimit='10'
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
+                    strokeWidth='4'
+                    strokeMiterlimit='10'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
                   />
                   <path
                     d='M62.3438 46.25C62.3438 43.4886 60.1052 41.25 57.3438 41.25H22.6562C19.8948 41.25 17.6562 43.4886 17.6562 46.25M15 60V63.75M65 60V63.75M75 30V28.75C75 21.8464 69.4036 16.25 62.5 16.25H17.5C10.5964 16.25 5 21.8464 5 28.75V30'
                     stroke='#545454'
-                    stroke-width='4'
-                    stroke-miterlimit='10'
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
+                    strokeWidth='4'
+                    strokeMiterlimit='10'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
                   />
                 </svg>
               </div>
