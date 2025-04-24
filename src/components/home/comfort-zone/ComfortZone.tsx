@@ -293,7 +293,7 @@ export default function FeaturedItems() {
           </h2>
 
           <div className='flex space-x-3 mt-4 md:mt-0'>
-            See a
+            <Link href={'/shop'}>See all</Link>
           </div>
         </div>
 
