@@ -20,25 +20,39 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
 import { getCurrentUser } from "@/service/authService";
+import { useGetProfileQuery } from "@/redux/features/profile/profileAPI";
 
 export default function MobileNavbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState<string | null>(null);
   const [tokenOnCookie, setTokenOnCookie] = useState<string | null>(null);
+
+  interface ProfileResponse {
+    data: {
+      avatar: string;
+      name: string;
+      // add other profile fields as needed
+    };
+  }
+  const {data} = useGetProfileQuery() as { data: ProfileResponse }
+  const userData = data?.data
+  
 
   const pathname = usePathname();
 
   useEffect(() => {
     const user = localStorage.getItem("user") ?? "";
+    console.log(user)
+
 
     getCurrentUser().then((res) => {
       setTokenOnCookie(res ?? null);
     });
 
-    if (user) {
-      setUser(user);
-    }
+   
   }, []);
+
+  const ImageURl = process.env.NEXT_PUBLIC_IMAGE_URL;
+
 
   return (
     <header className='border-b border-gray-200'>
@@ -46,7 +60,7 @@ export default function MobileNavbar() {
         <div className='flex items-center'>
           <Link href='/' className='mr-24 hidden md:block'>
             <Image
-              src='/header/logo.svg'
+              src={'/header/logo.svg'}
               alt='Campus Store Logo'
               width={60}
               height={60}
@@ -383,7 +397,7 @@ export default function MobileNavbar() {
           </Link>
 
           <div className='hidden md:flex items-center justify-end gap-4 h-full'>
-            <button aria-label='Search' className='cursor-pointer'>
+            {/* <button aria-label='Search' className='cursor-pointer'>
               <svg
                 width='48'
                 height='48'
@@ -412,7 +426,7 @@ export default function MobileNavbar() {
                   fill='#101010'
                 />
               </svg>
-            </button>
+            </button> */}
             <Link href='/cart' className='cursor-pointer'>
               <button aria-label='Cart' className='p-2 cursor-pointer'>
                 <svg
@@ -460,7 +474,7 @@ export default function MobileNavbar() {
                   <DropdownMenuTrigger className='focus:outline-none'>
                     <div className='flex items-center'>
                       <Avatar className='h-10 w-10 border-2 border-yellow-400'>
-                        <AvatarImage src='/header/user.png' alt='Profile' />
+                        <AvatarImage src={`${ImageURl}${userData?.avatar}`} alt='Profile' />
                         <AvatarFallback>US</AvatarFallback>
                       </Avatar>
                       <ChevronDown
@@ -476,14 +490,14 @@ export default function MobileNavbar() {
                         My Account
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
+                    {/* <DropdownMenuItem asChild>
                       <Link
                         href='/student-dashboard'
                         className='cursor-pointer'
                       >
-                        Student Dashboard
+                        {userData?.name}
                       </Link>
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
