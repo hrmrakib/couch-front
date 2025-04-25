@@ -120,7 +120,7 @@ export default function MyAccount() {
       </div>
 
       {/* Order Details Modal */}
-      {selectedOrder !== null && (
+      {/* {selectedOrder !== null && (
         <OrderDetailsModal
           isOpen={isModalOpen}
           onClose={() => {
@@ -137,7 +137,7 @@ export default function MyAccount() {
             imageUrl: "/order/1.png",
           }}
         />
-      )}
+      )} */}
     </div>
   );
 }

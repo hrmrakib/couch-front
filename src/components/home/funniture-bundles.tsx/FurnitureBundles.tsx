@@ -74,7 +74,7 @@ export default function FurnitureBundles() {
               {/* Text overlay */}
               <div className='absolute inset-0 flex items-center justify-center'>
                 <h3 className='text-white text-3xl md:text-4xl font-bold'>
-                  {bundles?.data[0]._id.name}
+                  {bundles?.data[0].name}
                 </h3>
               </div>
             </div>
@@ -122,7 +122,7 @@ export default function FurnitureBundles() {
               {/* Text overlay */}
               <div className='absolute inset-0 flex items-center justify-center'>
                 <h3 className='text-white text-3xl md:text-4xl font-bold'>
-                  {bundles?.data[1]._id.name}
+                  {bundles?.data[1].name}
                 </h3>
               </div>
             </div>
@@ -170,7 +170,7 @@ export default function FurnitureBundles() {
               {/* Text overlay */}
               <div className='absolute inset-0 flex items-center justify-center'>
                 <h3 className='text-white text-3xl md:text-4xl font-bold'>
-                  {bundles?.data[2]._id.name}
+                  {bundles?.data[2].name}
                 </h3>
               </div>
             </div>

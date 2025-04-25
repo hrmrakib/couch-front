@@ -110,6 +110,8 @@ export default function ShopPageComponent() {
   const isFilterExpanded = (filter: FilterCategory) =>
     expandedFilters.includes(filter);
 
+console.log(viewMode, "viewMode");
+
   const ProductCard = ({ product }: { product: any }) => {
     const { data, refetch } = useExistWishlistQuery({
       productId: product?._id,
@@ -120,7 +122,11 @@ export default function ShopPageComponent() {
         key={product?._id}
         className={`group ${viewMode === "list" ? "flex gap-8" : ""}`}
       >
-        <div className='min-w-[397px] h-[432px] flex items-center justify-center relative bg-gray-100 rounded-lg overflow-hidden mb-3'>
+        <div
+          className={`${
+            viewMode === "list" ? "max-w-[450px]" : "min-w-[397px]"
+          } h-[432px] flex items-center justify-center relative bg-gray-100 rounded-lg overflow-hidden mb-3`}
+        >
           <button
             onClick={() => (
               toggleFavorite(product?._id, data?.data?.wishlist), refetch()
@@ -353,6 +359,7 @@ export default function ShopPageComponent() {
                 No products found.
               </div>
             )}
+
             {products?.data.map((product) => (
               <ProductCard product={product} key={product?._id} />
             ))}

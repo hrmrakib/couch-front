@@ -7,18 +7,16 @@ import Loading from "@/components/loading/Loading";
 
 export default function MyAccount() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
-  const { data: orders, isLoading } = useGetOrdersQuery({});
+  const { data: orders, isLoading, refetch } = useGetOrdersQuery({});
 
-  const { data: orderById } = useGetOrdersQuery({
-    orderId: selectedOrder,
-  });
+  console.log("orders", orders);
 
   if (isLoading) {
     return (
       <div>
-        <Loading />{" "}
+        <Loading />
       </div>
     );
   }
@@ -37,19 +35,21 @@ export default function MyAccount() {
   };
 
   const handleViewOrder = (id: string) => {
-    setSelectedOrder(id);
+    setSelectedOrderId(id);
     setIsModalOpen(true);
   };
 
-  console.log(
-    "orders?.data",
-    orderById?.data[0]?.details[0]?.product?.images[0]
+  const selectedOrder = orders?.data?.find(
+    (order: { _id: string }) => order._id === selectedOrderId
   );
+
+  const selectedDetails = selectedOrder?.details?.[0];
+
+  console.log({ selectedDetails });
 
   return (
     <div className='max-w-6xl mx-auto px-4 py-8 md:py-12'>
       <div className='flex flex-col md:flex-row gap-6'>
-        {/* Content Area */}
         <div className='flex-1'>
           <div className='overflow-x-auto'>
             <table className='w-full border-collapse'>
@@ -73,41 +73,34 @@ export default function MyAccount() {
                 </tr>
               </thead>
               <tbody>
-                {orders?.data?.map(
-                  (order: {
-                    _id: string;
-                    createdAt: string;
-                    state: string;
-                    amount: number;
-                  }) => (
-                    <tr key={order._id}>
-                      <td className='py-4 px-6 border border-gray-200'>
-                        {order._id}
-                      </td>
-                      <td className='py-4 px-6 border border-gray-200'>
-                        {order.createdAt.split("T")[0]}
-                      </td>
-                      <td
-                        className={`py-4 px-6 border border-gray-200 ${getStatusColor(
-                          order.state
-                        )}`}
+                {orders?.data?.map((order) => (
+                  <tr key={order._id}>
+                    <td className='py-4 px-6 border border-gray-200'>
+                      {order._id}
+                    </td>
+                    <td className='py-4 px-6 border border-gray-200'>
+                      {order.createdAt.split("T")[0]}
+                    </td>
+                    <td
+                      className={`py-4 px-6 border border-gray-200 ${getStatusColor(
+                        order.state
+                      )}`}
+                    >
+                      {order.state}
+                    </td>
+                    <td className='py-4 px-6 border border-gray-200'>
+                      ${order.amount}
+                    </td>
+                    <td className='py-4 px-6 border border-gray-200'>
+                      <button
+                        onClick={() => handleViewOrder(order._id)}
+                        className='text-blue-600 hover:underline cursor-pointer'
                       >
-                        {order.state}
-                      </td>
-                      <td className='py-4 px-6 border border-gray-200'>
-                        {order.amount}
-                      </td>
-                      <td className='py-4 px-6 border border-gray-200'>
-                        <button
-                          onClick={() => handleViewOrder(order._id)}
-                          className='text-blue-600 hover:underline cursor-pointer'
-                        >
-                          View
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                )}
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -115,23 +108,22 @@ export default function MyAccount() {
       </div>
 
       {/* Order Details Modal */}
-      {selectedOrder !== null && (
+      {selectedOrder && (
         <OrderDetailsModal
           isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            // setSelectedOrder(null);
-          }}
+          onClose={() => setIsModalOpen(false)}
+          refetch={refetch}
           orderDetails={{
-            id: orders?.data?.[selectedOrder]?._id || 0,
-            productName: orderById?.data[0].name,
-            productId: orderById?.data[0]?.productId || 0,
-            date: orderById?.data[0]?.createdAt.split("T")[0],
-            total: orderById?.data[0]?.amount || 0,
-            customer: orderById?.data[0]?.customer,
-            status: orderById?.data[0]?.state,
-            imageUrl: orderById?.data[0]?.details[0]?.product?.images[0],
-            quantity: orderById?.data[0]?.quantity || 1,
+            id: selectedOrder._id,
+            productName: selectedOrder?.name || "N/A",
+            productId: selectedOrder?._id || "N/A",
+            date: selectedOrder.createdAt?.split("T")[0] || "N/A",
+            total: selectedOrder.amount || 0,
+            customer: selectedOrder.customer || "Unknown",
+            status: selectedOrder.state,
+            imageUrl:
+              selectedDetails?.product?.images?.[0] || "/placeholder.png",
+            quantity: selectedDetails?.quantity || 1,
           }}
         />
       )}

@@ -35,7 +35,7 @@ export default function ProductDetailsPage() {
   const [reviewText, setReviewText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [user, setUser] = useState(null);
+  const [, setUser] = useState(null);
   const params = useParams();
   const slug = params.slug as string;
   const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
@@ -106,12 +106,6 @@ export default function ProductDetailsPage() {
         router.push("/login");
       }
     });
-
-    const data = {
-      productId: product?.data?._id || "",
-      quantity: quantity,
-      rentalLength: Number(rentalLength),
-    };
 
     if (!product?.data) {
       toast.error("Product not found.");
@@ -699,7 +693,7 @@ export default function ProductDetailsPage() {
         </div> */}
 
         <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6`}>
-          {product?.meta?.related.map((product) => (
+          {product?.meta?.related?.map((product) => (
             <ProductCard product={product} key={product?._id} />
           ))}
         </div>

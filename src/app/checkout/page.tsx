@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import type React from "react";
@@ -166,6 +164,20 @@ export default function CheckoutPage() {
                     contact: e.target.value,
                   }))
                 }
+                // onChange={(e) =>
+                //   setCustomer((prevCustomer: TCustomer | null) => ({
+                //     ...prevCustomer,
+                //     contact: e.target.value,
+                //     name: prevCustomer?.name || { firstName: "", lastName: "" },
+                //     address: prevCustomer?.address || {
+                //       country: "",
+                //       city: "",
+                //       zip: "",
+                //       street: "",
+                //       apartment: "",
+                //     },
+                //   }))
+                // }
                 placeholder='E-mail/phone'
                 className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
               />
@@ -418,39 +430,6 @@ export default function CheckoutPage() {
             <div className='lg:bg-gray-50 lg:p-6 lg:rounded-lg'>
               {/* Order Summary */}
               <div className='mb-6'>
-                {/* {cartItems.map((item, index) => (
-									<div key={index} className="flex items-start py-4">
-										<div className="relative bg-gray-200 rounded-md w-16 h-16 flex items-center justify-center mr-4 overflow-hidden">
-											<div className="absolute top-0 left-0 bg-gray-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-xs">
-												{item.quantity}
-											</div>
-											<div className="relative w-12 h-12">
-												<Image
-													src={item.image || "/placeholder.svg"}
-													alt={item.name}
-													fill
-													className="object-contain"
-												/>
-											</div>
-										</div>
-										<div className="flex-1">
-											<div className="flex justify-between">
-												<div>
-													<h4 className="font-medium text-lg text-[#333333]">
-														{item.name}
-													</h4>
-													<p className="font-medium text-lg text-[#333333]">
-														{item.material}/{item.color}
-													</p>
-												</div>
-												<span className="font-medium text-lg text-[#333333]">
-													{formatPrice(item.price)}
-												</span>
-											</div>
-										</div>
-									</div>
-								))} */}
-                
                 {checkoutData && checkoutData.type === "bundles" && (
                   <div className='flex items-start py-4'>
                     <div className='relative bg-gray-200 rounded-md w-16 h-16 flex items-center justify-center mr-4 overflow-hidden'>
@@ -656,38 +635,6 @@ export default function CheckoutPage() {
                     </svg>
                   </label>
                 </div>
-
-                {/* Venmo */}
-                {/* <div className="mb-6">
-									<label className="flex items-center justify-between">
-										<div className="flex items-center">
-											
-
-											<input
-												type="radio"
-												name="paymentMethod"
-												checked={formData.paymentMethod === "venmo"}
-												onChange={() => handlePaymentMethodChange("venmo")}
-												className="peer hidden"
-											/>
-
-											<label className="h-6 w-6 flex items-center justify-center border-2 border-gray-300 rounded-full cursor-pointer peer-checked:border-[#FFC21A] peer-checked:bg-[#FFC21A]">
-												<div className="h-3 w-3 bg-white rounded-full peer-checked:bg-white"></div>
-											</label>
-
-											<span className="ml-2 text-xl text-[#333333] font-medium">
-												Venmo
-											</span>
-										</div>
-										<Image
-											src="/payments/venmo.svg"
-											className=""
-											alt="Venmo"
-											width={74}
-											height={47}
-										/>
-									</label>
-								</div> */}
 
                 <button
                   type='submit'

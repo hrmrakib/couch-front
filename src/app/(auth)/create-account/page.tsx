@@ -141,7 +141,7 @@ export default function CreateAccount() {
 
       const response = await register(form).unwrap();
 
-      console.log(response);
+      console.log({ response });
 
       if (response?.success) {
         toast.success(response.message);
@@ -152,7 +152,7 @@ export default function CreateAccount() {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error("An unknown error occurred");
+        toast.error(`Already have an account? Please, login`);
       }
     } finally {
       setIsSubmitting(false);

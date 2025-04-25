@@ -53,6 +53,29 @@ interface Product {
     isBuyable: boolean;
     isRentable: boolean;
     category: string;
+    related: [
+      {
+        _id: string;
+        name: string;
+        description: string;
+        price: number;
+        rentPrice: number;
+        stock: number;
+        rating: number;
+        isBuyable: boolean;
+        isRentable: boolean;
+        category: string;
+        color: string;
+        size: string;
+        materials: string[];
+        images: string[];
+        notes: string[];
+        type: string;
+        height: string;
+        width: string;
+        length: string;
+      }
+    ];
   };
 }
 
@@ -73,6 +96,28 @@ interface ProductsMeta {
     availities: string[];
   };
   current: Record<string, string | number | boolean | null>;
+  meta: {
+    _id: string;
+
+    name: string;
+    description: string;
+    price: number;
+    rentPrice: number;
+    stock: number;
+    rating: number;
+    isBuyable: boolean;
+    isRentable: boolean;
+    category: string;
+    color: string;
+    size: string;
+    materials: string[];
+    images: string[];
+    notes: string[];
+    type: string;
+    height: string;
+    width: string;
+    length: string;
+  };
 }
 
 interface GetAllProductsResponse {

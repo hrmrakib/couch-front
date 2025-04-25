@@ -4,10 +4,12 @@ import { X } from "lucide-react";
 import Image from "next/image";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useChangeOrderStatusMutation } from "@/redux/features/order/orderAPI";
 
 interface OrderDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  refetch: () => void;
   orderDetails?: {
     id: number;
     productId: string;
@@ -35,13 +37,22 @@ interface OrderDetailsModalProps {
 export default function OrderDetailsModal({
   isOpen,
   onClose,
+  refetch,
   orderDetails,
 }: OrderDetailsModalProps) {
   if (!orderDetails) return null;
 
   const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
 
-  console.log(orderDetails);
+  const [changeOrderStatus] = useChangeOrderStatusMutation({});
+
+  const cancelOrder = async (orderId: string | number) => {
+    const res = await changeOrderStatus({ orderId, state: "cancel" });
+    console.log(`Canceling order with ID: ${orderId}`, res);
+    refetch();
+  };
+
+  console.log({ orderDetails });
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -107,6 +118,7 @@ export default function OrderDetailsModal({
 
         <div className='px-6 pb-6'>
           <Button
+            onClick={() => cancelOrder(orderDetails.id)}
             variant='destructive'
             className='w-full bg-[#FDB515] hover:bg-amber-500 text-black text-lg font-medium py-6 cursor-pointer'
           >
