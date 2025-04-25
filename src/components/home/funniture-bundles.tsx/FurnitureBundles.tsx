@@ -12,7 +12,7 @@ export default function FurnitureBundles() {
 
   const { data: bundles } = useBundleListQuery({});
 
-  console.log(bundles?.data[0]);
+  console.log("bundles.........", bundles?.data[1]?.images[0]);
 
   return (
     <section className='py-8 md:py-12'>
@@ -48,7 +48,7 @@ export default function FurnitureBundles() {
             >
               {false && <div className='md:pt-[30%] lg:pt-[25%]' />}
 
-              {ImageURL && bundles?.data[0]?.images?.[0] && (
+              {ImageURL && bundles?.data[0]?.images[0] && (
                 <Image
                   src={`${ImageURL}${bundles.data[0].images[0]}`}
                   alt={bundles.data[0].name || "Furniture bundle"}
@@ -96,13 +96,13 @@ export default function FurnitureBundles() {
             >
               {false && <div className='md:pt-[30%] lg:pt-[25%]' />}
 
-              {ImageURL && bundles?.data[1]?.images?.[1] && (
+              {ImageURL && bundles?.data[0]?.images[0] && (
                 <Image
                   src={`${ImageURL}${bundles.data[1].images[0]}`}
-                  alt={bundles.data[1].name || "Furniture bundle"}
+                  alt={bundles.data[0].name || "Furniture bundle"}
                   fill
                   className={`object-cover transition-transform duration-700 ${
-                    isHovering === bundles?.data[1]._id
+                    isHovering === bundles?.data[0]._id
                       ? "scale-110"
                       : "scale-100"
                   }`}
