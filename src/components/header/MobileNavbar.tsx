@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { usePathname } from "next/navigation";
-import { getCurrentUser } from "@/service/authService";
+import { getCurrentUser, logout } from "@/service/authService";
 import { useGetProfileQuery } from "@/redux/features/profile/profileAPI";
 
 export default function MobileNavbar() {
@@ -30,7 +30,7 @@ export default function MobileNavbar() {
     data: {
       avatar: string;
       name: string;
-      // add other profile fields as needed
+      email: string;
     };
   }
   const { data } = useGetProfileQuery() as { data: ProfileResponse };
@@ -48,6 +48,12 @@ export default function MobileNavbar() {
   }, []);
 
   const ImageURl = process.env.NEXT_PUBLIC_IMAGE_URL;
+
+  const handleLogout = async () => {
+    localStorage.clear();
+    await logout();
+    location.replace("/login");
+  };
 
   return (
     <header className='border-b border-gray-200'>
@@ -96,14 +102,17 @@ export default function MobileNavbar() {
                   href='/my-account'
                   className='flex items-center gap-2 mt-3'
                 >
-                  <Avatar className='h-12 w-12 border-2 border-yellow-400'>
-                    <AvatarImage src='/header/user.png' alt='Profile' />
+                  <Avatar className='h-10 w-10 border-2 border-yellow-400'>
+                    <AvatarImage
+                      src={`${ImageURl}${userData?.avatar}`}
+                      alt='Profile'
+                    />
                     <AvatarFallback>US</AvatarFallback>
                   </Avatar>
 
                   <div className='flex flex-col'>
-                    <p className='text-sm font-medium'>John Doe</p>
-                    <p className='text-xs text-gray-500'>john.doe@gmail.com</p>
+                    <p className='text-sm font-medium'>{userData?.name}</p>
+                    <p className='text-xs text-gray-500'>{userData?.email}</p>
                   </div>
                 </Link>
               </SheetHeader>
@@ -157,6 +166,7 @@ export default function MobileNavbar() {
                 </Link>
 
                 <button
+                  onClick={handleLogout}
                   type='button'
                   className={`${
                     pathname === "/f" ? "text-[#254EA4]" : "text-[#333333]"
