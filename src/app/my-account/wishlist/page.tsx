@@ -30,7 +30,11 @@ const Wishlist = () => {
   });
 
   if (isLoading) {
-    return <div><Loading /></div>;
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
   }
   if (!wishlistItems || wishlistItems.length === 0) {
     return (
@@ -76,8 +80,6 @@ const Wishlist = () => {
       toast.error("Failed to remove from wishlist. Please try again.");
     }
   };
-
-  console.log(wishlistItems?.data);
 
   return (
     <div>

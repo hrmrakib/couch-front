@@ -48,11 +48,8 @@ export default function OrderDetailsModal({
 
   const cancelOrder = async (orderId: string | number) => {
     const res = await changeOrderStatus({ orderId, state: "cancel" });
-    console.log(`Canceling order with ID: ${orderId}`, res);
     refetch();
   };
-
-  console.log({ orderDetails });
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>

@@ -11,7 +11,6 @@ export default function MyAccount() {
 
   const { data: orders, isLoading, refetch } = useGetOrdersQuery({});
 
-  console.log("orders", orders);
 
   if (isLoading) {
     return (
@@ -45,7 +44,6 @@ export default function MyAccount() {
 
   const selectedDetails = selectedOrder?.details?.[0];
 
-  console.log({ selectedDetails });
 
   return (
     <div className='max-w-6xl mx-auto px-4 py-8 md:py-12'>

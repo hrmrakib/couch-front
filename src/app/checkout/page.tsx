@@ -22,8 +22,6 @@ export default function CheckoutPage() {
     setCheckoutData(JSON.parse(localStorage?.getItem("checkout") || "{}"));
   }, []);
 
-  console.log({ checkoutData });
-
   const [customer, setCustomer] = useState<TCustomer | null>(null);
 
   const [saveInfo, setSaveInfo] = useState(false);
@@ -122,11 +120,7 @@ export default function CheckoutPage() {
 
       location.href = data?.data?.checkout_url;
     }
-
-    console.log({ customer, method });
   };
-
-  console.log({ customer });
 
   return (
     <div className='min-h-screen bg-white'>

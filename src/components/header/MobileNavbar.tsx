@@ -40,7 +40,6 @@ export default function MobileNavbar() {
 
   useEffect(() => {
     const user = localStorage.getItem("user") ?? "";
-    console.log(user);
 
     getCurrentUser().then((res) => {
       setTokenOnCookie(res ?? null);

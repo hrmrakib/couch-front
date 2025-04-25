@@ -141,7 +141,6 @@ export default function CreateAccount() {
 
       const response = await register(form).unwrap();
 
-      console.log({ response });
 
       if (response?.success) {
         toast.success(response.message);
@@ -195,8 +194,6 @@ export default function CreateAccount() {
     setShowPassword((prev) => !prev);
   };
 
-  // console.log(formData);
-  // console.log(profileImage);
 
   return (
     <main className='min-h-screen flex flex-col items-center justify-center px-4 py-12'>

@@ -197,8 +197,6 @@ const productAPI = baseAPI.injectEndpoints({
           queryParams.append("limit", params.limit.toString());
         }
 
-        console.log("queryParams", queryParams.toString());
-
         return `/products?${queryParams.toString()}`;
       },
     }),
@@ -212,8 +210,6 @@ const productAPI = baseAPI.injectEndpoints({
 
     productCheckout: builder.mutation({
       query: ({ data }) => {
-        console.log("data", data);
-
         return {
           url: `/orders/checkout`,
           method: "POST",

@@ -47,7 +47,6 @@ export default function MyAccountPage() {
     zip: "",
   });
 
-  console.log(address, "address");
 
   const { data: profile } = useGetProfileQuery() as {
     data?: { data: ProfileData };
@@ -60,7 +59,6 @@ export default function MyAccountPage() {
     if (customer) {
       try {
         const parsedCustomer = JSON.parse(customer);
-        console.log("parsedCustomer", parsedCustomer);
 
         setAddress({
           firstName:

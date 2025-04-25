@@ -105,8 +105,6 @@ export default function SellPage() {
     phone: "1",
   });
 
-  console.log(mainImage?.file.name, "mainImage");
-
   const [postTrade] = usePostTradeMutation();
 
   // Refs
@@ -178,8 +176,7 @@ export default function SellPage() {
   // Handle additional image upload
   const handleAdditionalImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    console.log(files);
-    console.log(files);
+
     if (files && files.length > 0) {
       const file = files[0];
       if (file.size > 10 * 1024 * 1024) {
@@ -339,8 +336,6 @@ export default function SellPage() {
 
       const response = await postTrade(formDataToSend).unwrap();
       toast.success(response.message || "Trade created successfully!");
-
-      console.log("Trade created:", response);
     } catch (error) {
       console.error("Failed to create trade:", error);
       alert("Failed to list your furniture. Please try again.");
@@ -357,8 +352,6 @@ export default function SellPage() {
         phone: getCountryCallingCode(country.value),
       }));
   }, []);
-
-  console.log(formData);
 
   return (
     <div className='max-w-6xl mx-auto px-4 py-8'>

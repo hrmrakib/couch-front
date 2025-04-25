@@ -166,7 +166,6 @@ export default function Verify() {
     if (otp.length === 6) {
       const res = await verify({ otp, email }).unwrap();
 
-      console.log("verify ..", res);
       if (res.error) {
         alert("Invalid OTP. Please try again.");
         return;

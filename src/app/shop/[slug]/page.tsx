@@ -77,10 +77,8 @@ export default function ProductDetailsPage() {
     try {
       if (isFavorite) {
         const data = await deleteToWishlist({ productId }).unwrap();
-        console.log(data);
       } else {
         const data = await addToWishlist({ productId }).unwrap();
-        console.log(data);
       }
     } catch {
       toast.error("Failed to update wishlist. Please try to login.");
@@ -159,8 +157,6 @@ export default function ProductDetailsPage() {
           content: reviewText,
         },
       });
-
-      console.log(res);
 
       if (res.data.success) {
         toast.success(res.data.message);
@@ -285,8 +281,6 @@ export default function ProductDetailsPage() {
       </div>
     );
   };
-
-  console.log(quantity, rentalLength);
 
   return (
     <div className='min-h-screen'>

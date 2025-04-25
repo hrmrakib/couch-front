@@ -12,8 +12,6 @@ export default function FurnitureBundles() {
 
   const { data: bundles } = useBundleListQuery({});
 
-  console.log("bundles.........", bundles?.data[1]?.images[0]);
-
   return (
     <section className='py-8 md:py-12'>
       <div className='container mx-auto px-4'>

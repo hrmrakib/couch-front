@@ -27,11 +27,9 @@ export default function MyAccount() {
   // Step 3: Submit handler
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted", formData);
 
     try {
       const response = await login(formData).unwrap();
-      console.log(response);
 
       if (response?.success) {
         await saveTokens(response?.data?.token);
@@ -41,12 +39,14 @@ export default function MyAccount() {
 
       location.replace("/");
     } catch (error) {
-      console.log(error);
     } finally {
+      setFormData({
+        email: "",
+        password: "",
+      });
     }
   };
 
-  console.log(formData);
 
   return (
     <div className='min-h-screen md:flex justify-center items-center h-[calc(100vh-100px)]'>

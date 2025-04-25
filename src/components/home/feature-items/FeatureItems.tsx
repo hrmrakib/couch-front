@@ -35,16 +35,12 @@ export default function FeaturedItems() {
     <div>Error</div>;
   }
 
-  console.log(productsData?.data);
-
   const toggleFavorite = async (productId: string, isFavorite: boolean) => {
     try {
       if (isFavorite) {
-        const data = await deleteToWishlist({ productId }).unwrap();
-        console.log(data);
+        await deleteToWishlist({ productId }).unwrap();
       } else {
-        const data = await addToWishlist({ productId }).unwrap();
-        console.log(data);
+        await addToWishlist({ productId }).unwrap();
       }
     } catch {
       toast.error("Failed to update wishlist. Please try to login.");

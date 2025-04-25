@@ -78,7 +78,6 @@ export default function CartPage() {
     try {
       const res = await addToCartMutation({ productId: id, data }).unwrap();
       refetch();
-      console.log(res);
     } catch (error) {
       console.error("Error adding to cart:", error);
     }
@@ -96,7 +95,6 @@ export default function CartPage() {
     try {
       const res = await addToCartMutation({ productId: id, data }).unwrap();
       refetch();
-      console.log(res);
     } catch (error) {
       console.error("Error adding to cart:", error);
     }

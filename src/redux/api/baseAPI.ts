@@ -7,12 +7,9 @@ export const baseAPI = createApi({
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("accessToken");
 
-      console.log("Current token:", token);
-
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
-      // console.log("Prepared headers:", headers);
       return headers;
     },
   }),

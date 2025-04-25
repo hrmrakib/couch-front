@@ -43,7 +43,6 @@ export default function ForgotPassword() {
     try {
       const response = await forgetPassword({ email }).unwrap();
 
-      console.log({ response });
 
       if (response?.success) {
         localStorage.setItem("email", email);
