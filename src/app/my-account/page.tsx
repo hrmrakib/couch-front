@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Edit, Pencil } from "lucide-react";
 import {
@@ -10,12 +10,14 @@ import {
   useUpdateProfileMutation,
 } from "@/redux/features/profile/profileAPI";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface Address {
-  name: string;
+  firstName: string;
+  lastName: string;
   street: string;
   city: string;
-  state: string;
+  apartment: string;
   zip: string;
 }
 
@@ -37,17 +39,48 @@ export default function MyAccountPage() {
   const [updateProfile] = useUpdateProfileMutation();
 
   const [address, setAddress] = useState<Address>({
-    name: "Johan Smaith",
-    street: "1388 Market st, suite 400",
-    city: "san fransisco",
-    state: "CA",
-    zip: "526",
+    firstName: "",
+    lastName: "",
+    street: "",
+    city: "",
+    apartment: "",
+    zip: "",
   });
+
+  console.log(address, "address");
 
   const { data: profile } = useGetProfileQuery() as {
     data?: { data: ProfileData };
   };
+
   const ImageURl = process.env.NEXT_PUBLIC_IMAGE_URL;
+
+  useEffect(() => {
+    const customer = localStorage.getItem("customer");
+    if (customer) {
+      try {
+        const parsedCustomer = JSON.parse(customer);
+        console.log("parsedCustomer", parsedCustomer);
+
+        setAddress({
+          firstName:
+            parsedCustomer?.firstName || parsedCustomer?.name?.firstName || "",
+          lastName:
+            parsedCustomer?.lastName || parsedCustomer?.name?.lastName || "",
+          street:
+            parsedCustomer?.street || parsedCustomer?.address?.street || "",
+          city: parsedCustomer?.city || parsedCustomer?.address?.city || "",
+          apartment:
+            parsedCustomer?.apartment ||
+            parsedCustomer?.address?.apartment ||
+            "",
+          zip: parsedCustomer?.zip || parsedCustomer?.address?.zip || "",
+        });
+      } catch (error) {
+        console.error("Invalid customer data in localStorage", error);
+      }
+    }
+  }, []);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhoneNumber(e.target.value);
@@ -58,7 +91,7 @@ export default function MyAccountPage() {
   };
 
   const formatAddress = (address: Address) => {
-    return `${address.street} ${address.city}, ${address.state} ${address.zip}`;
+    return `${address.street} ${address.city}, ${address.apartment} ${address.zip}`;
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,6 +128,12 @@ export default function MyAccountPage() {
     setEditedName(profile?.data?.name || "");
   };
 
+  const handleSaveAddress = () => {
+    setIsEditingAddress(false);
+
+    localStorage.setItem("customer", JSON.stringify({ ...address }));
+  };
+
   return (
     <div className='bg-[#FFFFFF]'>
       <div className='container mx-auto'>
@@ -106,33 +145,36 @@ export default function MyAccountPage() {
               <div className='flex items-center gap-4'>
                 <div className='relative'>
                   <div className='w-20 h-20 rounded-full overflow-hidden bg-gray-200'>
-                    {/* <Image
-                      src={
-                        profileImage ||
-                        (ImageURl && profile?.data?.avatar
-                          ? `${ImageURl}${profile.data.avatar}`
-                          : "/users/2.png")
-                      }
-                      alt='Profile'
-                      width={280}
-                      height={280}
-                      className='object-cover'
-                    /> */}
+                    <Avatar className='h-full w-full border-2 border-yellow-400'>
+                      <AvatarImage
+                        src={
+                          profileImage ||
+                          (ImageURl && profile?.data?.avatar
+                            ? `${ImageURl}${profile.data.avatar}`
+                            : "/users/2.png")
+                        }
+                        // src={`${ImageURl}${profile?.data?.avatar}`}
+                        alt='Profile'
+                      />
+                      <AvatarFallback>US</AvatarFallback>
+                    </Avatar>
                   </div>
-                  <button
-                    className='absolute bottom-0 right-0 bg-blue-500 text-white cursor-pointer rounded-full p-1'
-                    aria-label='Edit profile picture'
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <Pencil size={16} />
-                    <input
-                      type='file'
-                      ref={fileInputRef}
-                      onChange={handleImageChange}
-                      accept='image/*'
-                      className='hidden'
-                    />
-                  </button>
+                  {isEditingName && (
+                    <button
+                      className='absolute bottom-0 right-0 bg-blue-500 text-white cursor-pointer rounded-full p-1'
+                      aria-label='Edit profile picture'
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Pencil size={16} />
+                      <input
+                        type='file'
+                        ref={fileInputRef}
+                        onChange={handleImageChange}
+                        accept='image/*'
+                        className='hidden'
+                      />
+                    </button>
+                  )}
                 </div>
                 <div>
                   {isEditingName ? (
@@ -194,56 +236,91 @@ export default function MyAccountPage() {
 
                 {isEditingAddress ? (
                   <div className='space-y-3'>
-                    <input
-                      type='text'
-                      value={address.name}
-                      onChange={(e) =>
-                        handleAddressChange("name", e.target.value)
-                      }
-                      className='w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
-                      placeholder='Full name'
-                    />
-                    <input
-                      type='text'
-                      value={address.street}
-                      onChange={(e) =>
-                        handleAddressChange("street", e.target.value)
-                      }
-                      className='w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
-                      placeholder='Street address'
-                    />
-                    <div className='grid grid-cols-3 gap-2'>
+                    <div className='flex items-center gap-5'>
+                      <label htmlFor='firstName'>
+                        <span>First Name</span>
+                        <input
+                          type='text'
+                          value={address.firstName}
+                          onChange={(e) =>
+                            handleAddressChange("firstName", e.target.value)
+                          }
+                          className='w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                          placeholder='First Name'
+                        />
+                      </label>
+                      <label htmlFor='lastName'>
+                        <span>Last Name</span>
+                        <input
+                          type='text'
+                          value={address.lastName}
+                          onChange={(e) =>
+                            handleAddressChange("lastName", e.target.value)
+                          }
+                          className='w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                          placeholder='Last Name'
+                        />
+                      </label>
+                    </div>
+
+                    <label htmlFor='streetAddress'>
+                      <span>Street Address</span>
                       <input
                         type='text'
-                        value={address.city}
+                        value={address.street}
                         onChange={(e) =>
-                          handleAddressChange("city", e.target.value)
+                          handleAddressChange("street", e.target.value)
                         }
-                        className='col-span-1 border border-gray-300 rounded p-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
-                        placeholder='City'
+                        className='w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                        placeholder='Street address'
                       />
-                      <input
-                        type='text'
-                        value={address.state}
-                        onChange={(e) =>
-                          handleAddressChange("state", e.target.value)
-                        }
-                        className='col-span-1 border border-gray-300 rounded p-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
-                        placeholder='State'
-                      />
-                      <input
-                        type='text'
-                        value={address.zip}
-                        onChange={(e) =>
-                          handleAddressChange("zip", e.target.value)
-                        }
-                        className='col-span-1 border border-gray-300 rounded p-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
-                        placeholder='ZIP'
-                      />
+                    </label>
+
+                    <div className='grid grid-cols-2 gap-2 mt-5'>
+                      <label htmlFor='' className=''>
+                        <span>City</span>
+                        <input
+                          type='text'
+                          value={address.city}
+                          onChange={(e) =>
+                            handleAddressChange("city", e.target.value)
+                          }
+                          className='w-full col-span- border border-gray-300 rounded p-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                          placeholder='City'
+                        />
+                      </label>
+
+                      <label htmlFor='' className=''>
+                        <span>ZIP</span>
+                        <input
+                          type='text'
+                          value={address.zip}
+                          onChange={(e) =>
+                            handleAddressChange("zip", e.target.value)
+                          }
+                          className='w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                          placeholder='ZIP'
+                        />
+                      </label>
+                    </div>
+
+                    <div>
+                      <label htmlFor=''>
+                        <p>Appartment</p>
+                        <input
+                          type='text'
+                          value={address.apartment}
+                          onChange={(e) =>
+                            handleAddressChange("apartment", e.target.value)
+                          }
+                          className='col-span-1 border border-gray-300 rounded p-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                          placeholder='Appartment'
+                        />
+                      </label>
                     </div>
                     <div className='flex justify-end'>
                       <button
-                        onClick={() => setIsEditingAddress(false)}
+                        onClick={() => handleSaveAddress()}
                         className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'
                       >
                         Save
@@ -252,7 +329,9 @@ export default function MyAccountPage() {
                   </div>
                 ) : (
                   <div>
-                    <p className='text-gray-800'>{address.name}</p>
+                    <p className='text-gray-800'>
+                      {address.firstName + " " + address.lastName}
+                    </p>
                     <p className='text-gray-800'>{formatAddress(address)}</p>
                   </div>
                 )}

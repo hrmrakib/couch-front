@@ -33,26 +33,21 @@ export default function MobileNavbar() {
       // add other profile fields as needed
     };
   }
-  const {data} = useGetProfileQuery() as { data: ProfileResponse }
-  const userData = data?.data
-  
+  const { data } = useGetProfileQuery() as { data: ProfileResponse };
+  const userData = data?.data;
 
   const pathname = usePathname();
 
   useEffect(() => {
     const user = localStorage.getItem("user") ?? "";
-    console.log(user)
-
+    console.log(user);
 
     getCurrentUser().then((res) => {
       setTokenOnCookie(res ?? null);
     });
-
-   
   }, []);
 
   const ImageURl = process.env.NEXT_PUBLIC_IMAGE_URL;
-
 
   return (
     <header className='border-b border-gray-200'>
@@ -60,7 +55,7 @@ export default function MobileNavbar() {
         <div className='flex items-center'>
           <Link href='/' className='mr-24 hidden md:block'>
             <Image
-              src={'/header/logo.svg'}
+              src={"/header/logo.svg"}
               alt='Campus Store Logo'
               width={60}
               height={60}
@@ -397,36 +392,6 @@ export default function MobileNavbar() {
           </Link>
 
           <div className='hidden md:flex items-center justify-end gap-4 h-full'>
-            {/* <button aria-label='Search' className='cursor-pointer'>
-              <svg
-                width='48'
-                height='48'
-                viewBox='0 0 48 48'
-                fill='none'
-                xmlns='http://www.w3.org/2000/svg'
-              >
-                <rect
-                  x='0.5'
-                  y='0.5'
-                  width='47'
-                  height='47'
-                  rx='23.5'
-                  fill='white'
-                />
-                <rect
-                  x='0.5'
-                  y='0.5'
-                  width='47'
-                  height='47'
-                  rx='23.5'
-                  stroke='#E6E6E6'
-                />
-                <path
-                  d='M30.031 28.6168L34.3137 32.8995L32.8995 34.3137L28.6168 30.031C27.0769 31.263 25.124 32 23 32C18.032 32 14 27.968 14 23C14 18.032 18.032 14 23 14C27.968 14 32 18.032 32 23C32 25.124 31.263 27.0769 30.031 28.6168ZM28.0247 27.8748C29.2475 26.6146 30 24.8956 30 23C30 19.1325 26.8675 16 23 16C19.1325 16 16 19.1325 16 23C16 26.8675 19.1325 30 23 30C24.8956 30 26.6146 29.2475 27.8748 28.0247L28.0247 27.8748Z'
-                  fill='#101010'
-                />
-              </svg>
-            </button> */}
             <Link href='/cart' className='cursor-pointer'>
               <button aria-label='Cart' className='p-2 cursor-pointer'>
                 <svg
@@ -474,7 +439,10 @@ export default function MobileNavbar() {
                   <DropdownMenuTrigger className='focus:outline-none'>
                     <div className='flex items-center'>
                       <Avatar className='h-10 w-10 border-2 border-yellow-400'>
-                        <AvatarImage src={`${ImageURl}${userData?.avatar}`} alt='Profile' />
+                        <AvatarImage
+                          src={`${ImageURl}${userData?.avatar}`}
+                          alt='Profile'
+                        />
                         <AvatarFallback>US</AvatarFallback>
                       </Avatar>
                       <ChevronDown
