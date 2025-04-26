@@ -241,6 +241,13 @@ const productAPI = baseAPI.injectEndpoints({
         method: "DELETE",
       }),
     }),
+
+    getProductCategories: builder.query({
+      query: () => ({
+        url: `/products/categories/list`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -251,4 +258,5 @@ export const {
   useGetCartQuery,
   useRemoveFromCartMutation,
   useProductCheckoutMutation,
+  useGetProductCategoriesQuery
 } = productAPI;

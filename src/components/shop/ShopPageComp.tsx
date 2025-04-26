@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Heart, LayoutGrid, List, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ import {
 } from "@/redux/features/wishlist/wistlistAPI";
 import { toast } from "sonner";
 import Loading from "../loading/Loading";
+import { useSearchParams } from "next/navigation";
 
 type FilterCategory = "Category" | "Color" | "Price" | "Size" | "Material";
 
@@ -47,7 +48,7 @@ export default function ShopPageComponent() {
     sizes: [] as string[],
     materials: [] as string[],
   });
-  const [isBuyable, setIsBuyable] = useState(true);
+  const [isBuyable, setIsBuyable] = useState(false);
   const [isRentable, setIsRentable] = useState(false);
   const [sortBy, setSortBy] = useState("createdAt");
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,6 +57,16 @@ export default function ShopPageComponent() {
 
   const [addToWishlist] = useAddToWishlistMutation();
   const [deleteToWishlist] = useRemoveFromWishlistMutation();
+
+  const query = useSearchParams();
+  const category = query.get("categories");
+
+  useEffect(() => {
+    setSelectedFilters((prev) => ({
+      ...prev,
+      categories: category ? [category] : [],
+    }));
+  }, [category]);
 
   const {
     data: products,

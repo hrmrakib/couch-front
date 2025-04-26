@@ -8,42 +8,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-
-// Category data
-const categories = [
-  {
-    id: 1,
-    name: "Sofa",
-    image: "/categories/1.png",
-    slug: "sofa",
-  },
-  {
-    id: 2,
-    name: "Table",
-    image: "/categories/2.png",
-    slug: "table",
-  },
-  {
-    id: 3,
-    name: "Dining Chair",
-    image: "/categories/3.png",
-    slug: "dining-chair",
-  },
-  {
-    id: 4,
-    name: "Bed",
-    image: "/categories/1.png",
-    slug: "bed",
-  },
-  {
-    id: 5,
-    name: "Cabinet",
-    image: "/categories/2.png",
-    slug: "cabinet",
-  },
-];
+import { useGetProductCategoriesQuery } from "@/redux/features/product/ProductAPI";
 
 export default function CategoryCarousel() {
+  const { data: categories } = useGetProductCategoriesQuery({});
+
+  const ImageURL = process.env.NEXT_PUBLIC_IMAGE_URL;
+
   return (
     <section className='relative overflow-hidden bg-[#FFF8ED]'>
       <div className='container mx-auto px-4'>
@@ -122,12 +93,12 @@ export default function CategoryCarousel() {
               className='w-full'
             >
               <CarouselContent className='items-end'>
-                {categories.map((category, index) => (
+                {categories?.data?.map((category, index) => (
                   <CarouselItem
-                    key={category.id}
+                    key={index}
                     className='basis-full sm:basis-1/2 md:basis-1/2 lg:basis-1/3 pl-2 pr-2'
                   >
-                    <Link href={`/category/${category.slug}`}>
+                    <Link href={`/shop?categories=${category.name}`}>
                       <div
                         className={`${
                           index % 2 === 0 ? "h-[352px]" : "h-[320px]"
@@ -135,7 +106,7 @@ export default function CategoryCarousel() {
                       >
                         <div className='relative h-full w-full'>
                           <Image
-                            src={category.image || "/placeholder.svg"}
+                            src={`${ImageURL}${category.image}`}
                             alt={category.name}
                             fill
                             className='object-contain p-4'
