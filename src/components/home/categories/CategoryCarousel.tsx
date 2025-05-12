@@ -63,7 +63,7 @@ export default function CategoryCarousel() {
             </div>
 
             <Link
-              href='/categories'
+              href='/shop'
               className='inline-flex items-center font-medium text-[#545454] hover:text-[#3f3e3e] transition-colors'
             >
               ALL CATIGORIES
