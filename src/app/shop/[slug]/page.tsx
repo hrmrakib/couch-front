@@ -347,7 +347,7 @@ export default function ProductDetailsPage() {
                 </h2>
                 <div className='flex items-center'>
                   <Star className='w-5 h-5 fill-yellow-400 text-yellow-400' />
-                  <span className='ml-1 text-lg text-[#000000]'>4.8</span>
+                  <span className='ml-1 text-lg text-[#000000]'>{product?.data?.rating}</span>
                 </div>
               </div>
 

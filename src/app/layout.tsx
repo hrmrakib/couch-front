@@ -28,7 +28,6 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} ${poppins.className}`}
         cz-shortcut-listen='true'
-        data-new-gr-c-s-check-loaded='14.1232.0'
         data-gr-ext-installed=''
         upword-verified='true'
       >

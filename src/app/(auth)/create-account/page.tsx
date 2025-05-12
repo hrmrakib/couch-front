@@ -62,15 +62,6 @@ export default function CreateAccount() {
     }
   };
 
-  // const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
-  //   if (file) {
-  //     // Create a preview URL for the selected image
-  //     const imageUrl = URL.createObjectURL(file);
-  //     setProfileImage(imageUrl);
-  //   }
-  // };
-
   const validateForm = () => {
     // Name validation
     if (!formData.name.trim()) {
@@ -105,10 +96,10 @@ export default function CreateAccount() {
     }
 
     // Image validation
-    if (!profileImage) {
-      toast.error("Profile image is required");
-      return false;
-    }
+    // if (!profileImage) {
+    //   toast.error("Profile image is required");
+    //   return false;
+    // }
 
     // Terms & Conditions checkbox
     if (!agreeTerms) {
@@ -133,6 +124,7 @@ export default function CreateAccount() {
       form.append("name", formData.name);
       form.append("email", formData.email);
       form.append("password", formData.password);
+      
       if (profileImage) {
         form.append("images", profileImage.name);
       }
@@ -140,7 +132,6 @@ export default function CreateAccount() {
       localStorage.setItem("email", formData.email);
 
       const response = await register(form).unwrap();
-
 
       if (response?.success) {
         toast.success(response.message);
@@ -158,42 +149,9 @@ export default function CreateAccount() {
     }
   };
 
-  // const handleSubmit = async (e: FormEvent) => {
-  //   e.preventDefault();
-
-  //   if (!validateForm()) return;
-  //   // if (!agreeTerms) {
-  //   //   alert("Please agree to the terms and conditions");
-  //   //   return;
-  //   // }
-
-  //   setIsSubmitting(true);
-
-  //   try {
-  //     const response = await register({
-  //       name: formData.name,
-  //       email: formData.email,
-  //       password: formData.password,
-  //     }).unwrap();
-
-  //     toast.success(response.message);
-
-  //     if (response?.success) {
-  //       router.push("/verify");
-  //     }
-
-  //     // Redirect to login page after successful account creation
-  //   } catch (error) {
-  //     console.error("Error creating account:", error);
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
-
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
-
 
   return (
     <main className='min-h-screen flex flex-col items-center justify-center px-4 py-12'>

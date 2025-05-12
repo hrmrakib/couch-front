@@ -158,22 +158,9 @@ export default function CheckoutPage() {
                     contact: e.target.value,
                   }))
                 }
-                // onChange={(e) =>
-                //   setCustomer((prevCustomer: TCustomer | null) => ({
-                //     ...prevCustomer,
-                //     contact: e.target.value,
-                //     name: prevCustomer?.name || { firstName: "", lastName: "" },
-                //     address: prevCustomer?.address || {
-                //       country: "",
-                //       city: "",
-                //       zip: "",
-                //       street: "",
-                //       apartment: "",
-                //     },
-                //   }))
-                // }
                 placeholder='E-mail/phone'
                 className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                required
               />
 
               <div className='mt-2'>
@@ -208,6 +195,30 @@ export default function CheckoutPage() {
                   <select
                     id='country'
                     name='country'
+                    value={customer?.address?.country || ""}
+                    onChange={(e) =>
+                      setCustomer((prevCustomer: any) => ({
+                        ...prevCustomer,
+                        address: {
+                          ...prevCustomer.address,
+                          country: e.target.value,
+                        },
+                      }))
+                    }
+                    className='w-full border border-gray-300 rounded px-3 py-2 appearance-none focus:outline-none focus:ring-1 focus:ring-gray-400'
+                    required
+                  >
+                    <option value='' disabled>
+                      Select Your Country
+                    </option>
+                    <option value='United States'>United States</option>
+                    <option value='Canada'>Canada</option>
+                    <option value='United Kingdom'>United Kingdom</option>
+                  </select>
+
+                  {/* <select
+                    id='country'
+                    name='country'
                     value={customer?.address?.country}
                     onChange={(e) =>
                       setCustomer((prevCustomer: any) => ({
@@ -226,7 +237,8 @@ export default function CheckoutPage() {
                     <option value='United States'>United States</option>
                     <option value='Canada'>Canada</option>
                     <option value='United Kingdom'>United Kingdom</option>
-                  </select>
+                  </select> */}
+
                   <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
                     <svg
                       className='fill-current h-4 w-4'
@@ -264,6 +276,7 @@ export default function CheckoutPage() {
                     }
                     placeholder='First name'
                     className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                    required
                   />
                 </div>
                 <div className='flex-1'>
@@ -289,6 +302,7 @@ export default function CheckoutPage() {
                     }
                     placeholder='Last name'
                     className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                    required
                   />
                 </div>
               </div>
@@ -317,6 +331,7 @@ export default function CheckoutPage() {
                   }
                   placeholder='Address'
                   className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                  required
                 />
               </div>
 
@@ -344,6 +359,7 @@ export default function CheckoutPage() {
                   }
                   placeholder='Apartment, suite, etc. (optional)'
                   className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                  required
                 />
               </div>
 
@@ -372,6 +388,7 @@ export default function CheckoutPage() {
                     }
                     placeholder='Postal code'
                     className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                    required
                   />
                 </div>
                 <div className='flex-1'>
@@ -397,6 +414,7 @@ export default function CheckoutPage() {
                     }
                     placeholder='City'
                     className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                    required
                   />
                 </div>
               </div>

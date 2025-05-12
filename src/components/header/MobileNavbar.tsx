@@ -437,9 +437,15 @@ export default function MobileNavbar() {
             {!tokenOnCookie && (
               <Link
                 href='/login'
-                className='bg-yellow-500 hover:bg-yellow-600 text-black font-medium py-3 px-6 rounded transition-colors cursor-pointer'
+                // className='bg-yellow-500 hover:bg-yellow-600 text-black font-medium py-3 px-6 rounded transition-colors cursor-pointer'
               >
-                Login
+                {/* Login */}
+                <Image
+                  src='/users/user.jpg'
+                  alt='Login'
+                  width={44}
+                  height={44}
+                />
               </Link>
             )}
             {tokenOnCookie && (

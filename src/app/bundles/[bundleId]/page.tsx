@@ -163,13 +163,13 @@ export default function ProductDetailsPage({ params }: any) {
 							<div className="flex space-x-2 overflow-x-auto pb-2">
 								{bundle?.products?.map((product: any) => (
 									<Link
-										href={`/shop/${product._id}`}
-										key={product._id}
+										href={`/shop/${product?._id}`}
+										key={product?._id}
 										className="bg-[#F5F5F5] border-2 rounded-md overflow-hidden flex-shrink-0 w-[132px] h-[132px] relative"
 									>
 										<img
-											alt={product.name}
-											src={img(product.images[0])}
+											alt={product?.name}
+											src={img(product?.images[0])}
 											className="w-[132] h-[132] object-cover"
 										/>
 									</Link>

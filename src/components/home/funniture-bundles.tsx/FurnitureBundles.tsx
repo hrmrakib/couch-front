@@ -31,12 +31,12 @@ export default function FurnitureBundles() {
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
           <Link
-            key={bundles?.data[0]._id}
-            href={`/bundles/${bundles?.data[0]._id}`}
+            key={bundles?.data[0]?._id}
+            href={`/bundles/${bundles?.data[0]?._id}`}
             className={`relative overflow-hidden rounded-lg ${
               false ? "md:col-span-2" : ""
             }`}
-            onMouseEnter={() => setIsHovering(bundles?.data[0]._id)}
+            onMouseEnter={() => setIsHovering(bundles?.data[0]?._id)}
             onMouseLeave={() => setIsHovering(null)}
           >
             <div
@@ -48,11 +48,11 @@ export default function FurnitureBundles() {
 
               {ImageURL && bundles?.data[0]?.images[0] && (
                 <Image
-                  src={`${ImageURL}${bundles.data[0].images[0]}`}
+                  src={`${ImageURL}${bundles.data[0]?.images[0]}`}
                   alt={bundles.data[0].name || "Furniture bundle"}
                   fill
                   className={`object-cover transition-transform duration-700 ${
-                    isHovering === bundles?.data[0]._id
+                    isHovering === bundles?.data[0]?._id
                       ? "scale-110"
                       : "scale-100"
                   }`}
@@ -63,7 +63,7 @@ export default function FurnitureBundles() {
 
               <div
                 className={`absolute inset-0 bg-black transition-opacity duration-500 ${
-                  isHovering === bundles?.data[0]._id
+                  isHovering === bundles?.data[0]?._id
                     ? "opacity-50"
                     : "opacity-30"
                 }`}
@@ -72,19 +72,19 @@ export default function FurnitureBundles() {
               {/* Text overlay */}
               <div className='absolute inset-0 flex items-center justify-center'>
                 <h3 className='text-white text-3xl md:text-4xl font-bold'>
-                  {bundles?.data[0].name}
+                  {bundles?.data[0]?.name}
                 </h3>
               </div>
             </div>
           </Link>
 
           <Link
-            key={bundles?.data[1]._id}
-            href={`/bundles/${bundles?.data[1]._id}`}
+            key={bundles?.data[1]?._id}
+            href={`/bundles/${bundles?.data[1]?._id}`}
             className={`relative overflow-hidden rounded-lg ${
               false ? "md:col-span-2" : ""
             }`}
-            onMouseEnter={() => setIsHovering(bundles?.data[1]._id)}
+            onMouseEnter={() => setIsHovering(bundles?.data[1]?._id)}
             onMouseLeave={() => setIsHovering(null)}
           >
             <div
@@ -96,11 +96,11 @@ export default function FurnitureBundles() {
 
               {ImageURL && bundles?.data[0]?.images[0] && (
                 <Image
-                  src={`${ImageURL}${bundles.data[1].images[0]}`}
-                  alt={bundles.data[0].name || "Furniture bundle"}
+                  src={`${ImageURL}${bundles?.data[1]?.images[0]}`}
+                  alt={bundles?.data[0]?.name || "Furniture bundle"}
                   fill
                   className={`object-cover transition-transform duration-700 ${
-                    isHovering === bundles?.data[0]._id
+                    isHovering === bundles?.data[0]?._id
                       ? "scale-110"
                       : "scale-100"
                   }`}
@@ -111,7 +111,7 @@ export default function FurnitureBundles() {
 
               <div
                 className={`absolute inset-0 bg-black transition-opacity duration-500 ${
-                  isHovering === bundles?.data[1]._id
+                  isHovering === bundles?.data[1]?._id
                     ? "opacity-50"
                     : "opacity-30"
                 }`}
@@ -120,19 +120,19 @@ export default function FurnitureBundles() {
               {/* Text overlay */}
               <div className='absolute inset-0 flex items-center justify-center'>
                 <h3 className='text-white text-3xl md:text-4xl font-bold'>
-                  {bundles?.data[1].name}
+                  {bundles?.data[1]?.name}
                 </h3>
               </div>
             </div>
           </Link>
 
           <Link
-            key={bundles?.data[2]._id}
-            href={`/bundles/${bundles?.data[2]._id}`}
+            key={bundles?.data[2]?._id}
+            href={`/bundles/${bundles?.data[2]?._id}`}
             className={`relative overflow-hidden rounded-lg ${
               true ? "md:col-span-2" : ""
             }`}
-            onMouseEnter={() => setIsHovering(bundles?.data[2]._id)}
+            onMouseEnter={() => setIsHovering(bundles?.data[2]?._id)}
             onMouseLeave={() => setIsHovering(null)}
           >
             <div
@@ -144,11 +144,11 @@ export default function FurnitureBundles() {
 
               {ImageURL && bundles?.data[2]?.images?.[0] && (
                 <Image
-                  src={`${ImageURL}${bundles.data[2].images[0]}`}
+                  src={`${ImageURL}${bundles.data[2]?.images[0]}`}
                   alt={bundles.data[2].name || "Furniture bundle"}
                   fill
                   className={`object-cover transition-transform duration-700 ${
-                    isHovering === bundles?.data[2]._id
+                    isHovering === bundles?.data[2]?._id
                       ? "scale-110"
                       : "scale-100"
                   }`}
@@ -159,7 +159,7 @@ export default function FurnitureBundles() {
 
               <div
                 className={`absolute inset-0 bg-black transition-opacity duration-500 ${
-                  isHovering === bundles?.data[2]._id
+                  isHovering === bundles?.data[2]?._id
                     ? "opacity-50"
                     : "opacity-30"
                 }`}
@@ -168,7 +168,7 @@ export default function FurnitureBundles() {
               {/* Text overlay */}
               <div className='absolute inset-0 flex items-center justify-center'>
                 <h3 className='text-white text-3xl md:text-4xl font-bold'>
-                  {bundles?.data[2].name}
+                  {bundles?.data[2]?.name}
                 </h3>
               </div>
             </div>

@@ -265,7 +265,7 @@ export default function ShopPageComponent() {
       <div className='flex flex-col md:flex-row gap-6'>
         {/* Filters sidebar */}
         <div className='w-full md:w-64 space-y-2'>
-          <div className='space-y-2.5 p-4 w-64'>
+          {/* <div className='space-y-2.5 p-4 w-64'>
             <h3 className='font-medium'>Purchase Options</h3>
             <div className='flex items-center space-x-2'>
               <Checkbox
@@ -285,7 +285,7 @@ export default function ShopPageComponent() {
               />
               <Label htmlFor='rentable'>Rentable</Label>
             </div>
-          </div>
+          </div> */}
 
           {["Categories", "Colors", "Sizes", "Materials"].map((filter) => {
             const options =
