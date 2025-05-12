@@ -216,29 +216,6 @@ export default function CheckoutPage() {
                     <option value='United Kingdom'>United Kingdom</option>
                   </select>
 
-                  {/* <select
-                    id='country'
-                    name='country'
-                    value={customer?.address?.country}
-                    onChange={(e) =>
-                      setCustomer((prevCustomer: any) => ({
-                        ...prevCustomer,
-                        address: {
-                          ...prevCustomer.address,
-                          country: e.target.value,
-                        },
-                      }))
-                    }
-                    className='w-full border border-gray-300 rounded px-3 py-2 appearance-none focus:outline-none focus:ring-1 focus:ring-gray-400'
-                  >
-                    <option value='' disabled>
-                      Country region
-                    </option>
-                    <option value='United States'>United States</option>
-                    <option value='Canada'>Canada</option>
-                    <option value='United Kingdom'>United Kingdom</option>
-                  </select> */}
-
                   <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
                     <svg
                       className='fill-current h-4 w-4'

@@ -87,7 +87,7 @@ export default function SellPage() {
     apartment: "",
     fullName: "John Doe",
     street: "1234 Broadway St.",
-    country: "United States",
+    country: "",
     zipCode: "10001",
     city: "New York",
   });
@@ -388,6 +388,7 @@ export default function SellPage() {
               value={formData.productName}
               onChange={handleInputChange}
               className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+              required
             />
           </div>
 
@@ -406,6 +407,7 @@ export default function SellPage() {
               onChange={handleInputChange}
               rows={5}
               className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+              required
             />
           </div>
 
@@ -426,6 +428,7 @@ export default function SellPage() {
                 value={formData.category}
                 onChange={handleInputChange}
                 className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                required
               />
             </div>
 
@@ -494,6 +497,7 @@ export default function SellPage() {
                 value={formData.price}
                 onChange={handleInputChange}
                 className='w-full border border-gray-300 rounded pl-7 pr-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                required
               />
             </div>
           </div>
@@ -514,6 +518,7 @@ export default function SellPage() {
               onChange={handleInputChange}
               placeholder='Enter your full name'
               className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+              required
             />
           </div>
 
@@ -587,6 +592,7 @@ export default function SellPage() {
                     value={formData.phoneNumber}
                     onChange={handleInputChange}
                     className='flex-1 border-t border-r border-b border-gray-300 rounded-r px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                    required
                   />
                 </div>
               </div>
@@ -602,7 +608,7 @@ export default function SellPage() {
               <select
                 id='country'
                 name='country'
-                value={formData.country}
+                value={formData.country || ""}
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
@@ -610,14 +616,16 @@ export default function SellPage() {
                   }))
                 }
                 className='w-full border border-gray-300 rounded px-3 py-2 appearance-none focus:outline-none focus:ring-1 focus:ring-gray-400'
+                required
               >
-                <option value='' disabled defaultChecked>
-                  Country region
+                <option value='' disabled>
+                  Select Your Country
                 </option>
                 <option value='United States'>United States</option>
                 <option value='Canada'>Canada</option>
                 <option value='United Kingdom'>United Kingdom</option>
               </select>
+
               <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
                 <svg
                   className='fill-current h-4 w-4'
@@ -646,6 +654,7 @@ export default function SellPage() {
               onChange={handleInputChange}
               placeholder='City'
               className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+              required
             />
           </div>
 
@@ -665,6 +674,7 @@ export default function SellPage() {
               onChange={handleInputChange}
               placeholder='street'
               className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+              required
             />
           </div>
 
@@ -684,6 +694,7 @@ export default function SellPage() {
                 value={formData.apartment}
                 onChange={handleInputChange}
                 className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                required
               />
             </div>
 
@@ -702,6 +713,7 @@ export default function SellPage() {
                 value={formData.zipCode}
                 onChange={handleInputChange}
                 className='w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400'
+                required
               />
             </div>
           </div>
