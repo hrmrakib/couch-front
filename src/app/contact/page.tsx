@@ -101,7 +101,7 @@ export default function ContactPage() {
                       href='tel:+081115226'
                       className='text-[#545454] text-lg mb-1'
                     >
-                      +08 1111 5226
+                      (415) 699-7216
                     </Link>
                   </div>
 
@@ -119,7 +119,7 @@ export default function ContactPage() {
                         href='mailto:Support1234@Jaroti'
                         className='text-[#545454] text-lg mb-1'
                       >
-                        Support1234@Jaroti
+                        info@campuscouch.com
                       </Link>
                     </p>
                   </div>
@@ -136,7 +136,7 @@ export default function ContactPage() {
                       Saturday: 11:00 – 15:00
                     </p>
                     <p className='text-[#545454] text-lg mb-1'>
-                      123 Atlantic, Brooklyn, New York, USA
+                      150 Panoramic Way, Berkeley, CA 94704
                     </p>
                   </div>
                 </div>
