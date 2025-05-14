@@ -26,7 +26,7 @@ export default function CategoryCarousel() {
               <br />
               by categories
             </h2>
-
+ 
             <div className='flex items-center mb-6'>
               <div className='w-20 h-20 mr-3'>
                 <svg
@@ -63,7 +63,7 @@ export default function CategoryCarousel() {
             </div>
 
             <Link
-              href='/shop'
+              href='/categories'
               className='inline-flex items-center font-medium text-[#545454] hover:text-[#3f3e3e] transition-colors'
             >
               ALL CATIGORIES

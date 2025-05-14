@@ -10,7 +10,7 @@ export default function SiteFooter() {
           <div>
             <h3 className='text-xl font-bold mb-6'>CONTACT</h3>
             <ul className='space-y-4'>
-              <li>Tel: (2359698-485)</li>
+              <li>Tel: (415) 699-7216</li>
               <li>Mon - Fri 8am - 8pm</li>
               <li>Sat - Sun 8am - 7pm</li>
             </ul>
