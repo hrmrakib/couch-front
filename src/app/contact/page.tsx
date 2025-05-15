@@ -26,20 +26,61 @@ export default function ContactPage() {
     }));
   };
 
-//   <a href="mailto:someone@example.com?subject=Your%20Subject&body=Hi%20my%20name%20is%20Shaishab.%0AI%20would%20like%20to%20...">
-//   Send Email
-// </a>
+  // const handleSubmit = async (e: FormEvent) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
+  //   setSubmitError("");
 
-  const handleSubmit = async (e: FormEvent) => {
+  //   try {
+  //     // Simulate API call
+  //     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  //     // ("Form submitted:", formData);
+  //     setSubmitSuccess(true);
+  //     setFormData({
+  //       name: "",
+  //       email: "",
+  //       subject: "",
+  //       message: "",
+  //     });
+
+  //     // Reset success message after 5 seconds
+  //     setTimeout(() => {
+  //       setSubmitSuccess(false);
+  //     }, 5000);
+  //   } catch (error) {
+  //     console.error("Error submitting form:", error);
+  //     setSubmitError(
+  //       "There was an error submitting your message. Please try again."
+  //     );
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitError("");
+
+    const { name, email, subject, message } = formData;
+
+    // Simple client-side validation
+    if (!name || !email || !subject || !message) {
+      setSubmitError("Please fill out all fields.");
+      return;
+    }
+
+    // Construct mailto URL
+    const mailtoLink = `mailto:hrmrakibs@gmail.com?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(
+      `Hi, my name is ${name}.\n\n${message}\n\nYou can contact me at ${email}.`
+    )}`;
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Redirect to mail client
+      window.location.href = mailtoLink;
 
-      // ("Form submitted:", formData);
+      // Set success state
       setSubmitSuccess(true);
       setFormData({
         name: "",
@@ -48,17 +89,13 @@ export default function ContactPage() {
         message: "",
       });
 
-      // Reset success message after 5 seconds
+      // Reset success message after a timeout
       setTimeout(() => {
         setSubmitSuccess(false);
       }, 5000);
     } catch (error) {
-      console.error("Error submitting form:", error);
-      setSubmitError(
-        "There was an error submitting your message. Please try again."
-      );
-    } finally {
-      setIsSubmitting(false);
+      console.error("Error preparing mailto link:", error);
+      setSubmitError("There was an error. Please try again.");
     }
   };
 
