@@ -26,6 +26,10 @@ export default function ContactPage() {
     }));
   };
 
+//   <a href="mailto:someone@example.com?subject=Your%20Subject&body=Hi%20my%20name%20is%20Shaishab.%0AI%20would%20like%20to%20...">
+//   Send Email
+// </a>
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
